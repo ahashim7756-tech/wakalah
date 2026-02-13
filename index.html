@@ -8,9 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- دمج الـ CSS هنا -->
     <style>
-        /* ===== المتغيرات الأساسية ===== */
         :root {
             --primary: #f59e0b;
             --primary-dark: #d97706;
@@ -50,14 +48,6 @@
         button {
             transition: all 0.2s ease;
             font-weight: 700;
-            position: relative;
-            overflow: hidden;
-        }
-
-        button:hover {
-            opacity: 0.9;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
         }
 
         input, select, textarea {
@@ -66,13 +56,11 @@
             border: 2px solid var(--border) !important;
             color: white !important;
             padding: 0.75rem 1rem !important;
-            transition: all 0.2s ease !important;
         }
 
         input:focus, select:focus, textarea:focus {
             outline: none !important;
             border-color: var(--primary) !important;
-            box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2) !important;
             background-color: #334155 !important;
         }
 
@@ -147,7 +135,6 @@
             color: white;
             padding: 1rem 2rem;
             border-radius: 0.75rem;
-            box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.5);
             font-weight: bold;
             border-right: 6px solid #059669;
         }
@@ -157,7 +144,6 @@
             color: white;
             padding: 1rem 2rem;
             border-radius: 0.75rem;
-            box-shadow: 0 10px 25px -5px rgba(239, 68, 68, 0.5);
             font-weight: bold;
             border-right: 6px solid #b91c1c;
         }
@@ -167,7 +153,6 @@
             color: white;
             padding: 1rem 2rem;
             border-radius: 0.75rem;
-            box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.5);
             font-weight: bold;
             border-right: 6px solid #1d4ed8;
         }
@@ -223,10 +208,6 @@
             background: var(--primary);
             border-radius: 4px;
         }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--primary-dark);
-        }
     </style>
 </head>
 <body class="bg-gray-900 font-[Tajawal] text-white">
@@ -242,58 +223,157 @@
 <!-- رسائل التنبيه -->
 <div id="toast" class="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 hidden"></div>
 
-<main id="app" class="min-h-screen flex items-center justify-center p-6">
-    <!-- يتم تحميل المحتوى ديناميكياً عبر JavaScript -->
-</main>
+<main id="app" class="min-h-screen flex items-center justify-center p-6"></main>
 
-<!-- دمج الـ Firebase والـ JavaScript هنا -->
 <script type="module">
-    // ========== Firebase Config مباشرة ==========
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-    import { 
-        getFirestore, collection, addDoc, getDocs, query, doc, 
-        deleteDoc, orderBy, serverTimestamp, writeBatch, increment,
-        enableIndexedDbPersistence, CACHE_SIZE_UNLIMITED 
-    } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
-    import { getAuth } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+    // ==================== Firebase Config (للتخزين المحلي مؤقتاً) ====================
+    // نستخدم localStorage بدلاً من Firebase للتجربة السريعة
+    class LocalDB {
+        constructor() {
+            this.initDB();
+        }
 
-    // إعدادات Firebase المؤقتة (للتجربة بدون حساب حقيقي)
-    // ملاحظة: للتجربة المباشرة، استخدم هذه الإعدادات أو قم بإنشاء مشروعك الخاص
-    const firebaseConfig = {
-        apiKey: "AIzaSyBxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXx",
-        authDomain: "wakala-saas.firebaseapp.com",
-        projectId: "wakala-saas",
-        storageBucket: "wakala-saas.appspot.com",
-        messagingSenderId: "123456789012",
-        appId: "1:123456789012:web:abc123def456ghi789"
-    };
+        initDB() {
+            if (!localStorage.getItem('farmers')) localStorage.setItem('farmers', '[]');
+            if (!localStorage.getItem('loans')) localStorage.setItem('loans', '[]');
+            if (!localStorage.getItem('sales')) localStorage.setItem('sales', '[]');
+            if (!localStorage.getItem('expenses')) localStorage.setItem('expenses', '[]');
+        }
 
-    // تهيئة Firebase
-    const appFirebase = initializeApp(firebaseConfig);
-    const db = getFirestore(appFirebase);
-    const auth = getAuth(appFirebase);
+        // المزارعين
+        getFarmers() {
+            return JSON.parse(localStorage.getItem('farmers'));
+        }
 
-    // تفعيل التخزين المحلي
-    try {
-        enableIndexedDbPersistence(db, { cacheSizeBytes: CACHE_SIZE_UNLIMITED })
-            .then(() => console.log('✅ تم تفعيل التخزين المحلي'))
-            .catch((err) => {
-                if (err.code === 'failed-precondition') {
-                    console.warn('⚠️ التخزين المحلي غير متاح - عدة نوافذ مفتوحة');
+        addFarmer(farmer) {
+            const farmers = this.getFarmers();
+            farmer.id = Date.now() + Math.random().toString(36);
+            farmer.createdAt = new Date().toISOString();
+            farmers.push(farmer);
+            localStorage.setItem('farmers', JSON.stringify(farmers));
+            return farmer;
+        }
+
+        deleteFarmer(id) {
+            const farmers = this.getFarmers().filter(f => f.id !== id);
+            localStorage.setItem('farmers', JSON.stringify(farmers));
+        }
+
+        updateFarmer(id, updates) {
+            const farmers = this.getFarmers();
+            const index = farmers.findIndex(f => f.id === id);
+            if (index !== -1) {
+                farmers[index] = { ...farmers[index], ...updates };
+                localStorage.setItem('farmers', JSON.stringify(farmers));
+            }
+        }
+
+        // السلف
+        getLoans() {
+            return JSON.parse(localStorage.getItem('loans'));
+        }
+
+        addLoan(loan) {
+            const loans = this.getLoans();
+            loan.id = Date.now() + Math.random().toString(36);
+            loan.createdAt = new Date().toISOString();
+            loans.push(loan);
+            localStorage.setItem('loans', JSON.stringify(loans));
+            
+            // تحديث رصيد الفلاح
+            const farmers = this.getFarmers();
+            const farmerIndex = farmers.findIndex(f => f.id === loan.farmerId);
+            if (farmerIndex !== -1) {
+                farmers[farmerIndex].currentBalance = (farmers[farmerIndex].currentBalance || 0) + loan.amount;
+                farmers[farmerIndex].totalLoans = (farmers[farmerIndex].totalLoans || 0) + 1;
+                localStorage.setItem('farmers', JSON.stringify(farmers));
+            }
+            return loan;
+        }
+
+        deleteLoan(id) {
+            const loans = this.getLoans();
+            const loan = loans.find(l => l.id === id);
+            if (loan) {
+                // استرداد الرصيد
+                const farmers = this.getFarmers();
+                const farmerIndex = farmers.findIndex(f => f.id === loan.farmerId);
+                if (farmerIndex !== -1) {
+                    farmers[farmerIndex].currentBalance = (farmers[farmerIndex].currentBalance || 0) - loan.amount;
+                    farmers[farmerIndex].totalLoans = (farmers[farmerIndex].totalLoans || 0) - 1;
+                    localStorage.setItem('farmers', JSON.stringify(farmers));
                 }
-            });
-    } catch (error) {
-        console.warn('⚠️ خطأ في تفعيل التخزين المحلي:', error);
+            }
+            const newLoans = loans.filter(l => l.id !== id);
+            localStorage.setItem('loans', JSON.stringify(newLoans));
+        }
+
+        updateLoanPayment(id, amount) {
+            const loans = this.getLoans();
+            const index = loans.findIndex(l => l.id === id);
+            if (index !== -1) {
+                loans[index].paidAmount = (loans[index].paidAmount || 0) + amount;
+                if (loans[index].paidAmount >= loans[index].totalAmount) {
+                    loans[index].status = 'paid';
+                }
+                localStorage.setItem('loans', JSON.stringify(loans));
+            }
+        }
+
+        // المبيعات
+        getSales() {
+            return JSON.parse(localStorage.getItem('sales'));
+        }
+
+        addSale(sale) {
+            const sales = this.getSales();
+            sale.id = Date.now() + Math.random().toString(36);
+            sale.createdAt = new Date().toISOString();
+            sales.push(sale);
+            localStorage.setItem('sales', JSON.stringify(sales));
+
+            // تحديث إحصائيات الفلاح
+            const farmers = this.getFarmers();
+            const farmerIndex = farmers.findIndex(f => f.id === sale.farmerId);
+            if (farmerIndex !== -1) {
+                farmers[farmerIndex].totalSales = (farmers[farmerIndex].totalSales || 0) + 1;
+                farmers[farmerIndex].totalProfit = (farmers[farmerIndex].totalProfit || 0) + (sale.profit || 0);
+                localStorage.setItem('farmers', JSON.stringify(farmers));
+            }
+            return sale;
+        }
+
+        deleteSale(id) {
+            const sales = this.getSales().filter(s => s.id !== id);
+            localStorage.setItem('sales', JSON.stringify(sales));
+        }
+
+        // المصروفات
+        getExpenses() {
+            return JSON.parse(localStorage.getItem('expenses'));
+        }
+
+        addExpense(expense) {
+            const expenses = this.getExpenses();
+            expense.id = Date.now() + Math.random().toString(36);
+            expense.createdAt = new Date().toISOString();
+            expenses.push(expense);
+            localStorage.setItem('expenses', JSON.stringify(expenses));
+            return expense;
+        }
+
+        deleteExpense(id) {
+            const expenses = this.getExpenses().filter(e => e.id !== id);
+            localStorage.setItem('expenses', JSON.stringify(expenses));
+        }
     }
 
-    // ========== المتغيرات العامة ==========
-    const app = document.getElementById('app');
-    let farmers = [];
-    let loans = [];
-    let sales = [];
-    let expenses = [];
+    const db = new LocalDB();
 
-    // ========== دوال مساعدة ==========
+    // ==================== المتغيرات العامة ====================
+    const app = document.getElementById('app');
+
+    // ==================== دالة عرض التنبيهات ====================
     function showToast(message, type = 'info') {
         const toast = document.getElementById('toast');
         toast.className = `fixed top-4 left-1/2 transform -translate-x-1/2 z-50 toast-${type} shadow-2xl`;
@@ -310,7 +390,7 @@
         }, 3000);
     }
 
-    // ========== شاشة تسجيل الدخول ==========
+    // ==================== شاشة تسجيل الدخول ====================
     function showLogin() {
         app.innerHTML = `
         <div class="w-full max-w-md">
@@ -368,7 +448,7 @@
         }
     }
 
-    // ========== لوحة التحكم ==========
+    // ==================== لوحة التحكم الرئيسية ====================
     function showDashboard() {
         app.innerHTML = `
         <div class="w-full max-w-7xl">
@@ -465,73 +545,131 @@
         showFarmersList();
     }
 
-    // ========== تحديث الإحصائيات ==========
-    async function updateStats() {
+    // ==================== تحديث الإحصائيات ====================
+    function updateStats() {
         const statsDiv = document.getElementById('stats');
         
-        try {
-            const farmersSnap = await getDocs(collection(db, "farmers"));
-            const loansSnap = await getDocs(collection(db, "loans"));
-            const salesSnap = await getDocs(collection(db, "sales"));
-            const expensesSnap = await getDocs(collection(db, "expenses"));
-            
-            const totalFarmers = farmersSnap.size;
-            
-            let totalLoans = 0;
-            loansSnap.forEach(doc => {
-                totalLoans += doc.data().amount || 0;
-            });
-            
-            let totalSales = 0;
-            salesSnap.forEach(doc => {
-                totalSales += doc.data().total || 0;
-            });
-            
-            let totalExpenses = 0;
-            expensesSnap.forEach(doc => {
-                totalExpenses += doc.data().amount || 0;
-            });
-            
-            statsDiv.innerHTML = `
-                <div class="stat-card">
-                    <div class="stat-icon bg-green-500/20 text-green-400">
-                        <i class="fas fa-users"></i>
-                    </div>
-                    <p class="text-sm opacity-60">عدد الفلاحين</p>
-                    <p class="text-2xl font-bold">${totalFarmers}</p>
+        const farmers = db.getFarmers();
+        const loans = db.getLoans();
+        const sales = db.getSales();
+        const expenses = db.getExpenses();
+        
+        const totalFarmers = farmers.length;
+        const totalLoans = loans.reduce((sum, loan) => sum + (loan.amount || 0), 0);
+        const totalSales = sales.reduce((sum, sale) => sum + (sale.total || 0), 0);
+        const totalExpenses = expenses.reduce((sum, exp) => sum + (exp.amount || 0), 0);
+        
+        statsDiv.innerHTML = `
+            <div class="stat-card">
+                <div class="stat-icon bg-green-500/20 text-green-400">
+                    <i class="fas fa-users"></i>
                 </div>
-                
-                <div class="stat-card">
-                    <div class="stat-icon bg-blue-500/20 text-blue-400">
-                        <i class="fas fa-hand-holding-usd"></i>
-                    </div>
-                    <p class="text-sm opacity-60">إجمالي السلف</p>
-                    <p class="text-2xl font-bold">${totalLoans.toLocaleString()} ج.م</p>
-                </div>
-                
-                <div class="stat-card">
-                    <div class="stat-icon bg-purple-500/20 text-purple-400">
-                        <i class="fas fa-shopping-cart"></i>
-                    </div>
-                    <p class="text-sm opacity-60">إجمالي المبيعات</p>
-                    <p class="text-2xl font-bold">${totalSales.toLocaleString()} ج.م</p>
-                </div>
-                
-                <div class="stat-card">
-                    <div class="stat-icon bg-orange-500/20 text-orange-400">
-                        <i class="fas fa-wallet"></i>
-                    </div>
-                    <p class="text-sm opacity-60">إجمالي المصروفات</p>
-                    <p class="text-2xl font-bold">${totalExpenses.toLocaleString()} ج.م</p>
-                </div>
-            `;
+                <p class="text-sm opacity-60">عدد الفلاحين</p>
+                <p class="text-2xl font-bold">${totalFarmers}</p>
+            </div>
             
-        } catch (error) {
-            console.error('خطأ في تحديث الإحصائيات:', error);
-        }
+            <div class="stat-card">
+                <div class="stat-icon bg-blue-500/20 text-blue-400">
+                    <i class="fas fa-hand-holding-usd"></i>
+                </div>
+                <p class="text-sm opacity-60">إجمالي السلف</p>
+                <p class="text-2xl font-bold">${totalLoans.toLocaleString()} ج.م</p>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon bg-purple-500/20 text-purple-400">
+                    <i class="fas fa-shopping-cart"></i>
+                </div>
+                <p class="text-sm opacity-60">إجمالي المبيعات</p>
+                <p class="text-2xl font-bold">${totalSales.toLocaleString()} ج.م</p>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon bg-orange-500/20 text-orange-400">
+                    <i class="fas fa-wallet"></i>
+                </div>
+                <p class="text-sm opacity-60">إجمالي المصروفات</p>
+                <p class="text-2xl font-bold">${totalExpenses.toLocaleString()} ج.م</p>
+            </div>
+        `;
     }
 
-    // ========== نماذج الإدخال الأساسية (مبسطة) ==========
+    // ==================== قائمة الفلاحين ====================
+    function showFarmersList() {
+        const content = document.getElementById('content');
+        const farmers = db.getFarmers();
+        
+        if (farmers.length === 0) {
+            content.innerHTML = `
+            <div class="text-center py-12">
+                <i class="fas fa-users text-6xl text-gray-600 mb-4"></i>
+                <p class="text-xl text-gray-400 mb-4">لا يوجد فلاحين بعد</p>
+                <button onclick="showFarmerForm()" class="bg-amber-500 hover:bg-amber-600 px-6 py-3 rounded-xl font-bold">
+                    <i class="fas fa-plus ml-2"></i>
+                    إضافة أول فلاح
+                </button>
+            </div>
+            `;
+            return;
+        }
+        
+        let html = `
+        <div class="flex justify-between items-center mb-6">
+            <h3 class="text-xl font-bold">قائمة الفلاحين</h3>
+            <input type="text" id="searchFarmers" placeholder="بحث..." class="px-4 py-2 rounded-lg bg-gray-700">
+        </div>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>الاسم</th>
+                        <th>رقم الهاتف</th>
+                        <th>الرصيد الحالي</th>
+                        <th>عدد السلف</th>
+                        <th>إجمالي المبيعات</th>
+                        <th>الإجراءات</th>
+                    </tr>
+                </thead>
+                <tbody>
+        `;
+        
+        farmers.forEach((farmer, index) => {
+            html += `
+                <tr class="farmer-row">
+                    <td>${index + 1}</td>
+                    <td class="font-bold">${farmer.name}</td>
+                    <td>${farmer.phone}</td>
+                    <td class="${(farmer.currentBalance || 0) > 0 ? 'text-danger' : 'text-success'}">${(farmer.currentBalance || 0).toLocaleString()} ج.م</td>
+                    <td>${farmer.totalLoans || 0}</td>
+                    <td>${farmer.totalSales || 0}</td>
+                    <td>
+                        <button onclick="deleteFarmer('${farmer.id}')" class="text-danger hover:text-red-300 mx-1" title="حذف">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `;
+        });
+        
+        html += `
+                </tbody>
+            </table>
+        </div>
+        `;
+        
+        content.innerHTML = html;
+        
+        document.getElementById('searchFarmers')?.addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            document.querySelectorAll('.farmer-row').forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchTerm) ? '' : 'none';
+            });
+        });
+    }
+
+    // ==================== نموذج إضافة فلاح ====================
     function showFarmerForm() {
         const content = document.getElementById('content');
         content.innerHTML = `
@@ -554,6 +692,12 @@
                            class="w-full p-3 rounded-lg bg-gray-700 border border-gray-600"/>
                 </div>
                 
+                <div>
+                    <label class="block text-gray-300 mb-2">العنوان (اختياري)</label>
+                    <input id="farmerAddress" type="text" placeholder="العنوان" 
+                           class="w-full p-3 rounded-lg bg-gray-700 border border-gray-600"/>
+                </div>
+                
                 <div class="flex gap-3 pt-4">
                     <button id="saveFarmer" class="flex-1 bg-gradient-to-l from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 py-3 rounded-xl font-bold transition">
                         <i class="fas fa-save ml-2"></i>
@@ -565,8 +709,6 @@
                     </button>
                 </div>
             </div>
-            
-            <p id="msgFarmer" class="mt-4 text-center font-bold"></p>
         </div>
         `;
         
@@ -574,164 +716,714 @@
         document.getElementById('cancelForm').addEventListener('click', showFarmersList);
     }
 
-    async function saveFarmer() {
+    function saveFarmer() {
         const name = document.getElementById('farmerName').value.trim();
         const phone = document.getElementById('farmerPhone').value.trim();
+        const address = document.getElementById('farmerAddress').value.trim();
         
         if(!name || !phone) {
-            document.getElementById('msgFarmer').innerText = "❌ الاسم ورقم الهاتف مطلوبان";
+            showToast('الاسم ورقم الهاتف مطلوبان', 'error');
             return;
         }
         
-        try {
-            await addDoc(collection(db, "farmers"), {
-                name,
-                phone,
-                currentBalance: 0,
-                totalLoans: 0,
-                totalSales: 0,
-                status: 'active',
-                createdAt: serverTimestamp()
-            });
-            
-            showToast('تم إضافة الفلاح بنجاح', 'success');
-            refreshData();
-            showFarmersList();
-            
-        } catch (error) {
-            console.error('خطأ في حفظ الفلاح:', error);
-            showToast('حدث خطأ في حفظ البيانات', 'error');
-        }
+        db.addFarmer({
+            name,
+            phone,
+            address,
+            currentBalance: 0,
+            totalLoans: 0,
+            totalSales: 0,
+            totalProfit: 0,
+            status: 'active'
+        });
+        
+        showToast('تم إضافة الفلاح بنجاح', 'success');
+        refreshData();
+        showFarmersList();
     }
 
-    // ========== عرض قائمة الفلاحين ==========
-    async function showFarmersList() {
+    // ==================== قائمة السلف ====================
+    function showLoansList() {
         const content = document.getElementById('content');
-        content.innerHTML = '<div class="text-center py-12"><div class="animate-spin rounded-full h-12 w-12 border-t-2 border-amber-500 mx-auto"></div><p class="mt-4">جاري التحميل...</p></div>';
+        const loans = db.getLoans();
+        const farmers = db.getFarmers();
+        const farmersMap = new Map(farmers.map(f => [f.id, f.name]));
         
-        try {
-            const farmersSnap = await getDocs(query(collection(db, "farmers"), orderBy("createdAt", "desc")));
+        if (loans.length === 0) {
+            content.innerHTML = `
+            <div class="text-center py-12">
+                <i class="fas fa-hand-holding-usd text-6xl text-gray-600 mb-4"></i>
+                <p class="text-xl text-gray-400 mb-4">لا يوجد سلف بعد</p>
+                <button onclick="showLoanForm()" class="bg-amber-500 hover:bg-amber-600 px-6 py-3 rounded-xl font-bold">
+                    <i class="fas fa-plus ml-2"></i>
+                    إضافة سلفة
+                </button>
+            </div>
+            `;
+            return;
+        }
+        
+        let html = `
+        <h3 class="text-xl font-bold mb-6">قائمة السلف</h3>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>الفلاح</th>
+                        <th>المبلغ</th>
+                        <th>الفائدة</th>
+                        <th>الإجمالي</th>
+                        <th>المدفوع</th>
+                        <th>المتبقي</th>
+                        <th>تاريخ السداد</th>
+                        <th>الحالة</th>
+                        <th>الإجراءات</th>
+                    </tr>
+                </thead>
+                <tbody>
+        `;
+        
+        loans.forEach((loan, index) => {
+            const totalWithInterest = loan.amount + (loan.amount * (loan.interest || 0) / 100);
+            const paidAmount = loan.paidAmount || 0;
+            const remaining = totalWithInterest - paidAmount;
             
-            if (farmersSnap.empty) {
-                content.innerHTML = `
-                <div class="text-center py-12">
-                    <i class="fas fa-users text-6xl text-gray-600 mb-4"></i>
-                    <p class="text-xl text-gray-400 mb-4">لا يوجد فلاحين بعد</p>
-                    <button onclick="showFarmerForm()" class="bg-amber-500 hover:bg-amber-600 px-6 py-3 rounded-xl font-bold inline-flex items-center gap-2">
-                        <i class="fas fa-plus"></i>
-                        إضافة أول فلاح
+            let statusClass = 'badge-warning';
+            let statusText = 'معلق';
+            if (loan.status === 'paid' || remaining <= 0) {
+                statusClass = 'badge-success';
+                statusText = 'مدفوع';
+            } else if (loan.dueDate && new Date(loan.dueDate) < new Date()) {
+                statusClass = 'badge-danger';
+                statusText = 'متأخر';
+            }
+            
+            html += `
+                <tr>
+                    <td>${index + 1}</td>
+                    <td class="font-bold">${farmersMap.get(loan.farmerId) || 'غير معروف'}</td>
+                    <td>${loan.amount.toLocaleString()} ج.م</td>
+                    <td>${loan.interest || 0}%</td>
+                    <td>${totalWithInterest.toLocaleString()} ج.م</td>
+                    <td>${paidAmount.toLocaleString()} ج.م</td>
+                    <td class="${remaining > 0 ? 'text-danger' : 'text-success'}">${remaining.toLocaleString()} ج.م</td>
+                    <td>${loan.dueDate || 'غير محدد'}</td>
+                    <td><span class="badge ${statusClass}">${statusText}</span></td>
+                    <td>
+                        <button onclick="showPaymentForm('${loan.id}')" class="text-green-400 hover:text-green-300 mx-1" title="تسديد">
+                            <i class="fas fa-money-bill"></i>
+                        </button>
+                        <button onclick="deleteLoan('${loan.id}')" class="text-danger hover:text-red-300 mx-1" title="حذف">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `;
+        });
+        
+        html += `
+                </tbody>
+            </table>
+        </div>
+        `;
+        
+        content.innerHTML = html;
+    }
+
+    // ==================== نموذج إضافة سلفة ====================
+    function showLoanForm() {
+        const farmers = db.getFarmers();
+        
+        if (farmers.length === 0) {
+            showToast('يجب إضافة فلاح أولاً', 'error');
+            showFarmersList();
+            return;
+        }
+        
+        const content = document.getElementById('content');
+        content.innerHTML = `
+        <div class="max-w-2xl mx-auto">
+            <h3 class="text-2xl font-bold mb-6 flex items-center gap-2">
+                <i class="fas fa-hand-holding-usd text-blue-400"></i>
+                <span>إضافة سلفة جديدة</span>
+            </h3>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-gray-300 mb-2">اختر الفلاح</label>
+                    <select id="loanFarmer" class="w-full p-3 rounded-lg bg-gray-700">
+                        <option value="">-- اختر فلاح --</option>
+                        ${farmers.map(f => `<option value="${f.id}">${f.name} - ${f.phone}</option>`).join('')}
+                    </select>
+                </div>
+                
+                <div>
+                    <label class="block text-gray-300 mb-2">المبلغ (ج.م)</label>
+                    <input id="loanAmount" type="number" placeholder="أدخل المبلغ" 
+                           class="w-full p-3 rounded-lg bg-gray-700"/>
+                </div>
+                
+                <div>
+                    <label class="block text-gray-300 mb-2">الغرض</label>
+                    <input id="loanPurpose" type="text" placeholder="الغرض من السلفة" 
+                           class="w-full p-3 rounded-lg bg-gray-700"/>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-gray-300 mb-2">تاريخ السداد</label>
+                        <input id="loanDueDate" type="date" class="w-full p-3 rounded-lg bg-gray-700"/>
+                    </div>
+                    <div>
+                        <label class="block text-gray-300 mb-2">الفائدة (%)</label>
+                        <input id="loanInterest" type="number" value="0" min="0" max="100" step="0.1"
+                               class="w-full p-3 rounded-lg bg-gray-700"/>
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-gray-300 mb-2">ملاحظات</label>
+                    <textarea id="loanNotes" rows="3" placeholder="أي ملاحظات..." 
+                              class="w-full p-3 rounded-lg bg-gray-700"></textarea>
+                </div>
+                
+                <div class="flex gap-3 pt-4">
+                    <button id="saveLoan" class="flex-1 bg-gradient-to-l from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 py-3 rounded-xl font-bold">
+                        <i class="fas fa-save ml-2"></i>
+                        حفظ السلفة
+                    </button>
+                    <button id="cancelForm" class="flex-1 bg-gray-700 hover:bg-gray-600 py-3 rounded-xl font-bold">
+                        <i class="fas fa-times ml-2"></i>
+                        إلغاء
                     </button>
                 </div>
-                `;
+            </div>
+        </div>
+        `;
+        
+        document.getElementById('saveLoan').addEventListener('click', saveLoan);
+        document.getElementById('cancelForm').addEventListener('click', showLoansList);
+    }
+
+    function saveLoan() {
+        const farmerId = document.getElementById('loanFarmer').value;
+        const amount = parseFloat(document.getElementById('loanAmount').value);
+        const purpose = document.getElementById('loanPurpose').value;
+        const dueDate = document.getElementById('loanDueDate').value;
+        const interest = parseFloat(document.getElementById('loanInterest').value) || 0;
+        const notes = document.getElementById('loanNotes').value;
+        
+        if(!farmerId || !amount || amount <= 0) {
+            showToast('يرجى اختيار الفلاح وإدخال مبلغ صحيح', 'error');
+            return;
+        }
+        
+        db.addLoan({
+            farmerId,
+            amount,
+            purpose: purpose || 'بدون',
+            dueDate,
+            interest,
+            totalAmount: amount + (amount * interest / 100),
+            paidAmount: 0,
+            status: 'pending',
+            notes
+        });
+        
+        showToast('تم إضافة السلفة بنجاح', 'success');
+        refreshData();
+        showLoansList();
+    }
+
+    // ==================== نموذج تسديد سلفة ====================
+    window.showPaymentForm = function(loanId) {
+        const loans = db.getLoans();
+        const loan = loans.find(l => l.id === loanId);
+        if (!loan) return;
+        
+        const totalWithInterest = loan.amount + (loan.amount * (loan.interest || 0) / 100);
+        const remaining = totalWithInterest - (loan.paidAmount || 0);
+        
+        const content = document.getElementById('content');
+        content.innerHTML = `
+        <div class="max-w-2xl mx-auto">
+            <h3 class="text-2xl font-bold mb-6 flex items-center gap-2">
+                <i class="fas fa-money-bill text-green-400"></i>
+                <span>تسديد سلفة</span>
+            </h3>
+            
+            <div class="space-y-4">
+                <div class="bg-gray-800 p-4 rounded-lg">
+                    <p class="mb-2">المبلغ المتبقي: <span class="font-bold text-danger">${remaining.toLocaleString()} ج.م</span></p>
+                </div>
+                
+                <div>
+                    <label class="block text-gray-300 mb-2">المبلغ المدفوع</label>
+                    <input id="paymentAmount" type="number" min="1" max="${remaining}" placeholder="أدخل المبلغ" 
+                           class="w-full p-3 rounded-lg bg-gray-700"/>
+                </div>
+                
+                <div>
+                    <label class="block text-gray-300 mb-2">تاريخ الدفع</label>
+                    <input id="paymentDate" type="date" value="${new Date().toISOString().split('T')[0]}" 
+                           class="w-full p-3 rounded-lg bg-gray-700"/>
+                </div>
+                
+                <div class="flex gap-3 pt-4">
+                    <button id="savePayment" class="flex-1 bg-gradient-to-l from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 py-3 rounded-xl font-bold">
+                        <i class="fas fa-check ml-2"></i>
+                        تأكيد الدفع
+                    </button>
+                    <button id="cancelForm" class="flex-1 bg-gray-700 hover:bg-gray-600 py-3 rounded-xl font-bold">
+                        <i class="fas fa-times ml-2"></i>
+                        إلغاء
+                    </button>
+                </div>
+            </div>
+        </div>
+        `;
+        
+        document.getElementById('savePayment').addEventListener('click', () => {
+            const amount = parseFloat(document.getElementById('paymentAmount').value);
+            if (!amount || amount <= 0 || amount > remaining) {
+                showToast('يرجى إدخال مبلغ صحيح', 'error');
                 return;
             }
             
-            let html = `
-            <div class="flex justify-between items-center mb-6">
-                <h3 class="text-xl font-bold">قائمة الفلاحين</h3>
-            </div>
-            <div class="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>الاسم</th>
-                            <th>رقم الهاتف</th>
-                            <th>الرصيد الحالي</th>
-                            <th>الحالة</th>
-                            <th>الإجراءات</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-            `;
-            
-            let index = 1;
-            farmersSnap.forEach(doc => {
-                const farmer = doc.data();
-                html += `
-                    <tr>
-                        <td>${index++}</td>
-                        <td class="font-bold">${farmer.name}</td>
-                        <td dir="ltr">${farmer.phone}</td>
-                        <td class="${farmer.currentBalance > 0 ? 'text-danger' : 'text-success'}">${farmer.currentBalance.toLocaleString()} ج.م</td>
-                        <td>
-                            <span class="badge ${farmer.status === 'active' ? 'badge-success' : 'badge-danger'}">
-                                ${farmer.status === 'active' ? 'نشط' : 'غير نشط'}
-                            </span>
-                        </td>
-                        <td>
-                            <button onclick="deleteFarmer('${doc.id}')" class="text-danger hover:text-red-300 mx-1" title="حذف">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </td>
-                    </tr>
-                `;
-            });
-            
-            html += `
-                    </tbody>
-                </table>
-            </div>
-            `;
-            
-            content.innerHTML = html;
-            
-        } catch (error) {
-            console.error('خطأ في تحميل الفلاحين:', error);
-            content.innerHTML = '<p class="text-danger text-center">حدث خطأ في تحميل البيانات</p>';
-        }
-    }
+            db.updateLoanPayment(loanId, amount);
+            showToast('تم تسجيل الدفع بنجاح', 'success');
+            refreshData();
+            showLoansList();
+        });
+        
+        document.getElementById('cancelForm').addEventListener('click', showLoansList);
+    };
 
-    // دوال بسيطة للنماذج الأخرى
-    function showLoanForm() {
-        const content = document.getElementById('content');
-        content.innerHTML = '<p class="text-center py-12">نموذج إضافة سلفة - قيد التطوير</p>';
-    }
-
-    function showSaleForm() {
-        const content = document.getElementById('content');
-        content.innerHTML = '<p class="text-center py-12">نموذج تسجيل بيع - قيد التطوير</p>';
-    }
-
-    function showExpenseForm() {
-        const content = document.getElementById('content');
-        content.innerHTML = '<p class="text-center py-12">نموذج إضافة مصروف - قيد التطوير</p>';
-    }
-
-    function showLoansList() {
-        const content = document.getElementById('content');
-        content.innerHTML = '<p class="text-center py-12">قائمة السلف - قيد التطوير</p>';
-    }
-
+    // ==================== قائمة المبيعات ====================
     function showSalesList() {
         const content = document.getElementById('content');
-        content.innerHTML = '<p class="text-center py-12">قائمة المبيعات - قيد التطوير</p>';
+        const sales = db.getSales();
+        const farmers = db.getFarmers();
+        const farmersMap = new Map(farmers.map(f => [f.id, f.name]));
+        
+        if (sales.length === 0) {
+            content.innerHTML = `
+            <div class="text-center py-12">
+                <i class="fas fa-shopping-cart text-6xl text-gray-600 mb-4"></i>
+                <p class="text-xl text-gray-400 mb-4">لا يوجد مبيعات بعد</p>
+                <button onclick="showSaleForm()" class="bg-amber-500 hover:bg-amber-600 px-6 py-3 rounded-xl font-bold">
+                    <i class="fas fa-plus ml-2"></i>
+                    تسجيل أول بيع
+                </button>
+            </div>
+            `;
+            return;
+        }
+        
+        let totalSales = 0;
+        let totalProfit = 0;
+        
+        let html = `
+        <h3 class="text-xl font-bold mb-6">قائمة المبيعات</h3>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>الفلاح</th>
+                        <th>المنتج</th>
+                        <th>الكمية</th>
+                        <th>سعر الوحدة</th>
+                        <th>الإجمالي</th>
+                        <th>التكلفة</th>
+                        <th>الربح</th>
+                        <th>طريقة الدفع</th>
+                        <th>الإجراءات</th>
+                    </tr>
+                </thead>
+                <tbody>
+        `;
+        
+        sales.forEach((sale, index) => {
+            totalSales += sale.total || 0;
+            totalProfit += sale.profit || 0;
+            
+            html += `
+                <tr>
+                    <td>${index + 1}</td>
+                    <td class="font-bold">${farmersMap.get(sale.farmerId) || 'غير معروف'}</td>
+                    <td>${sale.product}</td>
+                    <td>${sale.quantity}</td>
+                    <td>${sale.unitPrice.toLocaleString()} ج.م</td>
+                    <td>${sale.total.toLocaleString()} ج.م</td>
+                    <td>${(sale.cost || 0).toLocaleString()} ج.م</td>
+                    <td class="${sale.profit >= 0 ? 'text-success' : 'text-danger'}">${sale.profit.toLocaleString()} ج.م</td>
+                    <td>
+                        <span class="badge ${sale.paymentMethod === 'cash' ? 'badge-success' : 'badge-warning'}">
+                            ${sale.paymentMethod === 'cash' ? 'نقداً' : sale.paymentMethod === 'credit' ? 'آجل' : 'تقسيط'}
+                        </span>
+                    </td>
+                    <td>
+                        <button onclick="deleteSale('${sale.id}')" class="text-danger hover:text-red-300 mx-1" title="حذف">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `;
+        });
+        
+        html += `
+                </tbody>
+                <tfoot class="bg-gray-800 font-bold">
+                    <tr>
+                        <td colspan="5">الإجمالي:</td>
+                        <td>${totalSales.toLocaleString()} ج.م</td>
+                        <td></td>
+                        <td class="${totalProfit >= 0 ? 'text-success' : 'text-danger'}">${totalProfit.toLocaleString()} ج.م</td>
+                        <td colspan="2"></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+        `;
+        
+        content.innerHTML = html;
     }
 
+    // ==================== نموذج إضافة بيع ====================
+    function showSaleForm() {
+        const farmers = db.getFarmers();
+        
+        if (farmers.length === 0) {
+            showToast('يجب إضافة فلاح أولاً', 'error');
+            showFarmersList();
+            return;
+        }
+        
+        const content = document.getElementById('content');
+        content.innerHTML = `
+        <div class="max-w-2xl mx-auto">
+            <h3 class="text-2xl font-bold mb-6 flex items-center gap-2">
+                <i class="fas fa-shopping-cart text-purple-400"></i>
+                <span>تسجيل عملية بيع</span>
+            </h3>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-gray-300 mb-2">اختر الفلاح</label>
+                    <select id="saleFarmer" class="w-full p-3 rounded-lg bg-gray-700">
+                        <option value="">-- اختر فلاح --</option>
+                        ${farmers.map(f => `<option value="${f.id}">${f.name} - ${f.phone}</option>`).join('')}
+                    </select>
+                </div>
+                
+                <div>
+                    <label class="block text-gray-300 mb-2">المنتج</label>
+                    <input id="saleProduct" type="text" placeholder="اسم المنتج" 
+                           class="w-full p-3 rounded-lg bg-gray-700"/>
+                </div>
+                
+                <div class="grid grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-gray-300 mb-2">الكمية</label>
+                        <input id="saleQuantity" type="number" value="1" min="1" 
+                               class="w-full p-3 rounded-lg bg-gray-700"/>
+                    </div>
+                    <div>
+                        <label class="block text-gray-300 mb-2">سعر الوحدة</label>
+                        <input id="saleUnitPrice" type="number" value="0" min="0" step="0.01"
+                               class="w-full p-3 rounded-lg bg-gray-700"/>
+                    </div>
+                    <div>
+                        <label class="block text-gray-300 mb-2">التكلفة</label>
+                        <input id="saleCost" type="number" value="0" min="0" step="0.01"
+                               class="w-full p-3 rounded-lg bg-gray-700"/>
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-gray-300 mb-2">طريقة الدفع</label>
+                    <select id="salePayment" class="w-full p-3 rounded-lg bg-gray-700">
+                        <option value="cash">نقداً</option>
+                        <option value="credit">آجل</option>
+                        <option value="installments">تقسيط</option>
+                    </select>
+                </div>
+                
+                <div class="flex gap-3 pt-4">
+                    <button id="saveSale" class="flex-1 bg-gradient-to-l from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 py-3 rounded-xl font-bold">
+                        <i class="fas fa-save ml-2"></i>
+                        تسجيل البيع
+                    </button>
+                    <button id="cancelForm" class="flex-1 bg-gray-700 hover:bg-gray-600 py-3 rounded-xl font-bold">
+                        <i class="fas fa-times ml-2"></i>
+                        إلغاء
+                    </button>
+                </div>
+            </div>
+        </div>
+        `;
+        
+        document.getElementById('saveSale').addEventListener('click', saveSale);
+        document.getElementById('cancelForm').addEventListener('click', showSalesList);
+    }
+
+    function saveSale() {
+        const farmerId = document.getElementById('saleFarmer').value;
+        const product = document.getElementById('saleProduct').value;
+        const quantity = parseFloat(document.getElementById('saleQuantity').value);
+        const unitPrice = parseFloat(document.getElementById('saleUnitPrice').value);
+        const cost = parseFloat(document.getElementById('saleCost').value);
+        const paymentMethod = document.getElementById('salePayment').value;
+        
+        if(!farmerId || !product || quantity <= 0 || unitPrice <= 0) {
+            showToast('يرجى إدخال جميع البيانات المطلوبة', 'error');
+            return;
+        }
+        
+        const total = quantity * unitPrice;
+        const profit = total - (cost * quantity);
+        
+        db.addSale({
+            farmerId,
+            product,
+            quantity,
+            unitPrice,
+            total,
+            cost: cost * quantity,
+            profit,
+            paymentMethod
+        });
+        
+        showToast('تم تسجيل البيع بنجاح', 'success');
+        refreshData();
+        showSalesList();
+    }
+
+    // ==================== قائمة المصروفات ====================
     function showExpensesList() {
         const content = document.getElementById('content');
-        content.innerHTML = '<p class="text-center py-12">قائمة المصروفات - قيد التطوير</p>';
+        const expenses = db.getExpenses();
+        
+        if (expenses.length === 0) {
+            content.innerHTML = `
+            <div class="text-center py-12">
+                <i class="fas fa-wallet text-6xl text-gray-600 mb-4"></i>
+                <p class="text-xl text-gray-400 mb-4">لا يوجد مصروفات بعد</p>
+                <button onclick="showExpenseForm()" class="bg-amber-500 hover:bg-amber-600 px-6 py-3 rounded-xl font-bold">
+                    <i class="fas fa-plus ml-2"></i>
+                    إضافة مصروف
+                </button>
+            </div>
+            `;
+            return;
+        }
+        
+        let totalExpenses = 0;
+        
+        let html = `
+        <div class="flex justify-between items-center mb-6">
+            <h3 class="text-xl font-bold">سجل المصروفات</h3>
+            <select id="expenseFilter" class="px-4 py-2 rounded-lg bg-gray-700">
+                <option value="all">كل المصروفات</option>
+                <option value="rent">إيجار</option>
+                <option value="salaries">رواتب</option>
+                <option value="utilities">فواتير</option>
+                <option value="transport">نقل</option>
+                <option value="maintenance">صيانة</option>
+                <option value="other">أخرى</option>
+            </select>
+        </div>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>النوع</th>
+                        <th>الوصف</th>
+                        <th>المبلغ</th>
+                        <th>التاريخ</th>
+                        <th>الإجراءات</th>
+                    </tr>
+                </thead>
+                <tbody>
+        `;
+        
+        expenses.forEach((expense, index) => {
+            totalExpenses += expense.amount || 0;
+            
+            const typeNames = {
+                'rent': 'إيجار',
+                'salaries': 'رواتب',
+                'utilities': 'فواتير',
+                'transport': 'نقل',
+                'maintenance': 'صيانة',
+                'other': 'أخرى'
+            };
+            
+            html += `
+                <tr class="expense-row" data-type="${expense.type}">
+                    <td>${index + 1}</td>
+                    <td>${typeNames[expense.type] || expense.type}</td>
+                    <td>${expense.description}</td>
+                    <td class="text-danger font-bold">${expense.amount.toLocaleString()} ج.م</td>
+                    <td>${expense.date || expense.createdAt.split('T')[0]}</td>
+                    <td>
+                        <button onclick="deleteExpense('${expense.id}')" class="text-danger hover:text-red-300 mx-1" title="حذف">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `;
+        });
+        
+        html += `
+                </tbody>
+                <tfoot class="bg-gray-800 font-bold">
+                    <tr>
+                        <td colspan="3">الإجمالي:</td>
+                        <td class="text-danger">${totalExpenses.toLocaleString()} ج.م</td>
+                        <td colspan="2"></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+        `;
+        
+        content.innerHTML = html;
+        
+        document.getElementById('expenseFilter').addEventListener('change', function(e) {
+            const filter = e.target.value;
+            document.querySelectorAll('.expense-row').forEach(row => {
+                row.style.display = (filter === 'all' || row.dataset.type === filter) ? '' : 'none';
+            });
+        });
     }
 
+    // ==================== نموذج إضافة مصروف ====================
+    function showExpenseForm() {
+        const content = document.getElementById('content');
+        content.innerHTML = `
+        <div class="max-w-2xl mx-auto">
+            <h3 class="text-2xl font-bold mb-6 flex items-center gap-2">
+                <i class="fas fa-wallet text-orange-400"></i>
+                <span>تسجيل مصروف</span>
+            </h3>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-gray-300 mb-2">نوع المصروف</label>
+                    <select id="expenseType" class="w-full p-3 rounded-lg bg-gray-700">
+                        <option value="rent">إيجار</option>
+                        <option value="salaries">رواتب</option>
+                        <option value="utilities">فواتير</option>
+                        <option value="transport">نقل</option>
+                        <option value="maintenance">صيانة</option>
+                        <option value="other">أخرى</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label class="block text-gray-300 mb-2">الوصف</label>
+                    <input id="expenseDesc" type="text" placeholder="وصف المصروف" 
+                           class="w-full p-3 rounded-lg bg-gray-700"/>
+                </div>
+                
+                <div>
+                    <label class="block text-gray-300 mb-2">المبلغ (ج.م)</label>
+                    <input id="expenseAmount" type="number" placeholder="أدخل المبلغ" 
+                           class="w-full p-3 rounded-lg bg-gray-700"/>
+                </div>
+                
+                <div>
+                    <label class="block text-gray-300 mb-2">التاريخ</label>
+                    <input id="expenseDate" type="date" value="${new Date().toISOString().split('T')[0]}" 
+                           class="w-full p-3 rounded-lg bg-gray-700"/>
+                </div>
+                
+                <div class="flex gap-3 pt-4">
+                    <button id="saveExpense" class="flex-1 bg-gradient-to-l from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 py-3 rounded-xl font-bold">
+                        <i class="fas fa-save ml-2"></i>
+                        تسجيل المصروف
+                    </button>
+                    <button id="cancelForm" class="flex-1 bg-gray-700 hover:bg-gray-600 py-3 rounded-xl font-bold">
+                        <i class="fas fa-times ml-2"></i>
+                        إلغاء
+                    </button>
+                </div>
+            </div>
+        </div>
+        `;
+        
+        document.getElementById('saveExpense').addEventListener('click', saveExpense);
+        document.getElementById('cancelForm').addEventListener('click', showExpensesList);
+    }
+
+    function saveExpense() {
+        const type = document.getElementById('expenseType').value;
+        const description = document.getElementById('expenseDesc').value;
+        const amount = parseFloat(document.getElementById('expenseAmount').value);
+        const date = document.getElementById('expenseDate').value;
+        
+        if(!description || !amount || amount <= 0) {
+            showToast('يرجى إدخال وصف المصروف ومبلغ صحيح', 'error');
+            return;
+        }
+        
+        db.addExpense({
+            type,
+            description,
+            amount,
+            date
+        });
+        
+        showToast('تم تسجيل المصروف بنجاح', 'success');
+        refreshData();
+        showExpensesList();
+    }
+
+    // ==================== دوال مساعدة ====================
     function refreshData() {
         updateStats();
     }
 
     // دوال الحذف
-    window.deleteFarmer = async (id) => {
+    window.deleteFarmer = (id) => {
         if (confirm('هل أنت متأكد من حذف هذا الفلاح؟')) {
-            try {
-                await deleteDoc(doc(db, "farmers", id));
-                showToast('تم الحذف بنجاح', 'success');
-                showFarmersList();
-            } catch (error) {
-                showToast('خطأ في الحذف', 'error');
-            }
+            db.deleteFarmer(id);
+            showToast('تم الحذف بنجاح', 'success');
+            refreshData();
+            showFarmersList();
         }
     };
 
-    // بدء التطبيق
-    showLogin();
+    window.deleteLoan = (id) => {
+        if (confirm('هل أنت متأكد من حذف هذه السلفة؟')) {
+            db.deleteLoan(id);
+            showToast('تم الحذف بنجاح', 'success');
+            refreshData();
+            showLoansList();
+        }
+    };
+
+    window.deleteSale = (id) => {
+        if (confirm('هل أنت متأكد من حذف هذا البيع؟')) {
+            db.deleteSale(id);
+            showToast('تم الحذف بنجاح', 'success');
+            refreshData();
+            showSalesList();
+        }
+    };
+
+    window.deleteExpense = (id) => {
+        if (confirm('هل أنت متأكد من حذف هذا المصروف؟')) {
+            db.deleteExpense(id);
+            showToast('تم الحذف بنجاح', 'success');
+            refreshData();
+            showExpensesList();
+        }
+    };
 
     // تصدير الدوال المهمة
     window.showFarmerForm = showFarmerForm;
@@ -739,6 +1431,8 @@
     window.showSaleForm = showSaleForm;
     window.showExpenseForm = showExpenseForm;
 
+    // بدء التطبيق
+    showLogin();
 </script>
 </body>
 </html>

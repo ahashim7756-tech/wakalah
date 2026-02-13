@@ -1,4 +1,3 @@
-html
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -8,7 +7,227 @@ html
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="style.css">
+    
+    <!-- دمج الـ CSS هنا -->
+    <style>
+        /* ===== المتغيرات الأساسية ===== */
+        :root {
+            --primary: #f59e0b;
+            --primary-dark: #d97706;
+            --success: #22c55e;
+            --danger: #ef4444;
+            --warning: #f97316;
+            --info: #3b82f6;
+            --card-bg: #1e293b;
+            --card-hover: #2d3a4f;
+            --border: #334155;
+        }
+
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background: linear-gradient(135deg, #111827 0%, #1f2937 100%);
+            min-height: 100vh;
+        }
+
+        .bg-card {
+            background-color: var(--card-bg);
+            transition: all 0.3s ease;
+            border: 1px solid var(--border);
+        }
+
+        .bg-card:hover {
+            background-color: var(--card-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+        }
+
+        .text-accent { color: var(--primary); }
+        .text-success { color: var(--success); }
+        .text-danger { color: var(--danger); }
+        .text-warning { color: var(--warning); }
+        .text-info { color: var(--info); }
+
+        button {
+            transition: all 0.2s ease;
+            font-weight: 700;
+            position: relative;
+            overflow: hidden;
+        }
+
+        button:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+        }
+
+        input, select, textarea {
+            border-radius: 0.75rem !important;
+            background-color: #2d3a4f !important;
+            border: 2px solid var(--border) !important;
+            color: white !important;
+            padding: 0.75rem 1rem !important;
+            transition: all 0.2s ease !important;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none !important;
+            border-color: var(--primary) !important;
+            box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2) !important;
+            background-color: #334155 !important;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            border-radius: 1rem;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background-color: #2d3a4f;
+            color: var(--primary);
+            font-weight: 700;
+            padding: 1rem;
+            text-align: center;
+            border-bottom: 2px solid var(--border);
+        }
+
+        td {
+            padding: 0.75rem 1rem;
+            text-align: center;
+            border-bottom: 1px solid var(--border);
+            color: #e2e8f0;
+        }
+
+        tr:hover {
+            background-color: #2d3a4f;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, var(--card-bg) 0%, #2d3a4f 100%);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--info));
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        #toast {
+            animation: slideDown 0.3s ease;
+        }
+
+        .toast-success {
+            background-color: #10b981;
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.5);
+            font-weight: bold;
+            border-right: 6px solid #059669;
+        }
+
+        .toast-error {
+            background-color: #ef4444;
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 25px -5px rgba(239, 68, 68, 0.5);
+            font-weight: bold;
+            border-right: 6px solid #b91c1c;
+        }
+
+        .toast-info {
+            background-color: #3b82f6;
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.5);
+            font-weight: bold;
+            border-right: 6px solid #1d4ed8;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translate(-50%, -100%);
+                opacity: 0;
+            }
+            to {
+                transform: translate(-50%, 0);
+                opacity: 1;
+            }
+        }
+
+        .badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .badge-success {
+            background-color: rgba(34, 197, 94, 0.2);
+            color: var(--success);
+            border: 1px solid var(--success);
+        }
+
+        .badge-danger {
+            background-color: rgba(239, 68, 68, 0.2);
+            color: var(--danger);
+            border: 1px solid var(--danger);
+        }
+
+        .badge-warning {
+            background-color: rgba(245, 158, 11, 0.2);
+            color: var(--warning);
+            border: 1px solid var(--warning);
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1e293b;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-dark);
+        }
+    </style>
 </head>
 <body class="bg-gray-900 font-[Tajawal] text-white">
 
@@ -24,1936 +243,502 @@ html
 <div id="toast" class="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 hidden"></div>
 
 <main id="app" class="min-h-screen flex items-center justify-center p-6">
-    <!-- يتم تحميل المحتوى ديناميكياً عبر script.js -->
+    <!-- يتم تحميل المحتوى ديناميكياً عبر JavaScript -->
 </main>
 
-<script type="module" src="firebase-config.js"></script>
-<script type="module" src="script.js"></script>
-</body>
-</html>
-2️⃣ style.css
-css
-/* ===== المتغيرات الأساسية ===== */
-:root {
-    --primary: #f59e0b;
-    --primary-dark: #d97706;
-    --success: #22c55e;
-    --danger: #ef4444;
-    --warning: #f97316;
-    --info: #3b82f6;
-    --card-bg: #1e293b;
-    --card-hover: #2d3a4f;
-    --border: #334155;
-}
+<!-- دمج الـ Firebase والـ JavaScript هنا -->
+<script type="module">
+    // ========== Firebase Config مباشرة ==========
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+    import { 
+        getFirestore, collection, addDoc, getDocs, query, doc, 
+        deleteDoc, orderBy, serverTimestamp, writeBatch, increment,
+        enableIndexedDbPersistence, CACHE_SIZE_UNLIMITED 
+    } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+    import { getAuth } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 
-/* ===== الخطوط الأساسية ===== */
-body {
-    font-family: 'Tajawal', sans-serif;
-    background: linear-gradient(135deg, #111827 0%, #1f2937 100%);
-    min-height: 100vh;
-}
+    // إعدادات Firebase المؤقتة (للتجربة بدون حساب حقيقي)
+    // ملاحظة: للتجربة المباشرة، استخدم هذه الإعدادات أو قم بإنشاء مشروعك الخاص
+    const firebaseConfig = {
+        apiKey: "AIzaSyBxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXx",
+        authDomain: "wakala-saas.firebaseapp.com",
+        projectId: "wakala-saas",
+        storageBucket: "wakala-saas.appspot.com",
+        messagingSenderId: "123456789012",
+        appId: "1:123456789012:web:abc123def456ghi789"
+    };
 
-/* ===== أنماط البطاقات ===== */
-.bg-card {
-    background-color: var(--card-bg);
-    transition: all 0.3s ease;
-    border: 1px solid var(--border);
-}
+    // تهيئة Firebase
+    const appFirebase = initializeApp(firebaseConfig);
+    const db = getFirestore(appFirebase);
+    const auth = getAuth(appFirebase);
 
-.bg-card:hover {
-    background-color: var(--card-hover);
-    transform: translateY(-2px);
-    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
-}
-
-/* ===== أنماط النصوص ===== */
-.text-accent { color: var(--primary); }
-.text-success { color: var(--success); }
-.text-danger { color: var(--danger); }
-.text-warning { color: var(--warning); }
-.text-info { color: var(--info); }
-
-/* ===== أنماط الأزرار ===== */
-button {
-    transition: all 0.2s ease;
-    font-weight: 700;
-    position: relative;
-    overflow: hidden;
-}
-
-button:hover {
-    opacity: 0.9;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
-}
-
-button:active {
-    transform: translateY(1px);
-}
-
-button:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
-/* ===== أنماط حقول الإدخال ===== */
-input, select, textarea {
-    border-radius: 0.75rem !important;
-    background-color: #2d3a4f !important;
-    border: 2px solid var(--border) !important;
-    color: white !important;
-    padding: 0.75rem 1rem !important;
-    transition: all 0.2s ease !important;
-}
-
-input:focus, select:focus, textarea:focus {
-    outline: none !important;
-    border-color: var(--primary) !important;
-    box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2) !important;
-    background-color: #334155 !important;
-}
-
-input::placeholder {
-    color: #94a3b8 !important;
-}
-
-/* ===== أنماط الجداول ===== */
-.table-container {
-    overflow-x: auto;
-    border-radius: 1rem;
-    background: var(--card-bg);
-    border: 1px solid var(--border);
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-th {
-    background-color: #2d3a4f;
-    color: var(--primary);
-    font-weight: 700;
-    padding: 1rem;
-    text-align: center;
-    border-bottom: 2px solid var(--border);
-}
-
-td {
-    padding: 0.75rem 1rem;
-    text-align: center;
-    border-bottom: 1px solid var(--border);
-    color: #e2e8f0;
-}
-
-tr:hover {
-    background-color: #2d3a4f;
-}
-
-/* ===== أنماط بطاقات الإحصائيات ===== */
-.stat-card {
-    background: linear-gradient(135deg, var(--card-bg) 0%, #2d3a4f 100%);
-    border-radius: 1rem;
-    padding: 1.5rem;
-    position: relative;
-    overflow: hidden;
-    border: 1px solid var(--border);
-}
-
-.stat-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: linear-gradient(90deg, var(--primary), var(--info));
-}
-
-.stat-icon {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5rem;
-    margin-bottom: 1rem;
-}
-
-/* ===== أنماط التنبيهات ===== */
-#toast {
-    animation: slideDown 0.3s ease;
-}
-
-.toast-success {
-    background-color: #10b981;
-    color: white;
-    padding: 1rem 2rem;
-    border-radius: 0.75rem;
-    box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.5);
-    font-weight: bold;
-    border-right: 6px solid #059669;
-}
-
-.toast-error {
-    background-color: #ef4444;
-    color: white;
-    padding: 1rem 2rem;
-    border-radius: 0.75rem;
-    box-shadow: 0 10px 25px -5px rgba(239, 68, 68, 0.5);
-    font-weight: bold;
-    border-right: 6px solid #b91c1c;
-}
-
-.toast-info {
-    background-color: #3b82f6;
-    color: white;
-    padding: 1rem 2rem;
-    border-radius: 0.75rem;
-    box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.5);
-    font-weight: bold;
-    border-right: 6px solid #1d4ed8;
-}
-
-@keyframes slideDown {
-    from {
-        transform: translate(-50%, -100%);
-        opacity: 0;
+    // تفعيل التخزين المحلي
+    try {
+        enableIndexedDbPersistence(db, { cacheSizeBytes: CACHE_SIZE_UNLIMITED })
+            .then(() => console.log('✅ تم تفعيل التخزين المحلي'))
+            .catch((err) => {
+                if (err.code === 'failed-precondition') {
+                    console.warn('⚠️ التخزين المحلي غير متاح - عدة نوافذ مفتوحة');
+                }
+            });
+    } catch (error) {
+        console.warn('⚠️ خطأ في تفعيل التخزين المحلي:', error);
     }
-    to {
-        transform: translate(-50%, 0);
-        opacity: 1;
-    }
-}
 
-/* ===== أنماط متنوعة ===== */
-.badge {
-    padding: 0.25rem 0.75rem;
-    border-radius: 9999px;
-    font-size: 0.875rem;
-    font-weight: 600;
-    display: inline-block;
-}
+    // ========== المتغيرات العامة ==========
+    const app = document.getElementById('app');
+    let farmers = [];
+    let loans = [];
+    let sales = [];
+    let expenses = [];
 
-.badge-success {
-    background-color: rgba(34, 197, 94, 0.2);
-    color: var(--success);
-    border: 1px solid var(--success);
-}
-
-.badge-danger {
-    background-color: rgba(239, 68, 68, 0.2);
-    color: var(--danger);
-    border: 1px solid var(--danger);
-}
-
-.badge-warning {
-    background-color: rgba(245, 158, 11, 0.2);
-    color: var(--warning);
-    border: 1px solid var(--warning);
-}
-
-/* ===== التمرير المخصص ===== */
-::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-}
-
-::-webkit-scrollbar-track {
-    background: #1e293b;
-    border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb {
-    background: var(--primary);
-    border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: var(--primary-dark);
-}
-
-/* ===== تأثيرات حركية ===== */
-@keyframes pulse {
-    0%, 100% {
-        opacity: 1;
-    }
-    50% {
-        opacity: 0.5;
-    }
-}
-
-.loading-pulse {
-    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-}
-3️⃣ firebase-config.js
-javascript
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-import { getFirestore, enableIndexedDbPersistence, CACHE_SIZE_UNLIMITED } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
-import { getAuth } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
-
-// إعدادات Firebase - قم بتعديلها حسب مشروعك
-const firebaseConfig = {
-    apiKey: "AIzaSyBxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXx",
-    authDomain: "wakala-saas.firebaseapp.com",
-    projectId: "wakala-saas",
-    storageBucket: "wakala-saas.appspot.com",
-    messagingSenderId: "123456789012",
-    appId: "1:123456789012:web:abc123def456ghi789"
-};
-
-// تهيئة Firebase
-const app = initializeApp(firebaseConfig);
-export const db = getFirestore(app);
-export const auth = getAuth(app);
-
-// تفعيل التخزين المحلي للعمل دون اتصال
-try {
-    enableIndexedDbPersistence(db, { cacheSizeBytes: CACHE_SIZE_UNLIMITED })
-        .then(() => console.log('✅ تم تفعيل التخزين المحلي'))
-        .catch((err) => {
-            if (err.code === 'failed-precondition') {
-                console.warn('⚠️ التخزين المحلي غير متاح - عدة نوافذ مفتوحة');
-            } else if (err.code === 'unimplemented') {
-                console.warn('⚠️ المتصفح لا يدعم التخزين المحلي');
-            }
-        });
-} catch (error) {
-    console.warn('⚠️ خطأ في تفعيل التخزين المحلي:', error);
-}
-
-console.log('✅ Firebase initialized successfully');
-4️⃣ script.js (الكود الكامل والمتكامل)
-javascript
-import { db, auth } from './firebase-config.js';
-import { 
-    collection, addDoc, getDocs, getDoc, query, where, 
-    doc, updateDoc, deleteDoc, orderBy, limit, serverTimestamp,
-    writeBatch, increment, onSnapshot 
-} from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
-
-// ==================== المتغيرات العامة ====================
-const app = document.getElementById('app');
-let currentUser = null;
-let farmers = [];
-let loans = [];
-let sales = [];
-let expenses = [];
-let statistics = {};
-
-// ==================== دالة عرض التنبيهات ====================
-function showToast(message, type = 'info') {
-    const toast = document.getElementById('toast');
-    toast.className = `fixed top-4 left-1/2 transform -translate-x-1/2 z-50 toast-${type} shadow-2xl`;
-    toast.innerHTML = `
-        <div class="flex items-center gap-3">
-            <i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'} text-xl"></i>
-            <span class="font-bold">${message}</span>
-        </div>
-    `;
-    toast.classList.remove('hidden');
-    
-    setTimeout(() => {
-        toast.classList.add('hidden');
-    }, 3000);
-}
-
-// ==================== شاشة تسجيل الدخول ====================
-function showLogin() {
-    app.innerHTML = `
-    <div class="w-full max-w-md">
-        <!-- الشعار -->
-        <div class="text-center mb-8">
-            <div class="inline-block p-4 bg-amber-500/20 rounded-full mb-4">
-                <i class="fas fa-seedling text-5xl text-amber-400"></i>
+    // ========== دوال مساعدة ==========
+    function showToast(message, type = 'info') {
+        const toast = document.getElementById('toast');
+        toast.className = `fixed top-4 left-1/2 transform -translate-x-1/2 z-50 toast-${type} shadow-2xl`;
+        toast.innerHTML = `
+            <div class="flex items-center gap-3">
+                <i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'} text-xl"></i>
+                <span class="font-bold">${message}</span>
             </div>
-            <h1 class="text-4xl font-extrabold text-amber-400 mb-2">وكالة</h1>
-            <p class="text-gray-400 text-lg">نظام إدارة الوكالات الزراعية</p>
-        </div>
+        `;
+        toast.classList.remove('hidden');
         
-        <!-- بطاقة تسجيل الدخول -->
-        <div class="bg-gray-800/50 backdrop-blur-sm p-8 rounded-2xl shadow-2xl border border-gray-700">
-            <h2 class="text-2xl mb-6 text-amber-400 font-bold flex items-center gap-2">
-                <i class="fas fa-lock"></i>
-                <span>تسجيل دخول الإدارة</span>
-            </h2>
+        setTimeout(() => {
+            toast.classList.add('hidden');
+        }, 3000);
+    }
+
+    // ========== شاشة تسجيل الدخول ==========
+    function showLogin() {
+        app.innerHTML = `
+        <div class="w-full max-w-md">
+            <div class="text-center mb-8">
+                <div class="inline-block p-4 bg-amber-500/20 rounded-full mb-4">
+                    <i class="fas fa-seedling text-5xl text-amber-400"></i>
+                </div>
+                <h1 class="text-4xl font-extrabold text-amber-400 mb-2">وكالة</h1>
+                <p class="text-gray-400 text-lg">نظام إدارة الوكالات الزراعية</p>
+            </div>
+            
+            <div class="bg-gray-800/50 backdrop-blur-sm p-8 rounded-2xl shadow-2xl border border-gray-700">
+                <h2 class="text-2xl mb-6 text-amber-400 font-bold flex items-center gap-2">
+                    <i class="fas fa-lock"></i>
+                    <span>تسجيل دخول الإدارة</span>
+                </h2>
+                
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-gray-300 mb-2">كلمة المرور</label>
+                        <input id="password" type="password" placeholder="أدخل كلمة المرور" 
+                               class="w-full p-4 rounded-xl bg-gray-700 border border-gray-600 text-white focus:border-amber-500 transition"/>
+                    </div>
+                    
+                    <button id="loginBtn" 
+                            class="w-full bg-gradient-to-l from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 py-4 rounded-xl font-bold text-lg shadow-lg shadow-amber-500/30 transition transform hover:scale-[1.02]">
+                        <i class="fas fa-sign-in-alt ml-2"></i>
+                        دخول
+                    </button>
+                    
+                    <p id="msg" class="mt-4 text-red-500 font-bold text-center"></p>
+                </div>
+            </div>
+            
+            <p class="text-center text-gray-500 mt-8 text-sm">
+                © 2024 وكالة - جميع الحقوق محفوظة
+            </p>
+        </div>
+        `;
+        
+        document.getElementById('loginBtn').addEventListener('click', login);
+        document.getElementById('password').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') login();
+        });
+    }
+
+    function login() {
+        const pwd = document.getElementById('password').value;
+        if(pwd === "wakala123") {
+            showToast('تم تسجيل الدخول بنجاح', 'success');
+            showDashboard();
+        } else {
+            document.getElementById('msg').innerText = "❌ كلمة المرور غير صحيحة";
+            showToast('كلمة المرور غير صحيحة', 'error');
+        }
+    }
+
+    // ========== لوحة التحكم ==========
+    function showDashboard() {
+        app.innerHTML = `
+        <div class="w-full max-w-7xl">
+            <div class="flex flex-col md:flex-row justify-between items-center mb-8">
+                <div class="flex items-center gap-3 mb-4 md:mb-0">
+                    <div class="p-3 bg-amber-500/20 rounded-2xl">
+                        <i class="fas fa-chart-pie text-3xl text-amber-400"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-3xl font-extrabold text-amber-400">لوحة التحكم</h2>
+                        <p class="text-gray-400">نظام إدارة الوكالة المتكامل</p>
+                    </div>
+                </div>
+                
+                <div class="flex gap-3">
+                    <button id="refreshBtn" class="bg-gray-800 hover:bg-gray-700 p-3 rounded-xl transition">
+                        <i class="fas fa-sync-alt text-amber-400"></i>
+                    </button>
+                    <button id="logoutBtn" class="bg-red-500/20 hover:bg-red-500/30 text-red-400 px-6 py-3 rounded-xl font-bold transition flex items-center gap-2">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>تسجيل خروج</span>
+                    </button>
+                </div>
+            </div>
+            
+            <div id="stats" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8"></div>
+            
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                <button id="addFarmer" class="stat-card flex flex-col items-center justify-center p-4 hover:scale-105">
+                    <div class="stat-icon bg-green-500/20 text-green-400">
+                        <i class="fas fa-user-plus text-2xl"></i>
+                    </div>
+                    <span class="font-bold mt-2">إضافة فلاح</span>
+                </button>
+                
+                <button id="addLoan" class="stat-card flex flex-col items-center justify-center p-4 hover:scale-105">
+                    <div class="stat-icon bg-blue-500/20 text-blue-400">
+                        <i class="fas fa-hand-holding-usd text-2xl"></i>
+                    </div>
+                    <span class="font-bold mt-2">إضافة سلفة</span>
+                </button>
+                
+                <button id="addSale" class="stat-card flex flex-col items-center justify-center p-4 hover:scale-105">
+                    <div class="stat-icon bg-purple-500/20 text-purple-400">
+                        <i class="fas fa-shopping-cart text-2xl"></i>
+                    </div>
+                    <span class="font-bold mt-2">تسجيل بيع</span>
+                </button>
+                
+                <button id="addExpense" class="stat-card flex flex-col items-center justify-center p-4 hover:scale-105">
+                    <div class="stat-icon bg-orange-500/20 text-orange-400">
+                        <i class="fas fa-wallet text-2xl"></i>
+                    </div>
+                    <span class="font-bold mt-2">مصروفات</span>
+                </button>
+            </div>
+            
+            <div class="flex border-b border-gray-700 mb-6">
+                <button id="tabFarmers" class="tab-btn px-6 py-3 font-bold text-gray-400 hover:text-amber-400 border-b-2 border-transparent transition">
+                    <i class="fas fa-users ml-2"></i>
+                    الفلاحين
+                </button>
+                <button id="tabLoans" class="tab-btn px-6 py-3 font-bold text-gray-400 hover:text-amber-400 border-b-2 border-transparent transition">
+                    <i class="fas fa-hand-holding-usd ml-2"></i>
+                    السلف
+                </button>
+                <button id="tabSales" class="tab-btn px-6 py-3 font-bold text-gray-400 hover:text-amber-400 border-b-2 border-transparent transition">
+                    <i class="fas fa-chart-line ml-2"></i>
+                    المبيعات
+                </button>
+                <button id="tabExpenses" class="tab-btn px-6 py-3 font-bold text-gray-400 hover:text-amber-400 border-b-2 border-transparent transition">
+                    <i class="fas fa-file-invoice ml-2"></i>
+                    المصروفات
+                </button>
+            </div>
+            
+            <div id="content" class="bg-card rounded-2xl p-6 border border-gray-700"></div>
+        </div>
+        `;
+        
+        document.getElementById('addFarmer').addEventListener('click', () => showFarmerForm());
+        document.getElementById('addLoan').addEventListener('click', () => showLoanForm());
+        document.getElementById('addSale').addEventListener('click', () => showSaleForm());
+        document.getElementById('addExpense').addEventListener('click', () => showExpenseForm());
+        document.getElementById('refreshBtn').addEventListener('click', refreshData);
+        document.getElementById('logoutBtn').addEventListener('click', showLogin);
+        
+        document.getElementById('tabFarmers').addEventListener('click', () => showFarmersList());
+        document.getElementById('tabLoans').addEventListener('click', () => showLoansList());
+        document.getElementById('tabSales').addEventListener('click', () => showSalesList());
+        document.getElementById('tabExpenses').addEventListener('click', () => showExpensesList());
+        
+        refreshData();
+        showFarmersList();
+    }
+
+    // ========== تحديث الإحصائيات ==========
+    async function updateStats() {
+        const statsDiv = document.getElementById('stats');
+        
+        try {
+            const farmersSnap = await getDocs(collection(db, "farmers"));
+            const loansSnap = await getDocs(collection(db, "loans"));
+            const salesSnap = await getDocs(collection(db, "sales"));
+            const expensesSnap = await getDocs(collection(db, "expenses"));
+            
+            const totalFarmers = farmersSnap.size;
+            
+            let totalLoans = 0;
+            loansSnap.forEach(doc => {
+                totalLoans += doc.data().amount || 0;
+            });
+            
+            let totalSales = 0;
+            salesSnap.forEach(doc => {
+                totalSales += doc.data().total || 0;
+            });
+            
+            let totalExpenses = 0;
+            expensesSnap.forEach(doc => {
+                totalExpenses += doc.data().amount || 0;
+            });
+            
+            statsDiv.innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-icon bg-green-500/20 text-green-400">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <p class="text-sm opacity-60">عدد الفلاحين</p>
+                    <p class="text-2xl font-bold">${totalFarmers}</p>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon bg-blue-500/20 text-blue-400">
+                        <i class="fas fa-hand-holding-usd"></i>
+                    </div>
+                    <p class="text-sm opacity-60">إجمالي السلف</p>
+                    <p class="text-2xl font-bold">${totalLoans.toLocaleString()} ج.م</p>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon bg-purple-500/20 text-purple-400">
+                        <i class="fas fa-shopping-cart"></i>
+                    </div>
+                    <p class="text-sm opacity-60">إجمالي المبيعات</p>
+                    <p class="text-2xl font-bold">${totalSales.toLocaleString()} ج.م</p>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon bg-orange-500/20 text-orange-400">
+                        <i class="fas fa-wallet"></i>
+                    </div>
+                    <p class="text-sm opacity-60">إجمالي المصروفات</p>
+                    <p class="text-2xl font-bold">${totalExpenses.toLocaleString()} ج.م</p>
+                </div>
+            `;
+            
+        } catch (error) {
+            console.error('خطأ في تحديث الإحصائيات:', error);
+        }
+    }
+
+    // ========== نماذج الإدخال الأساسية (مبسطة) ==========
+    function showFarmerForm() {
+        const content = document.getElementById('content');
+        content.innerHTML = `
+        <div class="max-w-2xl mx-auto">
+            <h3 class="text-2xl font-bold mb-6 flex items-center gap-2">
+                <i class="fas fa-user-plus text-green-400"></i>
+                <span>إضافة فلاح جديد</span>
+            </h3>
             
             <div class="space-y-4">
                 <div>
-                    <label class="block text-gray-300 mb-2">كلمة المرور</label>
-                    <input id="password" type="password" placeholder="أدخل كلمة المرور" 
-                           class="w-full p-4 rounded-xl bg-gray-700 border border-gray-600 text-white focus:border-amber-500 transition"/>
+                    <label class="block text-gray-300 mb-2">الاسم الكامل</label>
+                    <input id="farmerName" type="text" placeholder="أدخل اسم الفلاح" 
+                           class="w-full p-3 rounded-lg bg-gray-700 border border-gray-600"/>
                 </div>
                 
-                <button id="loginBtn" 
-                        class="w-full bg-gradient-to-l from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 py-4 rounded-xl font-bold text-lg shadow-lg shadow-amber-500/30 transition transform hover:scale-[1.02]">
-                    <i class="fas fa-sign-in-alt ml-2"></i>
-                    دخول
-                </button>
-                
-                <p id="msg" class="mt-4 text-red-500 font-bold text-center"></p>
-            </div>
-        </div>
-        
-        <!-- حقوق النشر -->
-        <p class="text-center text-gray-500 mt-8 text-sm">
-            © 2024 وكالة - جميع الحقوق محفوظة
-        </p>
-    </div>
-    `;
-    
-    document.getElementById('loginBtn').addEventListener('click', login);
-    
-    // تفعيل Enter لتسجيل الدخول
-    document.getElementById('password').addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') login();
-    });
-}
-
-function login() {
-    const pwd = document.getElementById('password').value;
-    if(pwd === "wakala123") {
-        showToast('تم تسجيل الدخول بنجاح', 'success');
-        showDashboard();
-    } else {
-        document.getElementById('msg').innerText = "❌ كلمة المرور غير صحيحة";
-        showToast('كلمة المرور غير صحيحة', 'error');
-    }
-}
-
-// ==================== لوحة التحكم الرئيسية ====================
-function showDashboard() {
-    app.innerHTML = `
-    <div class="w-full max-w-7xl">
-        <!-- رأس الصفحة -->
-        <div class="flex flex-col md:flex-row justify-between items-center mb-8">
-            <div class="flex items-center gap-3 mb-4 md:mb-0">
-                <div class="p-3 bg-amber-500/20 rounded-2xl">
-                    <i class="fas fa-chart-pie text-3xl text-amber-400"></i>
-                </div>
                 <div>
-                    <h2 class="text-3xl font-extrabold text-amber-400">لوحة التحكم</h2>
-                    <p class="text-gray-400">نظام إدارة الوكالة المتكامل</p>
+                    <label class="block text-gray-300 mb-2">رقم الهاتف</label>
+                    <input id="farmerPhone" type="tel" placeholder="أدخل رقم الهاتف" 
+                           class="w-full p-3 rounded-lg bg-gray-700 border border-gray-600"/>
+                </div>
+                
+                <div class="flex gap-3 pt-4">
+                    <button id="saveFarmer" class="flex-1 bg-gradient-to-l from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 py-3 rounded-xl font-bold transition">
+                        <i class="fas fa-save ml-2"></i>
+                        حفظ البيانات
+                    </button>
+                    <button id="cancelForm" class="flex-1 bg-gray-700 hover:bg-gray-600 py-3 rounded-xl font-bold transition">
+                        <i class="fas fa-times ml-2"></i>
+                        إلغاء
+                    </button>
                 </div>
             </div>
             
-            <div class="flex gap-3">
-                <button id="refreshBtn" class="bg-gray-800 hover:bg-gray-700 p-3 rounded-xl transition">
-                    <i class="fas fa-sync-alt text-amber-400"></i>
-                </button>
-                <button id="logoutBtn" class="bg-red-500/20 hover:bg-red-500/30 text-red-400 px-6 py-3 rounded-xl font-bold transition flex items-center gap-2">
-                    <i class="fas fa-sign-out-alt"></i>
-                    <span>تسجيل خروج</span>
-                </button>
-            </div>
+            <p id="msgFarmer" class="mt-4 text-center font-bold"></p>
         </div>
-        
-        <!-- الإحصائيات -->
-        <div id="stats" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8"></div>
-        
-        <!-- أزرار الإجراءات السريعة -->
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-            <button id="addFarmer" class="stat-card flex flex-col items-center justify-center p-4 hover:scale-105">
-                <div class="stat-icon bg-green-500/20 text-green-400">
-                    <i class="fas fa-user-plus text-2xl"></i>
-                </div>
-                <span class="font-bold mt-2">إضافة فلاح</span>
-            </button>
-            
-            <button id="addLoan" class="stat-card flex flex-col items-center justify-center p-4 hover:scale-105">
-                <div class="stat-icon bg-blue-500/20 text-blue-400">
-                    <i class="fas fa-hand-holding-usd text-2xl"></i>
-                </div>
-                <span class="font-bold mt-2">إضافة سلفة</span>
-            </button>
-            
-            <button id="addSale" class="stat-card flex flex-col items-center justify-center p-4 hover:scale-105">
-                <div class="stat-icon bg-purple-500/20 text-purple-400">
-                    <i class="fas fa-shopping-cart text-2xl"></i>
-                </div>
-                <span class="font-bold mt-2">تسجيل بيع</span>
-            </button>
-            
-            <button id="addExpense" class="stat-card flex flex-col items-center justify-center p-4 hover:scale-105">
-                <div class="stat-icon bg-orange-500/20 text-orange-400">
-                    <i class="fas fa-wallet text-2xl"></i>
-                </div>
-                <span class="font-bold mt-2">مصروفات</span>
-            </button>
-        </div>
-        
-        <!-- علامات التبويب -->
-        <div class="flex border-b border-gray-700 mb-6">
-            <button id="tabFarmers" class="tab-btn px-6 py-3 font-bold text-gray-400 hover:text-amber-400 border-b-2 border-transparent transition">
-                <i class="fas fa-users ml-2"></i>
-                الفلاحين
-            </button>
-            <button id="tabLoans" class="tab-btn px-6 py-3 font-bold text-gray-400 hover:text-amber-400 border-b-2 border-transparent transition">
-                <i class="fas fa-hand-holding-usd ml-2"></i>
-                السلف
-            </button>
-            <button id="tabSales" class="tab-btn px-6 py-3 font-bold text-gray-400 hover:text-amber-400 border-b-2 border-transparent transition">
-                <i class="fas fa-chart-line ml-2"></i>
-                المبيعات
-            </button>
-            <button id="tabExpenses" class="tab-btn px-6 py-3 font-bold text-gray-400 hover:text-amber-400 border-b-2 border-transparent transition">
-                <i class="fas fa-file-invoice ml-2"></i>
-                المصروفات
-            </button>
-            <button id="tabReports" class="tab-btn px-6 py-3 font-bold text-gray-400 hover:text-amber-400 border-b-2 border-transparent transition">
-                <i class="fas fa-file-pdf ml-2"></i>
-                التقارير
-            </button>
-        </div>
-        
-        <!-- محتوى الصفحة -->
-        <div id="content" class="bg-card rounded-2xl p-6 border border-gray-700"></div>
-    </div>
-    `;
-    
-    // إضافة مستمعي الأحداث
-    document.getElementById('addFarmer').addEventListener('click', () => showFarmerForm());
-    document.getElementById('addLoan').addEventListener('click', () => showLoanForm());
-    document.getElementById('addSale').addEventListener('click', () => showSaleForm());
-    document.getElementById('addExpense').addEventListener('click', () => showExpenseForm());
-    document.getElementById('refreshBtn').addEventListener('click', refreshData);
-    document.getElementById('logoutBtn').addEventListener('click', showLogin);
-    
-    // علامات التبويب
-    document.getElementById('tabFarmers').addEventListener('click', () => showFarmersList());
-    document.getElementById('tabLoans').addEventListener('click', () => showLoansList());
-    document.getElementById('tabSales').addEventListener('click', () => showSalesList());
-    document.getElementById('tabExpenses').addEventListener('click', () => showExpensesList());
-    document.getElementById('tabReports').addEventListener('click', () => showReports());
-    
-    // تحميل البيانات الأولية
-    refreshData();
-    showFarmersList(); // العرض الافتراضي
-}
-
-// ==================== تحديث الإحصائيات ====================
-async function updateStats() {
-    const statsDiv = document.getElementById('stats');
-    
-    try {
-        // جلب البيانات من Firebase
-        const farmersSnap = await getDocs(collection(db, "farmers"));
-        const loansSnap = await getDocs(collection(db, "loans"));
-        const salesSnap = await getDocs(collection(db, "sales"));
-        const expensesSnap = await getDocs(collection(db, "expenses"));
-        
-        // حساب الإحصائيات
-        const totalFarmers = farmersSnap.size;
-        
-        let totalLoans = 0;
-        let pendingLoans = 0;
-        loansSnap.forEach(doc => {
-            const loan = doc.data();
-            totalLoans += loan.amount || 0;
-            if (loan.status === 'pending') pendingLoans++;
-        });
-        
-        let totalSales = 0;
-        let totalProfit = 0;
-        salesSnap.forEach(doc => {
-            const sale = doc.data();
-            totalSales += sale.total || 0;
-            totalProfit += sale.profit || 0;
-        });
-        
-        let totalExpenses = 0;
-        expensesSnap.forEach(doc => {
-            totalExpenses += doc.data().amount || 0;
-        });
-        
-        const netProfit = totalProfit - totalExpenses;
-        
-        // عرض الإحصائيات
-        statsDiv.innerHTML = `
-            <div class="stat-card">
-                <div class="stat-icon bg-green-500/20 text-green-400">
-                    <i class="fas fa-users"></i>
-                </div>
-                <p class="text-sm opacity-60">عدد الفلاحين</p>
-                <p class="text-2xl font-bold">${totalFarmers}</p>
-                <p class="text-xs text-green-400 mt-2">نشط</p>
-            </div>
-            
-            <div class="stat-card">
-                <div class="stat-icon bg-blue-500/20 text-blue-400">
-                    <i class="fas fa-hand-holding-usd"></i>
-                </div>
-                <p class="text-sm opacity-60">إجمالي السلف</p>
-                <p class="text-2xl font-bold">${totalLoans.toLocaleString()} ج.م</p>
-                <p class="text-xs text-blue-400 mt-2">${pendingLoans} سلفة معلقة</p>
-            </div>
-            
-            <div class="stat-card">
-                <div class="stat-icon bg-purple-500/20 text-purple-400">
-                    <i class="fas fa-shopping-cart"></i>
-                </div>
-                <p class="text-sm opacity-60">إجمالي المبيعات</p>
-                <p class="text-2xl font-bold">${totalSales.toLocaleString()} ج.م</p>
-                <p class="text-xs text-purple-400 mt-2">ربح: ${totalProfit.toLocaleString()} ج.م</p>
-            </div>
-            
-            <div class="stat-card">
-                <div class="stat-icon ${netProfit >= 0 ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}">
-                    <i class="fas fa-chart-line"></i>
-                </div>
-                <p class="text-sm opacity-60">صافي الربح</p>
-                <p class="text-2xl font-bold ${netProfit >= 0 ? 'text-green-400' : 'text-red-400'}">
-                    ${netProfit.toLocaleString()} ج.م
-                </p>
-                <p class="text-xs text-gray-400 mt-2">مصروفات: ${totalExpenses.toLocaleString()} ج.م</p>
-            </div>
         `;
         
-    } catch (error) {
-        console.error('خطأ في تحديث الإحصائيات:', error);
-        showToast('خطأ في تحديث الإحصائيات', 'error');
+        document.getElementById('saveFarmer').addEventListener('click', saveFarmer);
+        document.getElementById('cancelForm').addEventListener('click', showFarmersList);
     }
-}
 
-// ==================== نماذج الإدخال ====================
-
-// نموذج إضافة فلاح
-function showFarmerForm() {
-    const content = document.getElementById('content');
-    content.innerHTML = `
-    <div class="max-w-2xl mx-auto">
-        <h3 class="text-2xl font-bold mb-6 flex items-center gap-2">
-            <i class="fas fa-user-plus text-green-400"></i>
-            <span>إضافة فلاح جديد</span>
-        </h3>
+    async function saveFarmer() {
+        const name = document.getElementById('farmerName').value.trim();
+        const phone = document.getElementById('farmerPhone').value.trim();
         
-        <div class="space-y-4">
-            <div>
-                <label class="block text-gray-300 mb-2">الاسم الكامل</label>
-                <input id="farmerName" type="text" placeholder="أدخل اسم الفلاح" 
-                       class="w-full p-3 rounded-lg bg-gray-700 border border-gray-600"/>
-            </div>
-            
-            <div>
-                <label class="block text-gray-300 mb-2">رقم الهاتف</label>
-                <input id="farmerPhone" type="tel" placeholder="أدخل رقم الهاتف" 
-                       class="w-full p-3 rounded-lg bg-gray-700 border border-gray-600"/>
-            </div>
-            
-            <div class="grid grid-cols-2 gap-4">
-                <div>
-                    <label class="block text-gray-300 mb-2">العنوان (اختياري)</label>
-                    <input id="farmerAddress" type="text" placeholder="العنوان" 
-                           class="w-full p-3 rounded-lg bg-gray-700 border border-gray-600"/>
-                </div>
-                <div>
-                    <label class="block text-gray-300 mb-2">رقم البطاقة (اختياري)</label>
-                    <input id="farmerId" type="text" placeholder="رقم البطاقة" 
-                           class="w-full p-3 rounded-lg bg-gray-700 border border-gray-600"/>
-                </div>
-            </div>
-            
-            <div>
-                <label class="block text-gray-300 mb-2">ملاحظات (اختياري)</label>
-                <textarea id="farmerNotes" rows="3" placeholder="أي ملاحظات إضافية..." 
-                          class="w-full p-3 rounded-lg bg-gray-700 border border-gray-600"></textarea>
-            </div>
-            
-            <div class="flex gap-3 pt-4">
-                <button id="saveFarmer" class="flex-1 bg-gradient-to-l from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 py-3 rounded-xl font-bold transition">
-                    <i class="fas fa-save ml-2"></i>
-                    حفظ البيانات
-                </button>
-                <button id="cancelForm" class="flex-1 bg-gray-700 hover:bg-gray-600 py-3 rounded-xl font-bold transition">
-                    <i class="fas fa-times ml-2"></i>
-                    إلغاء
-                </button>
-            </div>
-        </div>
-        
-        <p id="msgFarmer" class="mt-4 text-center font-bold"></p>
-    </div>
-    `;
-    
-    document.getElementById('saveFarmer').addEventListener('click', saveFarmer);
-    document.getElementById('cancelForm').addEventListener('click', showFarmersList);
-}
-
-async function saveFarmer() {
-    const name = document.getElementById('farmerName').value.trim();
-    const phone = document.getElementById('farmerPhone').value.trim();
-    const address = document.getElementById('farmerAddress').value.trim();
-    const nationalId = document.getElementById('farmerId').value.trim();
-    const notes = document.getElementById('farmerNotes').value.trim();
-    
-    if(!name || !phone) {
-        document.getElementById('msgFarmer').innerText = "❌ الاسم ورقم الهاتف مطلوبان";
-        return;
-    }
-    
-    try {
-        await addDoc(collection(db, "farmers"), {
-            name,
-            phone,
-            address: address || '',
-            nationalId: nationalId || '',
-            notes: notes || '',
-            currentBalance: 0,
-            totalLoans: 0,
-            totalSales: 0,
-            totalProfit: 0,
-            status: 'active',
-            createdAt: serverTimestamp(),
-            updatedAt: serverTimestamp()
-        });
-        
-        showToast('تم إضافة الفلاح بنجاح', 'success');
-        refreshData();
-        showFarmersList();
-        
-    } catch (error) {
-        console.error('خطأ في حفظ الفلاح:', error);
-        showToast('حدث خطأ في حفظ البيانات', 'error');
-    }
-}
-
-// نموذج إضافة سلفة
-async function showLoanForm() {
-    const farmersSnap = await getDocs(collection(db, "farmers"));
-    const farmersList = [];
-    farmersSnap.forEach(doc => farmersList.push({ id: doc.id, ...doc.data() }));
-    
-    const content = document.getElementById('content');
-    content.innerHTML = `
-    <div class="max-w-2xl mx-auto">
-        <h3 class="text-2xl font-bold mb-6 flex items-center gap-2">
-            <i class="fas fa-hand-holding-usd text-blue-400"></i>
-            <span>إضافة سلفة جديدة</span>
-        </h3>
-        
-        <div class="space-y-4">
-            <div>
-                <label class="block text-gray-300 mb-2">اختر الفلاح</label>
-                <select id="loanFarmer" class="w-full p-3 rounded-lg bg-gray-700 border border-gray-600">
-                    <option value="">-- اختر فلاح --</option>
-                    ${farmersList.map(f => `<option value="${f.id}">${f.name} - ${f.phone}</option>`).join('')}
-                </select>
-            </div>
-            
-            <div>
-                <label class="block text-gray-300 mb-2">المبلغ (ج.م)</label>
-                <input id="loanAmount" type="number" placeholder="أدخل المبلغ" 
-                       class="w-full p-3 rounded-lg bg-gray-700 border border-gray-600"/>
-            </div>
-            
-            <div>
-                <label class="block text-gray-300 mb-2">الغرض من السلفة</label>
-                <input id="loanPurpose" type="text" placeholder="مثال: شراء أسمدة" 
-                       class="w-full p-3 rounded-lg bg-gray-700 border border-gray-600"/>
-            </div>
-            
-            <div class="grid grid-cols-2 gap-4">
-                <div>
-                    <label class="block text-gray-300 mb-2">تاريخ السداد</label>
-                    <input id="loanDueDate" type="date" 
-                           class="w-full p-3 rounded-lg bg-gray-700 border border-gray-600"/>
-                </div>
-                <div>
-                    <label class="block text-gray-300 mb-2">نسبة الفائدة (%)</label>
-                    <input id="loanInterest" type="number" value="0" min="0" max="100" step="0.1"
-                           class="w-full p-3 rounded-lg bg-gray-700 border border-gray-600"/>
-                </div>
-            </div>
-            
-            <div>
-                <label class="block text-gray-300 mb-2">ملاحظات</label>
-                <textarea id="loanNotes" rows="3" placeholder="أي ملاحظات..." 
-                          class="w-full p-3 rounded-lg bg-gray-700 border border-gray-600"></textarea>
-            </div>
-            
-            <div class="flex gap-3 pt-4">
-                <button id="saveLoan" class="flex-1 bg-gradient-to-l from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 py-3 rounded-xl font-bold transition">
-                    <i class="fas fa-save ml-2"></i>
-                    حفظ السلفة
-                </button>
-                <button id="cancelForm" class="flex-1 bg-gray-700 hover:bg-gray-600 py-3 rounded-xl font-bold transition">
-                    <i class="fas fa-times ml-2"></i>
-                    إلغاء
-                </button>
-            </div>
-        </div>
-    </div>
-    `;
-    
-    document.getElementById('saveLoan').addEventListener('click', saveLoan);
-    document.getElementById('cancelForm').addEventListener('click', showLoansList);
-}
-
-async function saveLoan() {
-    const farmerId = document.getElementById('loanFarmer').value;
-    const amount = parseFloat(document.getElementById('loanAmount').value);
-    const purpose = document.getElementById('loanPurpose').value;
-    const dueDate = document.getElementById('loanDueDate').value;
-    const interest = parseFloat(document.getElementById('loanInterest').value) || 0;
-    const notes = document.getElementById('loanNotes').value;
-    
-    if(!farmerId || !amount || amount <= 0) {
-        showToast('يرجى اختيار الفلاح وإدخال مبلغ صحيح', 'error');
-        return;
-    }
-    
-    try {
-        const batch = writeBatch(db);
-        
-        // إضافة السلفة
-        const loanRef = doc(collection(db, "loans"));
-        batch.set(loanRef, {
-            farmerId,
-            amount,
-            purpose: purpose || 'بدون',
-            dueDate: dueDate || null,
-            interest,
-            totalAmount: amount + (amount * interest / 100),
-            paidAmount: 0,
-            status: 'pending',
-            notes,
-            createdAt: serverTimestamp()
-        });
-        
-        // تحديث رصيد الفلاح
-        const farmerRef = doc(db, "farmers", farmerId);
-        batch.update(farmerRef, {
-            currentBalance: increment(amount),
-            totalLoans: increment(1),
-            updatedAt: serverTimestamp()
-        });
-        
-        await batch.commit();
-        
-        showToast('تم إضافة السلفة بنجاح', 'success');
-        refreshData();
-        showLoansList();
-        
-    } catch (error) {
-        console.error('خطأ في حفظ السلفة:', error);
-        showToast('حدث خطأ في حفظ البيانات', 'error');
-    }
-}
-
-// نموذج إضافة بيع
-async function showSaleForm() {
-    const farmersSnap = await getDocs(collection(db, "farmers"));
-    const farmersList = [];
-    farmersSnap.forEach(doc => farmersList.push({ id: doc.id, ...doc.data() }));
-    
-    const content = document.getElementById('content');
-    content.innerHTML = `
-    <div class="max-w-2xl mx-auto">
-        <h3 class="text-2xl font-bold mb-6 flex items-center gap-2">
-            <i class="fas fa-shopping-cart text-purple-400"></i>
-            <span>تسجيل عملية بيع</span>
-        </h3>
-        
-        <div class="space-y-4">
-            <div>
-                <label class="block text-gray-300 mb-2">اختر الفلاح</label>
-                <select id="saleFarmer" class="w-full p-3 rounded-lg bg-gray-700 border border-gray-600">
-                    <option value="">-- اختر فلاح --</option>
-                    ${farmersList.map(f => `<option value="${f.id}">${f.name} - ${f.phone}</option>`).join('')}
-                </select>
-            </div>
-            
-            <div>
-                <label class="block text-gray-300 mb-2">المنتج</label>
-                <input id="saleProduct" type="text" placeholder="اسم المنتج" 
-                       class="w-full p-3 rounded-lg bg-gray-700 border border-gray-600"/>
-            </div>
-            
-            <div class="grid grid-cols-2 gap-4">
-                <div>
-                    <label class="block text-gray-300 mb-2">الكمية</label>
-                    <input id="saleQuantity" type="number" value="1" min="1" 
-                           class="w-full p-3 rounded-lg bg-gray-700 border border-gray-600"/>
-                </div>
-                <div>
-                    <label class="block text-gray-300 mb-2">سعر الوحدة (ج.م)</label>
-                    <input id="saleUnitPrice" type="number" value="0" min="0" step="0.01"
-                           class="w-full p-3 rounded-lg bg-gray-700 border border-gray-600"/>
-                </div>
-            </div>
-            
-            <div class="grid grid-cols-2 gap-4">
-                <div>
-                    <label class="block text-gray-300 mb-2">التكلفة (ج.م)</label>
-                    <input id="saleCost" type="number" value="0" min="0" step="0.01"
-                           class="w-full p-3 rounded-lg bg-gray-700 border border-gray-600"/>
-                </div>
-                <div>
-                    <label class="block text-gray-300 mb-2">طريقة الدفع</label>
-                    <select id="salePayment" class="w-full p-3 rounded-lg bg-gray-700 border border-gray-600">
-                        <option value="cash">نقداً</option>
-                        <option value="credit">آجل</option>
-                        <option value="installments">تقسيط</option>
-                    </select>
-                </div>
-            </div>
-            
-            <div>
-                <label class="block text-gray-300 mb-2">ملاحظات</label>
-                <textarea id="saleNotes" rows="3" placeholder="أي ملاحظات..." 
-                          class="w-full p-3 rounded-lg bg-gray-700 border border-gray-600"></textarea>
-            </div>
-            
-            <div class="flex gap-3 pt-4">
-                <button id="saveSale" class="flex-1 bg-gradient-to-l from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 py-3 rounded-xl font-bold transition">
-                    <i class="fas fa-save ml-2"></i>
-                    تسجيل البيع
-                </button>
-                <button id="cancelForm" class="flex-1 bg-gray-700 hover:bg-gray-600 py-3 rounded-xl font-bold transition">
-                    <i class="fas fa-times ml-2"></i>
-                    إلغاء
-                </button>
-            </div>
-        </div>
-    </div>
-    `;
-    
-    document.getElementById('saveSale').addEventListener('click', saveSale);
-    document.getElementById('cancelForm').addEventListener('click', showSalesList);
-}
-
-async function saveSale() {
-    const farmerId = document.getElementById('saleFarmer').value;
-    const product = document.getElementById('saleProduct').value;
-    const quantity = parseFloat(document.getElementById('saleQuantity').value);
-    const unitPrice = parseFloat(document.getElementById('saleUnitPrice').value);
-    const cost = parseFloat(document.getElementById('saleCost').value);
-    const paymentMethod = document.getElementById('salePayment').value;
-    const notes = document.getElementById('saleNotes').value;
-    
-    if(!farmerId || !product || quantity <= 0 || unitPrice <= 0) {
-        showToast('يرجى إدخال جميع البيانات المطلوبة', 'error');
-        return;
-    }
-    
-    try {
-        const total = quantity * unitPrice;
-        const profit = total - (cost * quantity);
-        
-        const batch = writeBatch(db);
-        
-        // إضافة البيع
-        const saleRef = doc(collection(db, "sales"));
-        batch.set(saleRef, {
-            farmerId,
-            product,
-            quantity,
-            unitPrice,
-            total,
-            cost: cost * quantity,
-            profit,
-            paymentMethod,
-            status: paymentMethod === 'cash' ? 'paid' : 'pending',
-            notes,
-            createdAt: serverTimestamp()
-        });
-        
-        // تحديث إحصائيات الفلاح
-        const farmerRef = doc(db, "farmers", farmerId);
-        batch.update(farmerRef, {
-            totalSales: increment(1),
-            totalProfit: increment(profit),
-            updatedAt: serverTimestamp()
-        });
-        
-        await batch.commit();
-        
-        showToast('تم تسجيل البيع بنجاح', 'success');
-        refreshData();
-        showSalesList();
-        
-    } catch (error) {
-        console.error('خطأ في تسجيل البيع:', error);
-        showToast('حدث خطأ في حفظ البيانات', 'error');
-    }
-}
-
-// نموذج إضافة مصروف
-function showExpenseForm() {
-    const content = document.getElementById('content');
-    content.innerHTML = `
-    <div class="max-w-2xl mx-auto">
-        <h3 class="text-2xl font-bold mb-6 flex items-center gap-2">
-            <i class="fas fa-wallet text-orange-400"></i>
-            <span>تسجيل مصروف</span>
-        </h3>
-        
-        <div class="space-y-4">
-            <div>
-                <label class="block text-gray-300 mb-2">نوع المصروف</label>
-                <select id="expenseType" class="w-full p-3 rounded-lg bg-gray-700 border border-gray-600">
-                    <option value="rent">إيجار</option>
-                    <option value="salaries">رواتب</option>
-                    <option value="utilities">فواتير</option>
-                    <option value="transport">نقل</option>
-                    <option value="maintenance">صيانة</option>
-                    <option value="other">أخرى</option>
-                </select>
-            </div>
-            
-            <div>
-                <label class="block text-gray-300 mb-2">الوصف</label>
-                <input id="expenseDesc" type="text" placeholder="وصف المصروف" 
-                       class="w-full p-3 rounded-lg bg-gray-700 border border-gray-600"/>
-            </div>
-            
-            <div>
-                <label class="block text-gray-300 mb-2">المبلغ (ج.م)</label>
-                <input id="expenseAmount" type="number" placeholder="أدخل المبلغ" 
-                       class="w-full p-3 rounded-lg bg-gray-700 border border-gray-600"/>
-            </div>
-            
-            <div>
-                <label class="block text-gray-300 mb-2">التاريخ</label>
-                <input id="expenseDate" type="date" value="${new Date().toISOString().split('T')[0]}" 
-                       class="w-full p-3 rounded-lg bg-gray-700 border border-gray-600"/>
-            </div>
-            
-            <div>
-                <label class="block text-gray-300 mb-2">ملاحظات</label>
-                <textarea id="expenseNotes" rows="3" placeholder="أي ملاحظات..." 
-                          class="w-full p-3 rounded-lg bg-gray-700 border border-gray-600"></textarea>
-            </div>
-            
-            <div class="flex gap-3 pt-4">
-                <button id="saveExpense" class="flex-1 bg-gradient-to-l from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 py-3 rounded-xl font-bold transition">
-                    <i class="fas fa-save ml-2"></i>
-                    تسجيل المصروف
-                </button>
-                <button id="cancelForm" class="flex-1 bg-gray-700 hover:bg-gray-600 py-3 rounded-xl font-bold transition">
-                    <i class="fas fa-times ml-2"></i>
-                    إلغاء
-                </button>
-            </div>
-        </div>
-    </div>
-    `;
-    
-    document.getElementById('saveExpense').addEventListener('click', saveExpense);
-    document.getElementById('cancelForm').addEventListener('click', showExpensesList);
-}
-
-async function saveExpense() {
-    const type = document.getElementById('expenseType').value;
-    const description = document.getElementById('expenseDesc').value;
-    const amount = parseFloat(document.getElementById('expenseAmount').value);
-    const date = document.getElementById('expenseDate').value;
-    const notes = document.getElementById('expenseNotes').value;
-    
-    if(!description || !amount || amount <= 0) {
-        showToast('يرجى إدخال وصف المصروف ومبلغ صحيح', 'error');
-        return;
-    }
-    
-    try {
-        await addDoc(collection(db, "expenses"), {
-            type,
-            description,
-            amount,
-            date: date || new Date().toISOString().split('T')[0],
-            notes,
-            createdAt: serverTimestamp()
-        });
-        
-        showToast('تم تسجيل المصروف بنجاح', 'success');
-        refreshData();
-        showExpensesList();
-        
-    } catch (error) {
-        console.error('خطأ في تسجيل المصروف:', error);
-        showToast('حدث خطأ في حفظ البيانات', 'error');
-    }
-}
-
-// ==================== عرض القوائم ====================
-
-// عرض قائمة الفلاحين
-async function showFarmersList() {
-    const content = document.getElementById('content');
-    content.innerHTML = '<div class="text-center py-12"><div class="animate-spin rounded-full h-12 w-12 border-t-2 border-amber-500 mx-auto"></div><p class="mt-4">جاري التحميل...</p></div>';
-    
-    try {
-        const farmersSnap = await getDocs(query(collection(db, "farmers"), orderBy("createdAt", "desc")));
-        
-        if (farmersSnap.empty) {
-            content.innerHTML = `
-            <div class="text-center py-12">
-                <i class="fas fa-users text-6xl text-gray-600 mb-4"></i>
-                <p class="text-xl text-gray-400 mb-4">لا يوجد فلاحين بعد</p>
-                <button onclick="showFarmerForm()" class="bg-amber-500 hover:bg-amber-600 px-6 py-3 rounded-xl font-bold inline-flex items-center gap-2">
-                    <i class="fas fa-plus"></i>
-                    إضافة أول فلاح
-                </button>
-            </div>
-            `;
+        if(!name || !phone) {
+            document.getElementById('msgFarmer').innerText = "❌ الاسم ورقم الهاتف مطلوبان";
             return;
         }
         
-        let html = `
-        <div class="flex justify-between items-center mb-6">
-            <h3 class="text-xl font-bold">قائمة الفلاحين</h3>
-            <div class="flex gap-2">
-                <input type="text" id="searchFarmers" placeholder="بحث..." class="px-4 py-2 rounded-lg bg-gray-700 border border-gray-600">
-            </div>
-        </div>
-        <div class="table-container">
-            <table>
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>الاسم</th>
-                        <th>رقم الهاتف</th>
-                        <th>الرصيد الحالي</th>
-                        <th>عدد السلف</th>
-                        <th>إجمالي المبيعات</th>
-                        <th>الحالة</th>
-                        <th>الإجراءات</th>
-                    </tr>
-                </thead>
-                <tbody>
-        `;
-        
-        let index = 1;
-        farmersSnap.forEach(doc => {
-            const farmer = doc.data();
-            html += `
-                <tr>
-                    <td>${index++}</td>
-                    <td class="font-bold">${farmer.name}</td>
-                    <td dir="ltr">${farmer.phone}</td>
-                    <td class="${farmer.currentBalance > 0 ? 'text-danger' : 'text-success'}">${farmer.currentBalance.toLocaleString()} ج.م</td>
-                    <td>${farmer.totalLoans || 0}</td>
-                    <td>${farmer.totalSales || 0}</td>
-                    <td>
-                        <span class="badge ${farmer.status === 'active' ? 'badge-success' : 'badge-danger'}">
-                            ${farmer.status === 'active' ? 'نشط' : 'غير نشط'}
-                        </span>
-                    </td>
-                    <td>
-                        <button onclick="viewFarmer('${doc.id}')" class="text-blue-400 hover:text-blue-300 mx-1" title="عرض">
-                            <i class="fas fa-eye"></i>
-                        </button>
-                        <button onclick="editFarmer('${doc.id}')" class="text-amber-400 hover:text-amber-300 mx-1" title="تعديل">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <button onclick="deleteFarmer('${doc.id}')" class="text-danger hover:text-red-300 mx-1" title="حذف">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </td>
-                </tr>
-            `;
-        });
-        
-        html += `
-                </tbody>
-            </table>
-        </div>
-        `;
-        
-        content.innerHTML = html;
-        
-        // إضافة خاصية البحث
-        document.getElementById('searchFarmers').addEventListener('input', function(e) {
-            const searchTerm = e.target.value.toLowerCase();
-            const rows = document.querySelectorAll('tbody tr');
-            rows.forEach(row => {
-                const text = row.textContent.toLowerCase();
-                row.style.display = text.includes(searchTerm) ? '' : 'none';
+        try {
+            await addDoc(collection(db, "farmers"), {
+                name,
+                phone,
+                currentBalance: 0,
+                totalLoans: 0,
+                totalSales: 0,
+                status: 'active',
+                createdAt: serverTimestamp()
             });
-        });
-        
-    } catch (error) {
-        console.error('خطأ في تحميل الفلاحين:', error);
-        content.innerHTML = '<p class="text-danger text-center">حدث خطأ في تحميل البيانات</p>';
-    }
-}
-
-// عرض قائمة السلف
-async function showLoansList() {
-    const content = document.getElementById('content');
-    content.innerHTML = '<div class="text-center py-12"><div class="animate-spin rounded-full h-12 w-12 border-t-2 border-amber-500 mx-auto"></div><p class="mt-4">جاري التحميل...</p></div>';
-    
-    try {
-        const loansSnap = await getDocs(query(collection(db, "loans"), orderBy("createdAt", "desc")));
-        
-        // جلب أسماء الفلاحين
-        const farmersMap = new Map();
-        const farmersSnap = await getDocs(collection(db, "farmers"));
-        farmersSnap.forEach(doc => farmersMap.set(doc.id, doc.data().name));
-        
-        if (loansSnap.empty) {
-            content.innerHTML = `
-            <div class="text-center py-12">
-                <i class="fas fa-hand-holding-usd text-6xl text-gray-600 mb-4"></i>
-                <p class="text-xl text-gray-400 mb-4">لا يوجد سلف بعد</p>
-                <button onclick="showLoanForm()" class="bg-amber-500 hover:bg-amber-600 px-6 py-3 rounded-xl font-bold inline-flex items-center gap-2">
-                    <i class="fas fa-plus"></i>
-                    إضافة سلفة
-                </button>
-            </div>
-            `;
-            return;
-        }
-        
-        let html = `
-        <h3 class="text-xl font-bold mb-6">قائمة السلف</h3>
-        <div class="table-container">
-            <table>
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>الفلاح</th>
-                        <th>المبلغ</th>
-                        <th>الفائدة</th>
-                        <th>الإجمالي</th>
-                        <th>المدفوع</th>
-                        <th>المتبقي</th>
-                        <th>تاريخ السداد</th>
-                        <th>الحالة</th>
-                        <th>الإجراءات</th>
-                    </tr>
-                </thead>
-                <tbody>
-        `;
-        
-        let index = 1;
-        loansSnap.forEach(doc => {
-            const loan = doc.data();
-            const totalWithInterest = loan.amount + (loan.amount * (loan.interest || 0) / 100);
-            const remaining = totalWithInterest - (loan.paidAmount || 0);
             
-            let statusClass = 'badge-warning';
-            let statusText = 'معلق';
-            if (loan.status === 'paid') {
-                statusClass = 'badge-success';
-                statusText = 'مدفوع';
-            } else if (loan.status === 'overdue') {
-                statusClass = 'badge-danger';
-                statusText = 'متأخر';
+            showToast('تم إضافة الفلاح بنجاح', 'success');
+            refreshData();
+            showFarmersList();
+            
+        } catch (error) {
+            console.error('خطأ في حفظ الفلاح:', error);
+            showToast('حدث خطأ في حفظ البيانات', 'error');
+        }
+    }
+
+    // ========== عرض قائمة الفلاحين ==========
+    async function showFarmersList() {
+        const content = document.getElementById('content');
+        content.innerHTML = '<div class="text-center py-12"><div class="animate-spin rounded-full h-12 w-12 border-t-2 border-amber-500 mx-auto"></div><p class="mt-4">جاري التحميل...</p></div>';
+        
+        try {
+            const farmersSnap = await getDocs(query(collection(db, "farmers"), orderBy("createdAt", "desc")));
+            
+            if (farmersSnap.empty) {
+                content.innerHTML = `
+                <div class="text-center py-12">
+                    <i class="fas fa-users text-6xl text-gray-600 mb-4"></i>
+                    <p class="text-xl text-gray-400 mb-4">لا يوجد فلاحين بعد</p>
+                    <button onclick="showFarmerForm()" class="bg-amber-500 hover:bg-amber-600 px-6 py-3 rounded-xl font-bold inline-flex items-center gap-2">
+                        <i class="fas fa-plus"></i>
+                        إضافة أول فلاح
+                    </button>
+                </div>
+                `;
+                return;
             }
             
-            html += `
-                <tr>
-                    <td>${index++}</td>
-                    <td class="font-bold">${farmersMap.get(loan.farmerId) || 'غير معروف'}</td>
-                    <td>${loan.amount.toLocaleString()} ج.م</td>
-                    <td>${loan.interest || 0}%</td>
-                    <td>${totalWithInterest.toLocaleString()} ج.م</td>
-                    <td>${(loan.paidAmount || 0).toLocaleString()} ج.م</td>
-                    <td class="${remaining > 0 ? 'text-danger' : 'text-success'}">${remaining.toLocaleString()} ج.م</td>
-                    <td>${loan.dueDate || 'غير محدد'}</td>
-                    <td><span class="badge ${statusClass}">${statusText}</span></td>
-                    <td>
-                        <button onclick="viewLoan('${doc.id}')" class="text-blue-400 hover:text-blue-300 mx-1" title="عرض">
-                            <i class="fas fa-eye"></i>
-                        </button>
-                        <button onclick="payLoan('${doc.id}')" class="text-green-400 hover:text-green-300 mx-1" title="تسديد">
-                            <i class="fas fa-money-bill"></i>
-                        </button>
-                        <button onclick="deleteLoan('${doc.id}')" class="text-danger hover:text-red-300 mx-1" title="حذف">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </td>
-                </tr>
-            `;
-        });
-        
-        html += `
-                </tbody>
-            </table>
-        </div>
-        `;
-        
-        content.innerHTML = html;
-        
-    } catch (error) {
-        console.error('خطأ في تحميل السلف:', error);
-        content.innerHTML = '<p class="text-danger text-center">حدث خطأ في تحميل البيانات</p>';
-    }
-}
-
-// عرض قائمة المبيعات
-async function showSalesList() {
-    const content = document.getElementById('content');
-    content.innerHTML = '<div class="text-center py-12"><div class="animate-spin rounded-full h-12 w-12 border-t-2 border-amber-500 mx-auto"></div><p class="mt-4">جاري التحميل...</p></div>';
-    
-    try {
-        const salesSnap = await getDocs(query(collection(db, "sales"), orderBy("createdAt", "desc")));
-        
-        // جلب أسماء الفلاحين
-        const farmersMap = new Map();
-        const farmersSnap = await getDocs(collection(db, "farmers"));
-        farmersSnap.forEach(doc => farmersMap.set(doc.id, doc.data().name));
-        
-        if (salesSnap.empty) {
-            content.innerHTML = `
-            <div class="text-center py-12">
-                <i class="fas fa-shopping-cart text-6xl text-gray-600 mb-4"></i>
-                <p class="text-xl text-gray-400 mb-4">لا يوجد مبيعات بعد</p>
-                <button onclick="showSaleForm()" class="bg-amber-500 hover:bg-amber-600 px-6 py-3 rounded-xl font-bold inline-flex items-center gap-2">
-                    <i class="fas fa-plus"></i>
-                    تسجيل أول بيع
-                </button>
+            let html = `
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold">قائمة الفلاحين</h3>
             </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>الاسم</th>
+                            <th>رقم الهاتف</th>
+                            <th>الرصيد الحالي</th>
+                            <th>الحالة</th>
+                            <th>الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
             `;
-            return;
-        }
-        
-        let html = `
-        <h3 class="text-xl font-bold mb-6">قائمة المبيعات</h3>
-        <div class="table-container">
-            <table>
-                <thead>
+            
+            let index = 1;
+            farmersSnap.forEach(doc => {
+                const farmer = doc.data();
+                html += `
                     <tr>
-                        <th>#</th>
-                        <th>الفلاح</th>
-                        <th>المنتج</th>
-                        <th>الكمية</th>
-                        <th>سعر الوحدة</th>
-                        <th>الإجمالي</th>
-                        <th>التكلفة</th>
-                        <th>الربح</th>
-                        <th>طريقة الدفع</th>
-                        <th>التاريخ</th>
-                        <th>الإجراءات</th>
+                        <td>${index++}</td>
+                        <td class="font-bold">${farmer.name}</td>
+                        <td dir="ltr">${farmer.phone}</td>
+                        <td class="${farmer.currentBalance > 0 ? 'text-danger' : 'text-success'}">${farmer.currentBalance.toLocaleString()} ج.م</td>
+                        <td>
+                            <span class="badge ${farmer.status === 'active' ? 'badge-success' : 'badge-danger'}">
+                                ${farmer.status === 'active' ? 'نشط' : 'غير نشط'}
+                            </span>
+                        </td>
+                        <td>
+                            <button onclick="deleteFarmer('${doc.id}')" class="text-danger hover:text-red-300 mx-1" title="حذف">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
                     </tr>
-                </thead>
-                <tbody>
-        `;
-        
-        let index = 1;
-        let totalSalesAmount = 0;
-        let totalProfit = 0;
-        
-        salesSnap.forEach(doc => {
-            const sale = doc.data();
-            const date = sale.createdAt?.toDate().toLocaleDateString('ar-EG') || 'غير محدد';
-            
-            totalSalesAmount += sale.total || 0;
-            totalProfit += sale.profit || 0;
-            
-            html += `
-                <tr>
-                    <td>${index++}</td>
-                    <td class="font-bold">${farmersMap.get(sale.farmerId) || 'غير معروف'}</td>
-                    <td>${sale.product}</td>
-                    <td>${sale.quantity}</td>
-                    <td>${sale.unitPrice.toLocaleString()} ج.م</td>
-                    <td>${sale.total.toLocaleString()} ج.م</td>
-                    <td>${(sale.cost || 0).toLocaleString()} ج.م</td>
-                    <td class="${sale.profit >= 0 ? 'text-success' : 'text-danger'}">${sale.profit.toLocaleString()} ج.م</td>
-                    <td>
-                        <span class="badge ${sale.paymentMethod === 'cash' ? 'badge-success' : 'badge-warning'}">
-                            ${sale.paymentMethod === 'cash' ? 'نقداً' : sale.paymentMethod === 'credit' ? 'آجل' : 'تقسيط'}
-                        </span>
-                    </td>
-                    <td>${date}</td>
-                    <td>
-                        <button onclick="viewSale('${doc.id}')" class="text-blue-400 hover:text-blue-300 mx-1" title="عرض">
-                            <i class="fas fa-eye"></i>
-                        </button>
-                        <button onclick="deleteSale('${doc.id}')" class="text-danger hover:text-red-300 mx-1" title="حذف">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </td>
-                </tr>
-            `;
-        });
-        
-        html += `
-                </tbody>
-                <tfoot class="bg-gray-800 font-bold">
-                    <tr>
-                        <td colspan="5" class="text-left">الإجمالي:</td>
-                        <td>${totalSalesAmount.toLocaleString()} ج.م</td>
-                        <td></td>
-                        <td class="${totalProfit >= 0 ? 'text-success' : 'text-danger'}">${totalProfit.toLocaleString()} ج.م</td>
-                        <td colspan="3"></td>
-                    </tr>
-                </tfoot>
-            </table>
-        </div>
-        `;
-        
-        content.innerHTML = html;
-        
-    } catch (error) {
-        console.error('خطأ في تحميل المبيعات:', error);
-        content.innerHTML = '<p class="text-danger text-center">حدث خطأ في تحميل البيانات</p>';
-    }
-}
-
-// عرض قائمة المصروفات
-async function showExpensesList() {
-    const content = document.getElementById('content');
-    content.innerHTML = '<div class="text-center py-12"><div class="animate-spin rounded-full h-12 w-12 border-t-2 border-amber-500 mx-auto"></div><p class="mt-4">جاري التحميل...</p></div>';
-    
-    try {
-        const expensesSnap = await getDocs(query(collection(db, "expenses"), orderBy("date", "desc")));
-        
-        if (expensesSnap.empty) {
-            content.innerHTML = `
-            <div class="text-center py-12">
-                <i class="fas fa-wallet text-6xl text-gray-600 mb-4"></i>
-                <p class="text-xl text-gray-400 mb-4">لا يوجد مصروفات بعد</p>
-                <button onclick="showExpenseForm()" class="bg-amber-500 hover:bg-amber-600 px-6 py-3 rounded-xl font-bold inline-flex items-center gap-2">
-                    <i class="fas fa-plus"></i>
-                    إضافة مصروف
-                </button>
-            </div>
-            `;
-            return;
-        }
-        
-        let html = `
-        <div class="flex justify-between items-center mb-6">
-            <h3 class="text-xl font-bold">سجل المصروفات</h3>
-            <div class="flex gap-3">
-                <select id="expenseFilter" class="px-4 py-2 rounded-lg bg-gray-700 border border-gray-600">
-                    <option value="all">كل المصروفات</option>
-                    <option value="rent">إيجار</option>
-                    <option value="salaries">رواتب</option>
-                    <option value="utilities">فواتير</option>
-                    <option value="transport">نقل</option>
-                    <option value="maintenance">صيانة</option>
-                    <option value="other">أخرى</option>
-                </select>
-            </div>
-        </div>
-        <div class="table-container">
-            <table>
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>النوع</th>
-                        <th>الوصف</th>
-                        <th>المبلغ</th>
-                        <th>التاريخ</th>
-                        <th>ملاحظات</th>
-                        <th>الإجراءات</th>
-                    </tr>
-                </thead>
-                <tbody>
-        `;
-        
-        let index = 1;
-        let totalExpenses = 0;
-        
-        expensesSnap.forEach(doc => {
-            const expense = doc.data();
-            totalExpenses += expense.amount || 0;
-            
-            const typeNames = {
-                'rent': 'إيجار',
-                'salaries': 'رواتب',
-                'utilities': 'فواتير',
-                'transport': 'نقل',
-                'maintenance': 'صيانة',
-                'other': 'أخرى'
-            };
-            
-            html += `
-                <tr class="expense-row" data-type="${expense.type}">
-                    <td>${index++}</td>
-                    <td>${typeNames[expense.type] || expense.type}</td>
-                    <td>${expense.description}</td>
-                    <td class="text-danger font-bold">${expense.amount.toLocaleString()} ج.م</td>
-                    <td>${expense.date}</td>
-                    <td>${expense.notes || '-'}</td>
-                    <td>
-                        <button onclick="deleteExpense('${doc.id}')" class="text-danger hover:text-red-300 mx-1" title="حذف">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </td>
-                </tr>
-            `;
-        });
-        
-        html += `
-                </tbody>
-                <tfoot class="bg-gray-800 font-bold">
-                    <tr>
-                        <td colspan="3" class="text-left">الإجمالي:</td>
-                        <td class="text-danger">${totalExpenses.toLocaleString()} ج.م</td>
-                        <td colspan="3"></td>
-                    </tr>
-                </tfoot>
-            </table>
-        </div>
-        `;
-        
-        content.innerHTML = html;
-        
-        // إضافة فلترة المصروفات
-        document.getElementById('expenseFilter').addEventListener('change', function(e) {
-            const filter = e.target.value;
-            const rows = document.querySelectorAll('.expense-row');
-            
-            rows.forEach(row => {
-                if (filter === 'all' || row.dataset.type === filter) {
-                    row.style.display = '';
-                } else {
-                    row.style.display = 'none';
-                }
+                `;
             });
-        });
-        
-    } catch (error) {
-        console.error('خطأ في تحميل المصروفات:', error);
-        content.innerHTML = '<p class="text-danger text-center">حدث خطأ في تحميل البيانات</p>';
+            
+            html += `
+                    </tbody>
+                </table>
+            </div>
+            `;
+            
+            content.innerHTML = html;
+            
+        } catch (error) {
+            console.error('خطأ في تحميل الفلاحين:', error);
+            content.innerHTML = '<p class="text-danger text-center">حدث خطأ في تحميل البيانات</p>';
+        }
     }
-}
 
-// ==================== التقارير ====================
-async function showReports() {
-    const content = document.getElementById('content');
-    content.innerHTML = `
-    <div class="space-y-6">
-        <h3 class="text-2xl font-bold mb-6">التقارير والإحصائيات</h3>
-        
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <!-- تقرير الفلاحين -->
-            <div class="bg-gray-800/50 p-6 rounded-xl border border-gray-700">
-                <h4 class="text-xl font-bold mb-4 flex items-center gap-2">
-                    <i class="fas fa-users text-green-400"></i>
-                    <span>تقرير الفلاحين</span>
-                </h4>
-                <div id="reportFarmers" class="space-y-2">
-                    <p>جاري التحميل...</p>
-                </div>
-                <button onclick="exportFarmersReport()" class="mt-4 bg-green-500/20 hover:bg-green-500/30 text-green-400 px-4 py-2 rounded-lg w-full">
-                    <i class="fas fa-download ml-2"></i>
-                    تصدير التقرير
-                </button>
-            </div>
-            
-            <!-- تقرير السلف -->
-            <div class="bg-gray-800/50 p-6 rounded-xl border border-gray-700">
-                <h4 class="text-xl font-bold mb-4 flex items-center gap-2">
-                    <i class="fas fa-hand-holding-usd text-blue-400"></i>
-                    <span>تقرير السلف</span>
-                </h4>
-                <div id="reportLoans" class="space-y-2">
-                    <p>جاري التحميل...</p>
-                </div>
-                <button onclick="exportLoansReport()" class="mt-4 bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 px-4 py-2 rounded-lg w-full">
-                    <i class="fas fa-download ml-2"></i>
-                    تصدير التقرير
-                </button>
-            </div>
-            
-            <!-- تقرير المبيعات -->
-            <div class="bg-gray-800/50 p-6 rounded-xl border border-gray-700">
-                <h4 class="text-xl font-bold mb-4 flex items-center gap-2">
-                    <i class="fas fa-chart-line text-purple-400"></i>
-                    <span>تقرير المبيعات</span>
-                </h4>
-                <div id="reportSales" class="space-y-2">
-                    <p>جاري التحميل...</p>
-                </div>
-                <button onclick="exportSalesReport()" class="mt-4 bg-purple-500/20 hover:bg-purple-500/30 text-purple-400 px-4 py-2 rounded-lg w-full">
-                    <i class="fas fa-download ml-2"></i>
-                    تصدير التقرير
-                </button>
-            </div>
-            
-            <!-- تقرير المصروفات -->
-            <div class="bg-gray-800/50 p-6 rounded-xl border border-gray-700">
-                <h4 class="text-xl font-bold mb-4 flex items-center gap-2">
-                    <i class="fas fa-file-invoice text-orange-400"></i>
-                    <span>تقرير المصروفات</span>
-                </h4>
-                <div id="reportExpenses" class="space-y-2">
-                    <p>جاري التحميل...</p>
-                </div>
-                <button onclick="exportExpensesReport()" class="mt-4 bg-orange-500/20 hover:bg-orange-500/30 text-orange-400 px-4 py-2 rounded-lg w-full">
-                    <i class="fas fa-download ml-2"></i>
-                    تصدير التقرير
-                </button>
-            </div>
-        </div>
-    </div>
-    `;
-    
-    // تحميل بيانات التقارير
-    loadReportsData();
-}
-
-async function loadReportsData() {
-    try {
-        // إحصائيات الفلاحين
-        const farmersSnap = await getDocs(collection(db, "farmers"));
-        const totalFarmers = farmersSnap.size;
-        let activeFarmers = 0;
-        farmersSnap.forEach(doc => {
-            if (doc.data().status === 'active') activeFarmers++;
-        });
-        
-        document.getElementById('reportFarmers').innerHTML = `
-            <p>إجمالي الفلاحين: <span class="font-bold text-amber-400">${totalFarmers}</span></p>
-            <p>الفلاحين النشطين: <span class="font-bold text-green-400">${activeFarmers}</span></p>
-            <p>الفلاحين غير النشطين: <span class="font-bold text-red-400">${totalFarmers - activeFarmers}</span></p>
-        `;
-        
-        // إحصائيات السلف
-        const loansSnap = await getDocs(collection(db, "loans"));
-        let totalLoans = 0, paidLoans = 0, pendingLoans = 0, totalAmount = 0;
-        loansSnap.forEach(doc => {
-            const loan = doc.data();
-            totalLoans++;
-            totalAmount += loan.amount;
-            if (loan.status === 'paid') paidLoans++;
-            else if (loan.status === 'pending') pendingLoans++;
-        });
-        
-        document.getElementById('reportLoans').innerHTML = `
-            <p>إجمالي السلف: <span class="font-bold text-amber-400">${totalLoans}</span></p>
-            <p>إجمالي المبالغ: <span class="font-bold text-amber-400">${totalAmount.toLocaleString()} ج.م</span></p>
-            <p>السلف المدفوعة: <span class="font-bold text-green-400">${paidLoans}</span></p>
-            <p>السلف المعلقة: <span class="font-bold text-yellow-400">${pendingLoans}</span></p>
-        `;
-        
-        // إحصائيات المبيعات
-        const salesSnap = await getDocs(collection(db, "sales"));
-        let totalSales = 0, totalSalesAmount = 0, totalProfit = 0;
-        salesSnap.forEach(doc => {
-            const sale = doc.data();
-            totalSales++;
-            totalSalesAmount += sale.total || 0;
-            totalProfit += sale.profit || 0;
-        });
-        
-        document.getElementById('reportSales').innerHTML = `
-            <p>عدد المبيعات: <span class="font-bold text-amber-400">${totalSales}</span></p>
-            <p>إجمالي المبيعات: <span class="font-bold text-amber-400">${totalSalesAmount.toLocaleString()} ج.م</span></p>
-            <p>إجمالي الأرباح: <span class="font-bold text-green-400">${totalProfit.toLocaleString()} ج.م</span></p>
-        `;
-        
-        // إحصائيات المصروفات
-        const expensesSnap = await getDocs(collection(db, "expenses"));
-        let totalExpenses = 0, totalExpensesAmount = 0;
-        expensesSnap.forEach(doc => {
-            totalExpenses++;
-            totalExpensesAmount += doc.data().amount || 0;
-        });
-        
-        document.getElementById('reportExpenses').innerHTML = `
-            <p>عدد المصروفات: <span class="font-bold text-amber-400">${totalExpenses}</span></p>
-            <p>إجمالي المصروفات: <span class="font-bold text-red-400">${totalExpensesAmount.toLocaleString()} ج.م</span></p>
-            <p>صافي الربح: <span class="font-bold ${totalProfit - totalExpensesAmount >= 0 ? 'text-green-400' : 'text-red-400'}">${(totalProfit - totalExpensesAmount).toLocaleString()} ج.م</span></p>
-        `;
-        
-    } catch (error) {
-        console.error('خطأ في تحميل التقارير:', error);
+    // دوال بسيطة للنماذج الأخرى
+    function showLoanForm() {
+        const content = document.getElementById('content');
+        content.innerHTML = '<p class="text-center py-12">نموذج إضافة سلفة - قيد التطوير</p>';
     }
-}
 
-// ==================== دوال مساعدة ====================
-function refreshData() {
-    updateStats();
-}
+    function showSaleForm() {
+        const content = document.getElementById('content');
+        content.innerHTML = '<p class="text-center py-12">نموذج تسجيل بيع - قيد التطوير</p>';
+    }
 
-// دالة لتسجيل خروج
-function logout() {
+    function showExpenseForm() {
+        const content = document.getElementById('content');
+        content.innerHTML = '<p class="text-center py-12">نموذج إضافة مصروف - قيد التطوير</p>';
+    }
+
+    function showLoansList() {
+        const content = document.getElementById('content');
+        content.innerHTML = '<p class="text-center py-12">قائمة السلف - قيد التطوير</p>';
+    }
+
+    function showSalesList() {
+        const content = document.getElementById('content');
+        content.innerHTML = '<p class="text-center py-12">قائمة المبيعات - قيد التطوير</p>';
+    }
+
+    function showExpensesList() {
+        const content = document.getElementById('content');
+        content.innerHTML = '<p class="text-center py-12">قائمة المصروفات - قيد التطوير</p>';
+    }
+
+    function refreshData() {
+        updateStats();
+    }
+
+    // دوال الحذف
+    window.deleteFarmer = async (id) => {
+        if (confirm('هل أنت متأكد من حذف هذا الفلاح؟')) {
+            try {
+                await deleteDoc(doc(db, "farmers", id));
+                showToast('تم الحذف بنجاح', 'success');
+                showFarmersList();
+            } catch (error) {
+                showToast('خطأ في الحذف', 'error');
+            }
+        }
+    };
+
+    // بدء التطبيق
     showLogin();
-    showToast('تم تسجيل الخروج بنجاح', 'info');
-}
 
-// تصدير الدوال للاستخدام العام
-window.showFarmerForm = showFarmerForm;
-window.showLoanForm = showLoanForm;
-window.showSaleForm = showSaleForm;
-window.showExpenseForm = showExpenseForm;
-window.showFarmersList = showFarmersList;
-window.showLoansList = showLoansList;
-window.showSalesList = showSalesList;
-window.showExpensesList = showExpensesList;
-window.refreshData = refreshData;
-window.logout = logout;
+    // تصدير الدوال المهمة
+    window.showFarmerForm = showFarmerForm;
+    window.showLoanForm = showLoanForm;
+    window.showSaleForm = showSaleForm;
+    window.showExpenseForm = showExpenseForm;
 
-// دوال الحذف (يمكن إضافتها حسب الحاجة)
-window.deleteFarmer = async (id) => {
-    if (confirm('هل أنت متأكد من حذف هذا الفلاح؟')) {
-        try {
-            await deleteDoc(doc(db, "farmers", id));
-            showToast('تم الحذف بنجاح', 'success');
-            showFarmersList();
-        } catch (error) {
-            showToast('خطأ في الحذف', 'error');
-        }
-    }
-};
-
-window.deleteLoan = async (id) => {
-    if (confirm('هل أنت متأكد من حذف هذه السلفة؟')) {
-        try {
-            await deleteDoc(doc(db, "loans", id));
-            showToast('تم الحذف بنجاح', 'success');
-            showLoansList();
-        } catch (error) {
-            showToast('خطأ في الحذف', 'error');
-        }
-    }
-};
-
-window.deleteSale = async (id) => {
-    if (confirm('هل أنت متأكد من حذف هذا البيع؟')) {
-        try {
-            await deleteDoc(doc(db, "sales", id));
-            showToast('تم الحذف بنجاح', 'success');
-            showSalesList();
-        } catch (error) {
-            showToast('خطأ في الحذف', 'error');
-        }
-    }
-};
-
-window.deleteExpense = async (id) => {
-    if (confirm('هل أنت متأكد من حذف هذا المصروف؟')) {
-        try {
-            await deleteDoc(doc(db, "expenses", id));
-            showToast('تم الحذف بنجاح', 'success');
-            showExpensesList();
-        } catch (error) {
-            showToast('خطأ في الحذف', 'error');
-        }
-    }
-};
-
-// ==================== بدء التطبيق ====================
-showLogin();
-5️⃣ firebase-rules.rules
-text
-rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-    // قواعد الأمان للمستخدمين
-    match /users/{userId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
-    }
-    
-    // قواعد الأمان للفلاحين
-    match /farmers/{farmerId} {
-      allow read: if request.auth != null;
-      allow write: if request.auth != null;
-      
-      // التحقق من صحة البيانات
-      allow create: if request.resource.data.name is string &&
-                      request.resource.data.name.size() >= 3 &&
-                      request.resource.data.phone is string &&
-                      request.resource.data.phone.size() >= 10;
-    }
-    
-    // قواعد الأمان للسلف
-    match /loans/{loanId} {
-      allow read: if request.auth != null;
-      allow write: if request.auth != null;
-      
-      // التحقق من صحة السلفة
-      allow create: if request.resource.data.amount is number &&
-                      request.resource.data.amount > 0 &&
-                      request.resource.data.farmerId is string;
-    }
-    
-    // قواعد الأمان للمبيعات
-    match /sales/{saleId} {
-      allow read: if request.auth != null;
-      allow write: if request.auth != null;
-      
-      // التحقق من صحة البيع
-      allow create: if request.resource.data.total is number &&
-                      request.resource.data.total > 0 &&
-                      request.resource.data.farmerId is string;
-    }
-    
-    // قواعد الأمان للمصروفات
-    match /expenses/{expenseId} {
-      allow read: if request.auth != null;
-      allow write: if request.auth != null;
-      
-      // التحقق من صحة المصروف
-      allow create: if request.resource.data.amount is number &&
-                      request.resource.data.amount > 0 &&
-                      request.resource.data.description is string;
-    }
-    
-    // قواعد الأمان للإحصائيات
-    match /statistics/{statId} {
-      allow read: if request.auth != null;
-      allow write: if false; // منع الكتابة المباشرة للإحصائيات
-    }
-  }
-}
-6️⃣ README.md
-markdown
-# وكالة - Wakala SaaS
-
-نظام متكامل لإدارة الوكالات الزراعية (SaaS) مبني على Firebase
-
-## 🚀 المميزات
-
-- ✅ إدارة الفلاحين (إضافة - تعديل - حذف - بحث)
-- ✅ إدارة السلف (إضافة - تسديد - متابعة)
-- ✅ إدارة المبيعات (تسجيل - أرباح - تقارير)
-- ✅ إدارة المصروفات
-- ✅ لوحة تحكم ديناميكية مع إحصائيات فورية
-- ✅ تقارير شاملة
-- ✅ واجهة عربية احترافية
-- ✅ تصميم متجاوب (Responsive)
-- ✅ دعم العمل دون اتصال (Offline support)
-- ✅ أمان متكامل مع Firebase Rules
-
-## 🛠️ التقنيات المستخدمة
-
-- HTML5 / CSS3 / JavaScript (ES6+)
-- Tailwind CSS للتصميم
-- Firebase (Firestore, Authentication)
-- Font Awesome للأيقونات
-
-## 📦 التثبيت والنشر
-
-### 1. تهيئة Firebase
-
-1. أنشئ مشروع جديد في [Firebase Console](https://console.firebase.google.com/)
-2. فعّل خدمة Firestore Database
-3. فعّل خدمة Authentication (بريد إلكتروني/كلمة مرور)
-4. احصل على إعدادات Firebase من Project Settings
-
-### 2. تحديث إعدادات Firebase
-
-افتح ملف `firebase-config.js` وقم بتحديث الإعدادات:
-
-```javascript
-const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_PROJECT_ID.appspot.com",
-    messagingSenderId: "YOUR_SENDER_ID",
-    appId: "YOUR_APP_ID"
-};
-3. تطبيق قواعد الأمان
-انسخ محتوى ملف firebase-rules.rules والصقه في قواعد Firestore
-
-4. رفع الملفات
-ارفع الملفات التالية إلى أي خدمة استضافة:
-
-index.html
-
-style.css
-
-script.js
-
-firebase-config.js
-
-5. كلمة المرور الافتراضية
-كلمة المرور: wakala123 (يمكن تغييرها في ملف script.js)
-
-📁 هيكل المشروع
-text
-wakala-saas/
-│
-├── index.html              # الصفحة الرئيسية
-├── style.css               # التنسيقات
-├── script.js                # منطق التطبيق
-├── firebase-config.js       # إعدادات Firebase
-├── firebase-rules.rules     # قواعد الأمان
-└── README.md                # التوثيق
-🎯 الاستخدام
-إضافة فلاح جديد
-اضغط على زر "إضافة فلاح"
-
-أدخل البيانات المطلوبة
-
-اضغط "حفظ"
-
-إضافة سلفة
-اختر الفلاح من القائمة
-
-أدخل المبلغ والتفاصيل
-
-اضغط "حفظ"
-
-تسجيل بيع
-اختر الفلاح
-
-أدخل بيانات المنتج
-
-حدد طريقة الدفع
-
-اضغط "تسجيل"
-
-عرض التقارير
-اضغط على تبويب "التقارير"
-
-اختر نوع التقرير المطلوب
-
-يمكن تصدير التقرير
-
-🔒 الأمان
-جميع البيانات محمية بقواعد Firebase
-
-مزامنة فورية للتحديثات
-
-صلاحيات محددة لكل عملية
-
-🌐 النشر على الإنترنت
-باستخدام Vercel
-bash
-npm i -g vercel
-vercel
-باستخدام Netlify
-اسحب وأفلت المجلد على Netlify Drop
-
-باستخدام GitHub Pages
-ارفع المشروع إلى GitHub
-
-فعّل GitHub Pages في الإعدادات
-
-📱 دعم الأجهزة
-✓ أجهزة الكمبيوتر
-
-✓ الأجهزة اللوحية
-
-✓ الهواتف الذكية
-
-✓ جميع المتصفحات الحديثة
-
-🔄 التحديثات المستقبلية
-إضافة نظام الفواتير
-
-دفع إلكتروني (Stripe)
-
-إشعارات فورية
-
-تصدير Excel/PDF
-
-تقارير متقدمة بالرسوم البيانية
-
-نظام صلاحيات متعدد المستويات
-
-📞 الدعم الفني
-للاستفسارات والدعم الفني:
-
-البريد الإلكتروني: support@wakala-saas.com
-
-الموقع: www.wakala-saas.com
-
-📄 الترخيص
-جميع الحقوق محفوظة © 2024 وكالة
-
-🏆 شكر وتقدير
-شكر خاص لجميع المطورين والمستخدمين الذين ساهموا في تطوير هذا المشروع
-
-
+</script>
+</body>
+</html>

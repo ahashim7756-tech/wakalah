@@ -1,0 +1,1168 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>وكالة الخضار والفاكهة | نظام الإدارة الذكي</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Tajawal', 'sans-serif'],
+                    },
+                    colors: {
+                        slate: {
+                            50: '#f8fafc',
+                            100: '#f1f5f9',
+                            200: '#e2e8f0',
+                            300: '#cbd5e1',
+                            400: '#94a3b8',
+                            500: '#64748b',
+                            600: '#475569',
+                            700: '#334155',
+                            800: '#1e293b',
+                            900: '#0f172a',
+                            950: '#020617',
+                        },
+                        amber: {
+                            50: '#fffbeb',
+                            100: '#fef3c7',
+                            200: '#fde68a',
+                            300: '#fcd34d',
+                            400: '#fbbf24',
+                            500: '#f59e0b',
+                            600: '#d97706',
+                            700: '#b45309',
+                            800: '#92400e',
+                            900: '#78350f',
+                            950: '#451a03',
+                        },
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.3s ease-out',
+                        'slide-up': 'slideUp 0.4s ease-out',
+                        'pulse-slow': 'pulse 3s infinite',
+                        'bounce-slow': 'bounce 2s infinite',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                        slideUp: {
+                            '0%': { transform: 'translateY(20px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' },
+                        },
+                    },
+                },
+            },
+        }
+    </script>
+
+    <style>
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        /* Glassmorphism Effects */
+        .glass {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .glass-dark {
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .glass-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.7) 100%);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.5);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+        }
+
+        /* Input Focus Effects */
+        .input-focus {
+            transition: all 0.3s ease;
+        }
+        .input-focus:focus {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(245, 158, 11, 0.15);
+        }
+
+        /* Button Hover Effects */
+        .btn-hover {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        .btn-hover::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+        .btn-hover:active::before {
+            width: 300px;
+            height: 300px;
+        }
+        .btn-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
+        }
+
+        /* Number Input Styling */
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type="number"] {
+            -moz-appearance: textfield;
+        }
+
+        /* Table Row Hover */
+        .table-row-hover {
+            transition: all 0.2s ease;
+        }
+        .table-row-hover:hover {
+            background: linear-gradient(90deg, rgba(245,158,11,0.05) 0%, transparent 100%);
+            transform: scale(1.002);
+        }
+
+        /* Loading Skeleton */
+        .skeleton {
+            background: linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+        }
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        /* Toast Notification */
+        .toast {
+            animation: slideInLeft 0.4s ease-out;
+        }
+        @keyframes slideInLeft {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        /* Mobile Bottom Navigation */
+        @media (max-width: 768px) {
+            .mobile-nav {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                z-index: 50;
+                background: white;
+                box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
+            }
+        }
+
+        /* Print Styles */
+        @media print {
+            .no-print { display: none !important; }
+            .print-only { display: block !important; }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans antialiased">
+
+    <!-- App Container -->
+    <div id="app" class="min-h-screen flex flex-col md:flex-row">
+
+        <!-- Sidebar Navigation (Desktop) -->
+        <aside class="hidden md:flex flex-col w-72 bg-slate-900 text-white fixed h-full z-40 transition-all duration-300" id="sidebar">
+            <!-- Logo -->
+            <div class="p-6 border-b border-slate-800">
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 bg-gradient-to-br from-amber-400 to-amber-600 rounded-xl flex items-center justify-center shadow-lg">
+                        <i class="fas fa-leaf text-white text-xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="font-bold text-lg leading-tight">وكالة الخضار</h1>
+                        <p class="text-xs text-slate-400">نظام الإدارة الذكي</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation Links -->
+            <nav class="flex-1 overflow-y-auto py-4 px-3 space-y-1">
+                <button onclick="app.navigate('dashboard')" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 hover:bg-slate-800 group active-nav" data-page="dashboard">
+                    <i class="fas fa-chart-line w-5 text-center text-amber-400 group-hover:scale-110 transition-transform"></i>
+                    <span class="font-medium">لوحة التحكم</span>
+                </button>
+                
+                <button onclick="app.navigate('auction')" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 hover:bg-slate-800 group" data-page="auction">
+                    <i class="fas fa-gavel w-5 text-center text-emerald-400 group-hover:scale-110 transition-transform"></i>
+                    <span class="font-medium">المزاد والمبيعات</span>
+                </button>
+                
+                <button onclick="app.navigate('suppliers')" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 hover:bg-slate-800 group" data-page="suppliers">
+                    <i class="fas fa-users w-5 text-center text-blue-400 group-hover:scale-110 transition-transform"></i>
+                    <span class="font-medium">الموردين والفلاحين</span>
+                </button>
+                
+                <button onclick="app.navigate('reports')" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 hover:bg-slate-800 group" data-page="reports">
+                    <i class="fas fa-file-invoice-dollar w-5 text-center text-purple-400 group-hover:scale-110 transition-transform"></i>
+                    <span class="font-medium">التقارير المالية</span>
+                </button>
+                
+                <button onclick="app.navigate('inventory')" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 hover:bg-slate-800 group" data-page="inventory">
+                    <i class="fas fa-boxes w-5 text-center text-orange-400 group-hover:scale-110 transition-transform"></i>
+                    <span class="font-medium">المخزون والأصناف</span>
+                </button>
+            </nav>
+
+            <!-- User Profile -->
+            <div class="p-4 border-t border-slate-800">
+                <div class="flex items-center gap-3 p-3 rounded-xl bg-slate-800/50">
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-slate-600 to-slate-700 flex items-center justify-center">
+                        <i class="fas fa-user text-slate-300"></i>
+                    </div>
+                    <div class="flex-1">
+                        <p class="text-sm font-medium">مدير الوكالة</p>
+                        <p class="text-xs text-slate-400">آخر دخول: اليوم</p>
+                    </div>
+                    <button onclick="app.logout()" class="text-slate-400 hover:text-red-400 transition-colors">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 md:mr-72 transition-all duration-300">
+            
+            <!-- Top Header -->
+            <header class="sticky top-0 z-30 glass border-b border-slate-200 px-4 md:px-8 py-4">
+                <div class="flex items-center justify-between">
+                    <!-- Mobile Menu Button -->
+                    <button onclick="app.toggleMobileMenu()" class="md:hidden p-2 rounded-lg hover:bg-slate-100 transition-colors">
+                        <i class="fas fa-bars text-slate-600 text-xl"></i>
+                    </button>
+
+                    <!-- Search Bar -->
+                    <div class="hidden md:flex items-center flex-1 max-w-xl mx-4">
+                        <div class="relative w-full">
+                            <i class="fas fa-search absolute right-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                            <input type="text" id="globalSearch" placeholder="البحث السريع (F2)..." 
+                                class="w-full pr-12 pl-4 py-2.5 bg-slate-100 border-0 rounded-xl text-sm focus:ring-2 focus:ring-amber-400 focus:bg-white transition-all input-focus"
+                                onkeyup="app.handleGlobalSearch(this.value)">
+                        </div>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="flex items-center gap-3">
+                        <button onclick="app.navigate('auction')" class="hidden sm:flex items-center gap-2 px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-xl font-medium btn-hover shadow-lg shadow-amber-500/30">
+                            <i class="fas fa-plus"></i>
+                            <span>عملية بيع جديدة</span>
+                        </button>
+                        
+                        <button onclick="app.toggleNotifications()" class="relative p-2 rounded-xl hover:bg-slate-100 transition-colors">
+                            <i class="fas fa-bell text-slate-600 text-lg"></i>
+                            <span class="absolute top-1 left-1 w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Page Content -->
+            <div class="p-4 md:p-8 pb-24 md:pb-8">
+
+                <!-- Dashboard Screen -->
+                <div id="page-dashboard" class="page-section animate-fade-in">
+                    <!-- Stats Cards -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                        <div class="glass-card rounded-2xl p-6 relative overflow-hidden group">
+                            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-400 to-emerald-600"></div>
+                            <div class="flex justify-between items-start mb-4">
+                                <div>
+                                    <p class="text-slate-500 text-sm font-medium mb-1">إجمالي المبيعات اليوم</p>
+                                    <h3 class="text-3xl font-bold text-slate-800" id="stat-total-sales">0.00</h3>
+                                    <span class="text-emerald-600 text-sm font-medium">ج.م</span>
+                                </div>
+                                <div class="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                                    <i class="fas fa-coins text-emerald-600 text-xl"></i>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-2 text-sm">
+                                <span class="text-emerald-600 font-medium"><i class="fas fa-arrow-up ml-1"></i>12%</span>
+                                <span class="text-slate-400">عن الأمس</span>
+                            </div>
+                        </div>
+
+                        <div class="glass-card rounded-2xl p-6 relative overflow-hidden group">
+                            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-amber-400 to-amber-600"></div>
+                            <div class="flex justify-between items-start mb-4">
+                                <div>
+                                    <p class="text-slate-500 text-sm font-medium mb-1">عمولات الوكالة</p>
+                                    <h3 class="text-3xl font-bold text-slate-800" id="stat-commissions">0.00</h3>
+                                    <span class="text-amber-600 text-sm font-medium">ج.م</span>
+                                </div>
+                                <div class="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                                    <i class="fas fa-percentage text-amber-600 text-xl"></i>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-2 text-sm">
+                                <span class="text-slate-400">نسبة العمولة:</span>
+                                <span class="text-amber-600 font-medium">5%</span>
+                            </div>
+                        </div>
+
+                        <div class="glass-card rounded-2xl p-6 relative overflow-hidden group">
+                            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-400 to-blue-600"></div>
+                            <div class="flex justify-between items-start mb-4">
+                                <div>
+                                    <p class="text-slate-500 text-sm font-medium mb-1">عدد العمليات اليوم</p>
+                                    <h3 class="text-3xl font-bold text-slate-800" id="stat-transactions">0</h3>
+                                    <span class="text-blue-600 text-sm font-medium">عملية</span>
+                                </div>
+                                <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                                    <i class="fas fa-shopping-cart text-blue-600 text-xl"></i>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-2 text-sm">
+                                <span class="text-blue-600 font-medium" id="stat-active-farmers">0</span>
+                                <span class="text-slate-400">فلاح نشط</span>
+                            </div>
+                        </div>
+
+                        <div class="glass-card rounded-2xl p-6 relative overflow-hidden group">
+                            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-purple-400 to-purple-600"></div>
+                            <div class="flex justify-between items-start mb-4">
+                                <div>
+                                    <p class="text-slate-500 text-sm font-medium mb-1">رصيد الخزينة</p>
+                                    <h3 class="text-3xl font-bold text-slate-800" id="stat-cash-balance">0.00</h3>
+                                    <span class="text-purple-600 text-sm font-medium">ج.م</span>
+                                </div>
+                                <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                                    <i class="fas fa-wallet text-purple-600 text-xl"></i>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-2 text-sm">
+                                <span class="text-slate-400">آخر تحديث:</span>
+                                <span class="text-purple-600 font-medium">الآن</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions & Recent Activity -->
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <!-- Quick Sale Form -->
+                        <div class="lg:col-span-2 glass-card rounded-2xl p-6">
+                            <div class="flex items-center justify-between mb-6">
+                                <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                                    <i class="fas fa-bolt text-amber-500"></i>
+                                    عملية بيع سريعة
+                                </h3>
+                                <span class="text-xs text-slate-400 bg-slate-100 px-3 py-1 rounded-full">F1 للوصول السريع</span>
+                            </div>
+                            
+                            <form id="quickSaleForm" onsubmit="app.handleQuickSale(event)" class="space-y-4">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div class="space-y-2">
+                                        <label class="text-sm font-medium text-slate-600">اسم الفلاح / المورد</label>
+                                        <div class="relative">
+                                            <i class="fas fa-user absolute right-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                                            <input type="text" name="farmerName" required list="farmersList"
+                                                class="w-full pr-12 pl-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-amber-400 focus:border-amber-400 transition-all input-focus"
+                                                placeholder="اختر أو اكتب اسم الفلاح">
+                                            <datalist id="farmersList"></datalist>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="space-y-2">
+                                        <label class="text-sm font-medium text-slate-600">الصنف</label>
+                                        <div class="relative">
+                                            <i class="fas fa-apple-alt absolute right-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                                            <select name="product" required
+                                                class="w-full pr-12 pl-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-amber-400 focus:border-amber-400 transition-all input-focus appearance-none cursor-pointer">
+                                                <option value="">اختر الصنف</option>
+                                                <option value="طماطم">طماطم</option>
+                                                <option value="خيار">خيار</option>
+                                                <option value="بطاطس">بطاطس</option>
+                                                <option value="بصل">بصل</option>
+                                                <option value="فلفل">فلفل</option>
+                                                <option value="باذنجان">باذنجان</option>
+                                                <option value="جزر">جزر</option>
+                                                <option value="كوسة">كوسة</option>
+                                                <option value="فاكهة مشكلة">فاكهة مشكلة</option>
+                                                <option value="عنب">عنب</option>
+                                                <option value="برتقال">برتقال</option>
+                                                <option value="تفاح">تفاح</option>
+                                            </select>
+                                            <i class="fas fa-chevron-down absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"></i>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <div class="space-y-2">
+                                        <label class="text-sm font-medium text-slate-600">الكمية (كجم)</label>
+                                        <input type="number" name="quantity" step="0.01" min="0.01" required
+                                            class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-amber-400 focus:border-amber-400 transition-all input-focus text-center font-bold text-lg"
+                                            placeholder="0.00" oninput="app.calculateQuickTotal()">
+                                    </div>
+                                    
+                                    <div class="space-y-2">
+                                        <label class="text-sm font-medium text-slate-600">سعر البيع (للكجم)</label>
+                                        <input type="number" name="price" step="0.01" min="0.01" required
+                                            class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-amber-400 focus:border-amber-400 transition-all input-focus text-center font-bold text-lg text-emerald-600"
+                                            placeholder="0.00" oninput="app.calculateQuickTotal()">
+                                    </div>
+                                    
+                                    <div class="space-y-2">
+                                        <label class="text-sm font-medium text-slate-600">الإجمالي</label>
+                                        <div class="w-full px-4 py-3 bg-emerald-50 border border-emerald-200 rounded-xl text-center">
+                                            <span id="quickTotal" class="text-2xl font-bold text-emerald-700">0.00</span>
+                                            <span class="text-emerald-600 text-sm mr-1">ج.م</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Expenses Section -->
+                                <div class="bg-slate-50 rounded-xl p-4 space-y-3">
+                                    <h4 class="text-sm font-medium text-slate-600 flex items-center gap-2">
+                                        <i class="fas fa-calculator text-slate-400"></i>
+                                        المصاريف والخصومات
+                                    </h4>
+                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                                        <div>
+                                            <label class="text-xs text-slate-500 mb-1 block">عمولة الوكالة (%)</label>
+                                            <input type="number" name="commissionRate" value="5" step="0.1" min="0" max="100"
+                                                class="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-center font-medium"
+                                                oninput="app.calculateQuickTotal()">
+                                        </div>
+                                        <div>
+                                            <label class="text-xs text-slate-500 mb-1 block">مصاريف العتالة</label>
+                                            <input type="number" name="packagingCost" step="0.01" min="0" value="0"
+                                                class="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-center font-medium"
+                                                placeholder="0.00" oninput="app.calculateQuickTotal()">
+                                        </div>
+                                        <div>
+                                            <label class="text-xs text-slate-500 mb-1 block">مصاريف النقل</label>
+                                            <input type="number" name="transportCost" step="0.01" min="0" value="0"
+                                                class="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-center font-medium"
+                                                placeholder="0.00" oninput="app.calculateQuickTotal()">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Net Amount Display -->
+                                <div class="flex items-center justify-between bg-gradient-to-r from-slate-800 to-slate-900 rounded-xl p-4 text-white">
+                                    <div>
+                                        <p class="text-slate-400 text-sm">صافي مستحق الفلاح</p>
+                                        <p class="text-xs text-slate-500">بعد خصم جميع المصاريف</p>
+                                    </div>
+                                    <div class="text-left">
+                                        <span id="quickNet" class="text-3xl font-bold text-amber-400">0.00</span>
+                                        <span class="text-slate-400 mr-1">ج.م</span>
+                                    </div>
+                                </div>
+
+                                <button type="submit" 
+                                    class="w-full py-4 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-bold rounded-xl btn-hover shadow-lg shadow-amber-500/30 flex items-center justify-center gap-2 text-lg">
+                                    <i class="fas fa-check-circle"></i>
+                                    <span>تسجيل عملية البيع</span>
+                                </button>
+                            </form>
+                        </div>
+
+                        <!-- Recent Transactions -->
+                        <div class="glass-card rounded-2xl p-6">
+                            <div class="flex items-center justify-between mb-6">
+                                <h3 class="text-lg font-bold text-slate-800">آخر العمليات</h3>
+                                <button onclick="app.navigate('auction')" class="text-amber-600 hover:text-amber-700 text-sm font-medium">
+                                    عرض الكل <i class="fas fa-arrow-left mr-1"></i>
+                                </button>
+                            </div>
+                            
+                            <div id="recentTransactionsList" class="space-y-3 max-h-96 overflow-y-auto">
+                                <div class="text-center text-slate-400 py-8">
+                                    <i class="fas fa-inbox text-4xl mb-2 opacity-30"></i>
+                                    <p>لا توجد عمليات مسجلة اليوم</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Auction/Sales Screen -->
+                <div id="page-auction" class="page-section hidden animate-fade-in">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-2xl font-bold text-slate-800">المزاد والمبيعات</h2>
+                        <div class="flex gap-2">
+                            <button onclick="app.exportTodaySales()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 rounded-lg text-slate-600 font-medium transition-colors">
+                                <i class="fas fa-download ml-2"></i>تصدير
+                            </button>
+                            <button onclick="app.printTodaySales()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 rounded-lg text-slate-600 font-medium transition-colors">
+                                <i class="fas fa-print ml-2"></i>طباعة
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Sales Table -->
+                    <div class="glass-card rounded-2xl overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead class="bg-slate-50 border-b border-slate-200">
+                                    <tr>
+                                        <th class="px-4 py-3 text-right text-sm font-semibold text-slate-600">الوقت</th>
+                                        <th class="px-4 py-3 text-right text-sm font-semibold text-slate-600">الفلاح</th>
+                                        <th class="px-4 py-3 text-right text-sm font-semibold text-slate-600">الصنف</th>
+                                        <th class="px-4 py-3 text-center text-sm font-semibold text-slate-600">الكمية</th>
+                                        <th class="px-4 py-3 text-center text-sm font-semibold text-slate-600">السعر</th>
+                                        <th class="px-4 py-3 text-center text-sm font-semibold text-slate-600">الإجمالي</th>
+                                        <th class="px-4 py-3 text-center text-sm font-semibold text-slate-600">الصافي</th>
+                                        <th class="px-4 py-3 text-center text-sm font-semibold text-slate-600">إجراءات</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="salesTableBody" class="divide-y divide-slate-100">
+                                    <!-- Dynamic content -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Suppliers Screen -->
+                <div id="page-suppliers" class="page-section hidden animate-fade-in">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-2xl font-bold text-slate-800">الموردين والفلاحين</h2>
+                        <button onclick="app.showAddSupplierModal()" class="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg font-medium transition-colors">
+                            <i class="fas fa-plus ml-2"></i>إضافة مورد
+                        </button>
+                    </div>
+
+                    <div class="glass-card rounded-2xl p-6">
+                        <div class="mb-4">
+                            <input type="text" placeholder="البحث في الموردين..." 
+                                class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-amber-400 transition-all"
+                                onkeyup="app.filterSuppliers(this.value)">
+                        </div>
+                        
+                        <div id="suppliersList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <!-- Dynamic content -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reports Screen -->
+                <div id="page-reports" class="page-section hidden animate-fade-in">
+                    <h2 class="text-2xl font-bold text-slate-800 mb-6">التقارير المالية</h2>
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div class="glass-card rounded-2xl p-6">
+                            <h3 class="text-lg font-bold mb-4">ملخص اليوم</h3>
+                            <canvas id="dailyChart" class="w-full h-64"></canvas>
+                        </div>
+                        
+                        <div class="glass-card rounded-2xl p-6">
+                            <h3 class="text-lg font-bold mb-4">أداء الفلاحين</h3>
+                            <div id="topFarmersList" class="space-y-3">
+                                <!-- Dynamic content -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Inventory Screen -->
+                <div id="page-inventory" class="page-section hidden animate-fade-in">
+                    <h2 class="text-2xl font-bold text-slate-800 mb-6">المخزون والأصناف</h2>
+                    <p class="text-slate-500">قيد التطوير...</p>
+                </div>
+
+            </div>
+        </main>
+
+        <!-- Mobile Bottom Navigation -->
+        <nav class="mobile-nav md:hidden flex justify-around items-center p-3 no-print">
+            <button onclick="app.navigate('dashboard')" class="flex flex-col items-center gap-1 p-2 text-amber-500" data-mobile-page="dashboard">
+                <i class="fas fa-home text-xl"></i>
+                <span class="text-xs">الرئيسية</span>
+            </button>
+            <button onclick="app.navigate('auction')" class="flex flex-col items-center gap-1 p-2 text-slate-400" data-mobile-page="auction">
+                <i class="fas fa-gavel text-xl"></i>
+                <span class="text-xs">المبيعات</span>
+            </button>
+            <button onclick="app.navigate('suppliers')" class="flex flex-col items-center gap-1 p-2 text-slate-400" data-mobile-page="suppliers">
+                <i class="fas fa-users text-xl"></i>
+                <span class="text-xs">الموردين</span>
+            </button>
+            <button onclick="app.navigate('reports')" class="flex flex-col items-center gap-1 p-2 text-slate-400" data-mobile-page="reports">
+                <i class="fas fa-chart-pie text-xl"></i>
+                <span class="text-xs">التقارير</span>
+            </button>
+        </nav>
+
+        <!-- Toast Container -->
+        <div id="toastContainer" class="fixed top-20 left-4 z-50 space-y-2"></div>
+
+    </div>
+
+    <script>
+        // ==================== DATA MODELS ====================
+        class Transaction {
+            constructor(data) {
+                this.id = Date.now().toString(36) + Math.random().toString(36).substr(2);
+                this.timestamp = new Date();
+                this.farmerName = data.farmerName?.trim() || '';
+                this.product = data.product || '';
+                this.quantity = parseFloat(data.quantity) || 0;
+                this.price = parseFloat(data.price) || 0;
+                this.total = this.quantity * this.price;
+                this.commissionRate = parseFloat(data.commissionRate) || 5;
+                this.commissionAmount = this.total * (this.commissionRate / 100);
+                this.packagingCost = parseFloat(data.packagingCost) || 0;
+                this.transportCost = parseFloat(data.transportCost) || 0;
+                this.totalExpenses = this.commissionAmount + this.packagingCost + this.transportCost;
+                this.netAmount = this.total - this.totalExpenses;
+            }
+
+            get formattedTime() {
+                return this.timestamp.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
+            }
+        }
+
+        class Farmer {
+            constructor(name) {
+                this.id = Date.now().toString(36) + Math.random().toString(36).substr(2);
+                this.name = name;
+                this.totalSales = 0;
+                this.totalNet = 0;
+                this.balance = 0;
+                this.transactions = [];
+                this.createdAt = new Date();
+            }
+        }
+
+        // ==================== MAIN APPLICATION ====================
+        const app = {
+            data: {
+                transactions: [],
+                farmers: {},
+                settings: {
+                    defaultCommissionRate: 5,
+                    currency: 'ج.م'
+                }
+            },
+
+            init() {
+                this.loadData();
+                this.setupKeyboardShortcuts();
+                this.updateDashboard();
+                this.renderRecentTransactions();
+                this.updateFarmersList();
+                
+                // Set today's date in header if needed
+                console.log('🥬 Vegetable Agency Management System Initialized');
+            },
+
+            // ==================== NAVIGATION ====================
+            navigate(page) {
+                // Hide all pages
+                document.querySelectorAll('.page-section').forEach(el => {
+                    el.classList.add('hidden');
+                });
+                
+                // Show target page
+                const targetPage = document.getElementById(`page-${page}`);
+                if (targetPage) {
+                    targetPage.classList.remove('hidden');
+                    targetPage.classList.add('animate-fade-in');
+                }
+
+                // Update sidebar active state
+                document.querySelectorAll('.nav-item').forEach(item => {
+                    item.classList.remove('bg-slate-800', 'text-amber-400');
+                    item.classList.add('hover:bg-slate-800');
+                });
+                
+                const activeNav = document.querySelector(`[data-page="${page}"]`);
+                if (activeNav) {
+                    activeNav.classList.add('bg-slate-800');
+                    activeNav.classList.remove('hover:bg-slate-800');
+                }
+
+                // Update mobile nav
+                document.querySelectorAll('[data-mobile-page]').forEach(item => {
+                    item.classList.remove('text-amber-500');
+                    item.classList.add('text-slate-400');
+                });
+                
+                const activeMobile = document.querySelector(`[data-mobile-page="${page}"]`);
+                if (activeMobile) {
+                    activeMobile.classList.remove('text-slate-400');
+                    activeMobile.classList.add('text-amber-500');
+                }
+
+                // Page specific actions
+                if (page === 'auction') this.renderSalesTable();
+                if (page === 'suppliers') this.renderSuppliers();
+                if (page === 'reports') this.renderReports();
+            },
+
+            toggleMobileMenu() {
+                const sidebar = document.getElementById('sidebar');
+                sidebar.classList.toggle('hidden');
+                sidebar.classList.toggle('fixed');
+                sidebar.classList.toggle('inset-0');
+                sidebar.classList.toggle('w-full');
+            },
+
+            // ==================== DATA PERSISTENCE ====================
+            saveData() {
+                try {
+                    localStorage.setItem('agencyData', JSON.stringify({
+                        transactions: this.data.transactions.map(t => ({
+                            ...t,
+                            timestamp: t.timestamp.toISOString()
+                        })),
+                        farmers: this.data.farmers,
+                        settings: this.data.settings
+                    }));
+                } catch (e) {
+                    console.error('Error saving data:', e);
+                    this.showToast('خطأ في حفظ البيانات', 'error');
+                }
+            },
+
+            loadData() {
+                try {
+                    const saved = localStorage.getItem('agencyData');
+                    if (saved) {
+                        const parsed = JSON.parse(saved);
+                        this.data.transactions = (parsed.transactions || []).map(t => ({
+                            ...t,
+                            timestamp: new Date(t.timestamp)
+                        }));
+                        this.data.farmers = parsed.farmers || {};
+                        this.data.settings = { ...this.data.settings, ...(parsed.settings || {}) };
+                    }
+                } catch (e) {
+                    console.error('Error loading data:', e);
+                }
+            },
+
+            // ==================== CALCULATIONS ====================
+            calculateQuickTotal() {
+                const form = document.getElementById('quickSaleForm');
+                const quantity = parseFloat(form.quantity.value) || 0;
+                const price = parseFloat(form.price.value) || 0;
+                const commissionRate = parseFloat(form.commissionRate.value) || 0;
+                const packagingCost = parseFloat(form.packagingCost.value) || 0;
+                const transportCost = parseFloat(form.transportCost.value) || 0;
+
+                const total = quantity * price;
+                const commissionAmount = total * (commissionRate / 100);
+                const totalExpenses = commissionAmount + packagingCost + transportCost;
+                const netAmount = total - totalExpenses;
+
+                document.getElementById('quickTotal').textContent = total.toFixed(2);
+                document.getElementById('quickNet').textContent = netAmount.toFixed(2);
+            },
+
+            // ==================== TRANSACTION HANDLING ====================
+            handleQuickSale(event) {
+                event.preventDefault();
+                
+                const formData = new FormData(event.target);
+                const data = Object.fromEntries(formData.entries());
+                
+                // Validation
+                if (!data.farmerName || !data.product || !data.quantity || !data.price) {
+                    this.showToast('يرجى ملء جميع الحقول المطلوبة', 'error');
+                    return;
+                }
+
+                const transaction = new Transaction(data);
+                
+                // Save transaction
+                this.data.transactions.unshift(transaction);
+                
+                // Update farmer
+                if (!this.data.farmers[transaction.farmerName]) {
+                    this.data.farmers[transaction.farmerName] = new Farmer(transaction.farmerName);
+                }
+                
+                const farmer = this.data.farmers[transaction.farmerName];
+                farmer.transactions.push(transaction.id);
+                farmer.totalSales += transaction.total;
+                farmer.totalNet += transaction.netAmount;
+                farmer.balance += transaction.netAmount;
+
+                // Save and update UI
+                this.saveData();
+                this.updateDashboard();
+                this.renderRecentTransactions();
+                this.updateFarmersList();
+                
+                // Reset form
+                event.target.reset();
+                document.getElementById('quickTotal').textContent = '0.00';
+                document.getElementById('quickNet').textContent = '0.00';
+                
+                this.showToast(`تم تسجيل عملية البيع بنجاح! الصافي: ${transaction.netAmount.toFixed(2)} ج.م`, 'success');
+            },
+
+            deleteTransaction(id) {
+                if (!confirm('هل أنت متأكد من حذف هذه العملية؟')) return;
+                
+                const index = this.data.transactions.findIndex(t => t.id === id);
+                if (index > -1) {
+                    const transaction = this.data.transactions[index];
+                    
+                    // Revert farmer stats
+                    const farmer = this.data.farmers[transaction.farmerName];
+                    if (farmer) {
+                        farmer.totalSales -= transaction.total;
+                        farmer.totalNet -= transaction.netAmount;
+                        farmer.balance -= transaction.netAmount;
+                        farmer.transactions = farmer.transactions.filter(tid => tid !== id);
+                    }
+                    
+                    this.data.transactions.splice(index, 1);
+                    this.saveData();
+                    this.updateDashboard();
+                    this.renderSalesTable();
+                    this.renderRecentTransactions();
+                    
+                    this.showToast('تم حذف العملية بنجاح', 'success');
+                }
+            },
+
+            // ==================== RENDERING ====================
+            updateDashboard() {
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                
+                const todayTransactions = this.data.transactions.filter(t => {
+                    const tDate = new Date(t.timestamp);
+                    tDate.setHours(0, 0, 0, 0);
+                    return tDate.getTime() === today.getTime();
+                });
+
+                const totalSales = todayTransactions.reduce((sum, t) => sum + t.total, 0);
+                const totalCommissions = todayTransactions.reduce((sum, t) => sum + t.commissionAmount, 0);
+                const cashBalance = totalCommissions + todayTransactions.reduce((sum, t) => sum + t.packagingCost + t.transportCost, 0);
+                
+                // Unique farmers today
+                const uniqueFarmers = new Set(todayTransactions.map(t => t.farmerName));
+
+                // Animate numbers
+                this.animateNumber('stat-total-sales', totalSales);
+                this.animateNumber('stat-commissions', totalCommissions);
+                this.animateNumber('stat-transactions', todayTransactions.length);
+                document.getElementById('stat-active-farmers').textContent = uniqueFarmers.size;
+                this.animateNumber('stat-cash-balance', cashBalance);
+            },
+
+            animateNumber(elementId, targetValue) {
+                const element = document.getElementById(elementId);
+                const startValue = parseFloat(element.textContent) || 0;
+                const duration = 1000;
+                const startTime = performance.now();
+
+                const animate = (currentTime) => {
+                    const elapsed = currentTime - startTime;
+                    const progress = Math.min(elapsed / duration, 1);
+                    const easeProgress = 1 - Math.pow(1 - progress, 3);
+                    const currentValue = startValue + (targetValue - startValue) * easeProgress;
+                    
+                    element.textContent = currentValue.toFixed(2);
+
+                    if (progress < 1) {
+                        requestAnimationFrame(animate);
+                    }
+                };
+
+                requestAnimationFrame(animate);
+            },
+
+            renderRecentTransactions() {
+                const container = document.getElementById('recentTransactionsList');
+                const recent = this.data.transactions.slice(0, 5);
+                
+                if (recent.length === 0) {
+                    container.innerHTML = `
+                        <div class="text-center text-slate-400 py-8">
+                            <i class="fas fa-inbox text-4xl mb-2 opacity-30"></i>
+                            <p>لا توجد عمليات مسجلة اليوم</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = recent.map(t => `
+                    <div class="flex items-center justify-between p-3 bg-slate-50 rounded-xl hover:bg-slate-100 transition-colors">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center">
+                                <i class="fas fa-shopping-basket text-emerald-600"></i>
+                            </div>
+                            <div>
+                                <p class="font-bold text-slate-800 text-sm">${t.farmerName}</p>
+                                <p class="text-xs text-slate-500">${t.product} • ${t.quantity} كجم</p>
+                            </div>
+                        </div>
+                        <div class="text-left">
+                            <p class="font-bold text-emerald-600">${t.total.toFixed(2)} ج.م</p>
+                            <p class="text-xs text-slate-400">${t.formattedTime}</p>
+                        </div>
+                    </div>
+                `).join('');
+            },
+
+            renderSalesTable() {
+                const tbody = document.getElementById('salesTableBody');
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                
+                const todayTransactions = this.data.transactions.filter(t => {
+                    const tDate = new Date(t.timestamp);
+                    tDate.setHours(0, 0, 0, 0);
+                    return tDate.getTime() === today.getTime();
+                });
+
+                if (todayTransactions.length === 0) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="8" class="px-4 py-8 text-center text-slate-400">
+                                لا توجد مبيعات مسجلة اليوم
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+
+                tbody.innerHTML = todayTransactions.map(t => `
+                    <tr class="table-row-hover border-b border-slate-50">
+                        <td class="px-4 py-3 text-sm text-slate-600">${t.formattedTime}</td>
+                        <td class="px-4 py-3 font-medium text-slate-800">${t.farmerName}</td>
+                        <td class="px-4 py-3 text-sm text-slate-600">${t.product}</td>
+                        <td class="px-4 py-3 text-center font-medium">${t.quantity.toFixed(2)}</td>
+                        <td class="px-4 py-3 text-center text-slate-600">${t.price.toFixed(2)}</td>
+                        <td class="px-4 py-3 text-center font-bold text-emerald-600">${t.total.toFixed(2)}</td>
+                        <td class="px-4 py-3 text-center font-bold text-amber-600">${t.netAmount.toFixed(2)}</td>
+                        <td class="px-4 py-3 text-center">
+                            <button onclick="app.deleteTransaction('${t.id}')" class="text-red-400 hover:text-red-600 transition-colors">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+            },
+
+            renderSuppliers() {
+                const container = document.getElementById('suppliersList');
+                const farmers = Object.values(this.data.farmers);
+                
+                if (farmers.length === 0) {
+                    container.innerHTML = '<p class="text-center text-slate-400 py-8">لا يوجد موردين مسجلين</p>';
+                    return;
+                }
+
+                container.innerHTML = farmers.map(f => `
+                    <div class="glass-card rounded-xl p-4">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="flex items-center gap-3">
+                                <div class="w-12 h-12 rounded-full bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center text-white font-bold text-lg">
+                                    ${f.name.charAt(0)}
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-slate-800">${f.name}</h4>
+                                    <p class="text-xs text-slate-500">${f.transactions.length} عملية</p>
+                                </div>
+                            </div>
+                            <div class="text-left">
+                                <p class="text-2xl font-bold text-emerald-600">${f.balance.toFixed(2)}</p>
+                                <p class="text-xs text-slate-400">الرصيد الحالي</p>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 text-sm">
+                            <div class="bg-slate-50 rounded-lg p-2 text-center">
+                                <p class="text-slate-500">إجمالي المبيعات</p>
+                                <p class="font-bold text-slate-800">${f.totalSales.toFixed(2)}</p>
+                            </div>
+                            <div class="bg-slate-50 rounded-lg p-2 text-center">
+                                <p class="text-slate-500">صافي الدخل</p>
+                                <p class="font-bold text-slate-800">${f.totalNet.toFixed(2)}</p>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            },
+
+            updateFarmersList() {
+                const datalist = document.getElementById('farmersList');
+                const farmers = Object.keys(this.data.farmers);
+                datalist.innerHTML = farmers.map(name => `
+                    <option value="${name}">
+                `).join('');
+            },
+
+            // ==================== UTILITIES ====================
+            setupKeyboardShortcuts() {
+                document.addEventListener('keydown', (e) => {
+                    // F1 - Quick Sale/New Transaction
+                    if (e.key === 'F1') {
+                        e.preventDefault();
+                        this.navigate('auction');
+                        document.querySelector('[name="farmerName"]')?.focus();
+                    }
+                    // F2 - Search
+                    if (e.key === 'F2') {
+                        e.preventDefault();
+                        document.getElementById('globalSearch')?.focus();
+                    }
+                });
+            },
+
+            handleGlobalSearch(query) {
+                // Implement global search logic
+                console.log('Searching for:', query);
+            },
+
+            showToast(message, type = 'info') {
+                const container = document.getElementById('toastContainer');
+                const toast = document.createElement('div');
+                
+                const colors = {
+                    success: 'bg-emerald-500',
+                    error: 'bg-red-500',
+                    warning: 'bg-amber-500',
+                    info: 'bg-blue-500'
+                };
+
+                toast.className = `toast ${colors[type]} text-white px-6 py-3 rounded-xl shadow-lg flex items-center gap-3 min-w-[300px]`;
+                toast.innerHTML = `
+                    <i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'}"></i>
+                    <span class="font-medium">${message}</span>
+                `;
+
+                container.appendChild(toast);
+
+                setTimeout(() => {
+                    toast.style.opacity = '0';
+                    toast.style.transform = 'translateX(100%)';
+                    setTimeout(() => toast.remove(), 300);
+                }, 4000);
+            },
+
+            // ==================== EXPORT & PRINT ====================
+            exportTodaySales() {
+                const today = new Date().toISOString().split('T')[0];
+                const data = this.data.transactions.filter(t => {
+                    const tDate = new Date(t.timestamp).toISOString().split('T')[0];
+                    return tDate === today;
+                });
+
+                const csv = [
+                    ['الوقت', 'الفلاح', 'الصنف', 'الكمية', 'السعر', 'الإجمالي', 'العمولة', 'الصافي'].join(','),
+                    ...data.map(t => [
+                        t.formattedTime,
+                        t.farmerName,
+                        t.product,
+                        t.quantity,
+                        t.price,
+                        t.total,
+                        t.commissionAmount,
+                        t.netAmount
+                    ].join(','))
+                ].join('\n');
+
+                const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = `مبيعات_${today}.csv`;
+                link.click();
+                
+                this.showToast('تم تصدير البيانات بنجاح', 'success');
+            },
+
+            printTodaySales() {
+                window.print();
+            },
+
+            // ==================== MODALS ====================
+            showAddSupplierModal() {
+                const name = prompt('أدخل اسم المورد الجديد:');
+                if (name && name.trim()) {
+                    if (!this.data.farmers[name.trim()]) {
+                        this.data.farmers[name.trim()] = new Farmer(name.trim());
+                        this.saveData();
+                        this.renderSuppliers();
+                        this.showToast('تم إضافة المورد بنجاح', 'success');
+                    } else {
+                        this.showToast('هذا المورد موجود بالفعل', 'warning');
+                    }
+                }
+            },
+
+            filterSuppliers(query) {
+                // Implement filtering
+                this.renderSuppliers();
+            },
+
+            renderReports() {
+                // Placeholder for charts
+                document.getElementById('topFarmersList').innerHTML = `
+                    <div class="text-center text-slate-400 py-8">
+                        <i class="fas fa-chart-bar text-4xl mb-2 opacity-30"></i>
+                        <p>التقارير التفصيلية قيد التطوير</p>
+                    </div>
+                `;
+            },
+
+            logout() {
+                if (confirm('هل تريد تسجيل الخروج؟')) {
+                    location.reload();
+                }
+            }
+        };
+
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', () => {
+            app.init();
+        });
+    </script>
+</body>
+</html>

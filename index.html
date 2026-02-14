@@ -1,1381 +1,1284 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>وكالة - Wakala SaaS | نظام تجارة الخضروات والفواكه</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=net" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <style>
-        :root {
-            --primary: #f59e0b;
-            --primary-dark: #d97706;
-            --success: #22c55e;
-            --danger: #ef4444;
-            --warning: #f97316;
-            --info: #3b82f6;
-            --card-bg: #1e293b;
-            --card-hover: #2d3a4f;
-            --border: #334155;
-        }
-
-        body {
-            font-family: 'Tajawal', sans-serif;
-            background: linear-gradient(135deg, #111827 0%, #1f2937 100%);
-            min-height: 100vh;
-        }
-
-        .bg-card {
-            background-color: var(--card-bg);
-            transition: all 0.3s ease;
-            border: 1px solid var(--border);
-        }
-
-        .bg-card:hover {
-            background-color: var(--card-hover);
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
-        }
-
-        .text-accent { color: var(--primary); }
-        .text-success { color: var(--success); }
-        .text-danger { color: var(--danger); }
-        .text-warning { color: var(--warning); }
-        .text-info { color: var(--info); }
-
-        button {
-            transition: all 0.2s ease;
-            font-weight: 700;
-        }
-
-        input, select, textarea {
-            border-radius: 0.75rem !important;
-            background-color: #2d3a4f !important;
-            border: 2px solid var(--border) !important;
-            color: white !important;
-            padding: 0.75rem 1rem !important;
-        }
-
-        input:focus, select:focus, textarea:focus {
-            outline: none !important;
-            border-color: var(--primary) !important;
-            background-color: #334155 !important;
-        }
-
-        .table-container {
-            overflow-x: auto;
-            border-radius: 1rem;
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th {
-            background-color: #2d3a4f;
-            color: var(--primary);
-            font-weight: 700;
-            padding: 1rem;
-            text-align: center;
-            border-bottom: 2px solid var(--border);
-        }
-
-        td {
-            padding: 0.75rem 1rem;
-            text-align: center;
-            border-bottom: 1px solid var(--border);
-            color: #e2e8f0;
-        }
-
-        tr:hover {
-            background-color: #2d3a4f;
-        }
-
-        .stat-card {
-            background: linear-gradient(135deg, var(--card-bg) 0%, #2d3a4f 100%);
-            border-radius: 1rem;
-            padding: 1.5rem;
-            position: relative;
-            overflow: hidden;
-            border: 1px solid var(--border);
-        }
-
-        .stat-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, var(--primary), var(--info));
-        }
-
-        .stat-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            margin-bottom: 1rem;
-        }
-
-        #toast {
-            animation: slideDown 0.3s ease;
-        }
-
-        .toast-success {
-            background-color: #10b981;
-            color: white;
-            padding: 1rem 2rem;
-            border-radius: 0.75rem;
-            font-weight: bold;
-            border-right: 6px solid #059669;
-        }
-
-        .toast-error {
-            background-color: #ef4444;
-            color: white;
-            padding: 1rem 2rem;
-            border-radius: 0.75rem;
-            font-weight: bold;
-            border-right: 6px solid #b91c1c;
-        }
-
-        .toast-info {
-            background-color: #3b82f6;
-            color: white;
-            padding: 1rem 2rem;
-            border-radius: 0.75rem;
-            font-weight: bold;
-            border-right: 6px solid #1d4ed8;
-        }
-
-        @keyframes slideDown {
-            from {
-                transform: translate(-50%, -100%);
-                opacity: 0;
-            }
-            to {
-                transform: translate(-50%, 0);
-                opacity: 1;
-            }
-        }
-
-        .badge {
-            padding: 0.25rem 0.75rem;
-            border-radius: 9999px;
-            font-size: 0.875rem;
-            font-weight: 600;
-            display: inline-block;
-        }
-
-        .badge-success {
-            background-color: rgba(34, 197, 94, 0.2);
-            color: var(--success);
-            border: 1px solid var(--success);
-        }
-
-        .badge-danger {
-            background-color: rgba(239, 68, 68, 0.2);
-            color: var(--danger);
-            border: 1px solid var(--danger);
-        }
-
-        .badge-warning {
-            background-color: rgba(245, 158, 11, 0.2);
-            color: var(--warning);
-            border: 1px solid var(--warning);
-        }
-
-        .badge-info {
-            background-color: rgba(59, 130, 246, 0.2);
-            color: var(--info);
-            border: 1px solid var(--info);
-        }
-
-        ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: #1e293b;
-            border-radius: 4px;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: var(--primary);
-            border-radius: 4px;
-        }
-
-        .product-card {
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            border-radius: 1rem;
-            padding: 1rem;
-            transition: all 0.3s ease;
-        }
-
-        .product-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px -10px rgba(245, 158, 11, 0.3);
-            border-color: var(--primary);
-        }
-
-        .worker-input-group {
-            display: grid;
-            grid-template-columns: 2fr 1fr 1fr 1fr;
-            gap: 0.5rem;
-            margin-bottom: 0.5rem;
-        }
-    </style>
-</head>
-<body class="bg-gray-900 font-[Tajawal] text-white">
-
-<!-- شاشة التحميل -->
-<div id="loadingScreen" class="fixed inset-0 bg-gray-900 z-50 flex items-center justify-center hidden">
-    <div class="text-center">
-        <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-amber-500 border-solid mx-auto mb-4"></div>
-        <p class="text-amber-400 text-xl font-bold">جاري التحميل...</p>
-    </div>
-</div>
-
-<!-- رسائل التنبيه -->
-<div id="toast" class="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 hidden"></div>
-
-<main id="app" class="min-h-screen flex items-center justify-center p-6"></main>
-
-<script type="module">
-    // ==================== قاعدة البيانات المحلية ====================
-    class LocalDB {
-        constructor() {
-            this.initDB();
-        }
-
-        initDB() {
-            if (!localStorage.getItem('farmers')) localStorage.setItem('farmers', '[]');
-            if (!localStorage.getItem('products')) localStorage.setItem('products', '[]');
-            if (!localStorage.getItem('purchases')) localStorage.setItem('purchases', '[]');
-            if (!localStorage.getItem('sales')) localStorage.setItem('sales', '[]');
-            if (!localStorage.getItem('expenses')) localStorage.setItem('expenses', '[]');
-            if (!localStorage.getItem('workers')) localStorage.setItem('workers', '[]');
-            if (!localStorage.getItem('settings')) {
-                localStorage.setItem('settings', JSON.stringify({
-                    commissionRate: 10, // نسبة عمولة الوكالة %
-                    currency: 'ج.م'
-                }));
-            }
-        }
-
-        // ========== الإعدادات ==========
-        getSettings() {
-            return JSON.parse(localStorage.getItem('settings'));
-        }
-
-        updateSettings(updates) {
-            const settings = this.getSettings();
-            const newSettings = { ...settings, ...updates };
-            localStorage.setItem('settings', JSON.stringify(newSettings));
-            return newSettings;
-        }
-
-        // ========== المنتجات ==========
-        getProducts() {
-            return JSON.parse(localStorage.getItem('products'));
-        }
-
-        addProduct(product) {
-            const products = this.getProducts();
-            product.id = Date.now() + Math.random().toString(36);
-            product.createdAt = new Date().toISOString();
-            products.push(product);
-            localStorage.setItem('products', JSON.stringify(products));
-            return product;
-        }
-
-        updateProduct(id, updates) {
-            const products = this.getProducts();
-            const index = products.findIndex(p => p.id === id);
-            if (index !== -1) {
-                products[index] = { ...products[index], ...updates };
-                localStorage.setItem('products', JSON.stringify(products));
-            }
-        }
-
-        deleteProduct(id) {
-            const products = this.getProducts().filter(p => p.id !== id);
-            localStorage.setItem('products', JSON.stringify(products));
-        }
-
-        // ========== المشتريات ==========
-        getPurchases() {
-            return JSON.parse(localStorage.getItem('purchases'));
-        }
-
-        addPurchase(purchase) {
-            const purchases = this.getPurchases();
-            purchase.id = Date.now() + Math.random().toString(36);
-            purchase.createdAt = new Date().toISOString();
-            purchases.push(purchase);
-            localStorage.setItem('purchases', JSON.stringify(purchases));
-
-            // تحديث المخزون
-            purchase.items.forEach(item => {
-                const products = this.getProducts();
-                const productIndex = products.findIndex(p => p.id === item.productId);
-                if (productIndex !== -1) {
-                    products[productIndex].stock = (products[productIndex].stock || 0) + item.quantity;
-                    products[productIndex].lastPurchasePrice = item.pricePerUnit;
-                    products[productIndex].lastPurchaseDate = purchase.date;
-                    localStorage.setItem('products', JSON.stringify(products));
-                }
-            });
-
-            return purchase;
-        }
-
-        // ========== المبيعات ==========
-        getSales() {
-            return JSON.parse(localStorage.getItem('sales'));
-        }
-
-        addSale(sale) {
-            const sales = this.getSales();
-            sale.id = Date.now() + Math.random().toString(36);
-            sale.createdAt = new Date().toISOString();
-            
-            // حساب العمولة
-            const settings = this.getSettings();
-            sale.commission = (sale.total * settings.commissionRate) / 100;
-            sale.netProfit = sale.total - sale.totalCost - sale.workersCost - sale.commission;
-            
-            sales.push(sale);
-            localStorage.setItem('sales', JSON.stringify(sales));
-
-            // تحديث المخزون
-            sale.items.forEach(item => {
-                const products = this.getProducts();
-                const productIndex = products.findIndex(p => p.id === item.productId);
-                if (productIndex !== -1) {
-                    products[productIndex].stock = (products[productIndex].stock || 0) - item.quantity;
-                    localStorage.setItem('products', JSON.stringify(products));
-                }
-            });
-
-            return sale;
-        }
-
-        deleteSale(id) {
-            const sales = this.getSales().filter(s => s.id !== id);
-            localStorage.setItem('sales', JSON.stringify(sales));
-        }
-
-        // ========== العمالة ==========
-        getWorkers() {
-            return JSON.parse(localStorage.getItem('workers'));
-        }
-
-        addWorker(worker) {
-            const workers = this.getWorkers();
-            worker.id = Date.now() + Math.random().toString(36);
-            workers.push(worker);
-            localStorage.setItem('workers', JSON.stringify(workers));
-            return worker;
-        }
-
-        updateWorker(id, updates) {
-            const workers = this.getWorkers();
-            const index = workers.findIndex(w => w.id === id);
-            if (index !== -1) {
-                workers[index] = { ...workers[index], ...updates };
-                localStorage.setItem('workers', JSON.stringify(workers));
-            }
-        }
-
-        deleteWorker(id) {
-            const workers = this.getWorkers().filter(w => w.id !== id);
-            localStorage.setItem('workers', JSON.stringify(workers));
-        }
-
-        // ========== المصروفات ==========
-        getExpenses() {
-            return JSON.parse(localStorage.getItem('expenses'));
-        }
-
-        addExpense(expense) {
-            const expenses = this.getExpenses();
-            expense.id = Date.now() + Math.random().toString(36);
-            expense.createdAt = new Date().toISOString();
-            expenses.push(expense);
-            localStorage.setItem('expenses', JSON.stringify(expenses));
-            return expense;
-        }
-
-        deleteExpense(id) {
-            const expenses = this.getExpenses().filter(e => e.id !== id);
-            localStorage.setItem('expenses', JSON.stringify(expenses));
-        }
-
-        // ========== الفلاحين ==========
-        getFarmers() {
-            return JSON.parse(localStorage.getItem('farmers'));
-        }
-
-        addFarmer(farmer) {
-            const farmers = this.getFarmers();
-            farmer.id = Date.now() + Math.random().toString(36);
-            farmer.createdAt = new Date().toISOString();
-            farmers.push(farmer);
-            localStorage.setItem('farmers', JSON.stringify(farmers));
-            return farmer;
-        }
-
-        deleteFarmer(id) {
-            const farmers = this.getFarmers().filter(f => f.id !== id);
-            localStorage.setItem('farmers', JSON.stringify(farmers));
-        }
+// ==================== إدارة قاعدة البيانات (IndexedDB) ====================
+class DatabaseManager {
+    constructor() {
+        this.db = null;
+        this.initDB();
     }
 
-    const db = new LocalDB();
+    async initDB() {
+        return new Promise((resolve, reject) => {
+            const request = indexedDB.open('MarketManagerDB', 1);
 
-    // ==================== المتغيرات العامة ====================
-    const app = document.getElementById('app');
+            request.onerror = (event) => {
+                console.error('خطأ في فتح قاعدة البيانات:', event.target.error);
+                reject(event.target.error);
+            };
 
-    // ==================== دالة عرض التنبيهات ====================
-    function showToast(message, type = 'info') {
-        const toast = document.getElementById('toast');
-        toast.className = `fixed top-4 left-1/2 transform -translate-x-1/2 z-50 toast-${type} shadow-2xl`;
-        toast.innerHTML = `
-            <div class="flex items-center gap-3">
-                <i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'} text-xl"></i>
-                <span class="font-bold">${message}</span>
+            request.onsuccess = (event) => {
+                this.db = event.target.result;
+                console.log('تم فتح قاعدة البيانات بنجاح');
+                resolve(this.db);
+            };
+
+            request.onupgradeneeded = (event) => {
+                const db = event.target.result;
+                
+                // إنشاء جداول قاعدة البيانات
+                if (!db.objectStoreNames.contains('settings')) {
+                    db.createObjectStore('settings', { keyPath: 'id' });
+                }
+                
+                if (!db.objectStoreNames.contains('products')) {
+                    const productStore = db.createObjectStore('products', { keyPath: 'id', autoIncrement: true });
+                    productStore.createIndex('name', 'name', { unique: false });
+                }
+                
+                if (!db.objectStoreNames.contains('purchases')) {
+                    db.createObjectStore('purchases', { keyPath: 'id', autoIncrement: true });
+                }
+                
+                if (!db.objectStoreNames.contains('sales')) {
+                    db.createObjectStore('sales', { keyPath: 'id', autoIncrement: true });
+                }
+                
+                if (!db.objectStoreNames.contains('workers')) {
+                    const workerStore = db.createObjectStore('workers', { keyPath: 'id', autoIncrement: true });
+                    workerStore.createIndex('name', 'name', { unique: false });
+                }
+                
+                if (!db.objectStoreNames.contains('expenses')) {
+                    db.createObjectStore('expenses', { keyPath: 'id', autoIncrement: true });
+                }
+                
+                if (!db.objectStoreNames.contains('farmers')) {
+                    db.createObjectStore('farmers', { keyPath: 'id', autoIncrement: true });
+                }
+            };
+        });
+    }
+
+    // ================ الإعدادات ================
+    async getSettings() {
+        return new Promise((resolve) => {
+            if (!this.db) {
+                resolve({ commissionRate: 10, currency: 'ج.م' });
+                return;
+            }
+            
+            const transaction = this.db.transaction(['settings'], 'readonly');
+            const store = transaction.objectStore('settings');
+            const request = store.get('main');
+            
+            request.onsuccess = () => {
+                if (request.result) {
+                    resolve(request.result);
+                } else {
+                    resolve({ commissionRate: 10, currency: 'ج.م' });
+                }
+            };
+            
+            request.onerror = () => {
+                resolve({ commissionRate: 10, currency: 'ج.م' });
+            };
+        });
+    }
+
+    async updateSettings(settings) {
+        return new Promise((resolve) => {
+            if (!this.db) {
+                resolve(false);
+                return;
+            }
+            
+            const transaction = this.db.transaction(['settings'], 'readwrite');
+            const store = transaction.objectStore('settings');
+            const request = store.put({ id: 'main', ...settings });
+            
+            request.onsuccess = () => resolve(true);
+            request.onerror = () => resolve(false);
+        });
+    }
+
+    // ================ المنتجات ================
+    async getProducts() {
+        return new Promise((resolve) => {
+            if (!this.db) {
+                resolve([]);
+                return;
+            }
+            
+            const transaction = this.db.transaction(['products'], 'readonly');
+            const store = transaction.objectStore('products');
+            const request = store.getAll();
+            
+            request.onsuccess = () => resolve(request.result || []);
+            request.onerror = () => resolve([]);
+        });
+    }
+
+    async addProduct(product) {
+        return new Promise((resolve) => {
+            if (!this.db) {
+                resolve(null);
+                return;
+            }
+            
+            const transaction = this.db.transaction(['products'], 'readwrite');
+            const store = transaction.objectStore('products');
+            const request = store.add({
+                ...product,
+                createdAt: new Date().toISOString()
+            });
+            
+            request.onsuccess = () => resolve(request.result);
+            request.onerror = () => resolve(null);
+        });
+    }
+
+    async deleteProduct(id) {
+        return new Promise((resolve) => {
+            if (!this.db) {
+                resolve(false);
+                return;
+            }
+            
+            const transaction = this.db.transaction(['products'], 'readwrite');
+            const store = transaction.objectStore('products');
+            const request = store.delete(id);
+            
+            request.onsuccess = () => resolve(true);
+            request.onerror = () => resolve(false);
+        });
+    }
+
+    // ================ المشتريات ================
+    async getPurchases() {
+        return new Promise((resolve) => {
+            if (!this.db) {
+                resolve([]);
+                return;
+            }
+            
+            const transaction = this.db.transaction(['purchases'], 'readonly');
+            const store = transaction.objectStore('purchases');
+            const request = store.getAll();
+            
+            request.onsuccess = () => resolve(request.result || []);
+            request.onerror = () => resolve([]);
+        });
+    }
+
+    async addPurchase(purchase) {
+        return new Promise((resolve) => {
+            if (!this.db) {
+                resolve(null);
+                return;
+            }
+            
+            const transaction = this.db.transaction(['purchases'], 'readwrite');
+            const store = transaction.objectStore('purchases');
+            const request = store.add({
+                ...purchase,
+                createdAt: new Date().toISOString()
+            });
+            
+            request.onsuccess = () => resolve(request.result);
+            request.onerror = () => resolve(null);
+        });
+    }
+
+    // ================ المبيعات ================
+    async getSales() {
+        return new Promise((resolve) => {
+            if (!this.db) {
+                resolve([]);
+                return;
+            }
+            
+            const transaction = this.db.transaction(['sales'], 'readonly');
+            const store = transaction.objectStore('sales');
+            const request = store.getAll();
+            
+            request.onsuccess = () => resolve(request.result || []);
+            request.onerror = () => resolve([]);
+        });
+    }
+
+    async addSale(sale) {
+        return new Promise((resolve) => {
+            if (!this.db) {
+                resolve(null);
+                return;
+            }
+            
+            const transaction = this.db.transaction(['sales'], 'readwrite');
+            const store = transaction.objectStore('sales');
+            const request = store.add({
+                ...sale,
+                createdAt: new Date().toISOString()
+            });
+            
+            request.onsuccess = () => resolve(request.result);
+            request.onerror = () => resolve(null);
+        });
+    }
+
+    // ================ العمالة ================
+    async getWorkers() {
+        return new Promise((resolve) => {
+            if (!this.db) {
+                resolve([]);
+                return;
+            }
+            
+            const transaction = this.db.transaction(['workers'], 'readonly');
+            const store = transaction.objectStore('workers');
+            const request = store.getAll();
+            
+            request.onsuccess = () => resolve(request.result || []);
+            request.onerror = () => resolve([]);
+        });
+    }
+
+    async addWorker(worker) {
+        return new Promise((resolve) => {
+            if (!this.db) {
+                resolve(null);
+                return;
+            }
+            
+            const transaction = this.db.transaction(['workers'], 'readwrite');
+            const store = transaction.objectStore('workers');
+            const request = store.add({
+                ...worker,
+                createdAt: new Date().toISOString()
+            });
+            
+            request.onsuccess = () => resolve(request.result);
+            request.onerror = () => resolve(null);
+        });
+    }
+
+    async deleteWorker(id) {
+        return new Promise((resolve) => {
+            if (!this.db) {
+                resolve(false);
+                return;
+            }
+            
+            const transaction = this.db.transaction(['workers'], 'readwrite');
+            const store = transaction.objectStore('workers');
+            const request = store.delete(id);
+            
+            request.onsuccess = () => resolve(true);
+            request.onerror = () => resolve(false);
+        });
+    }
+
+    // ================ المصروفات ================
+    async getExpenses() {
+        return new Promise((resolve) => {
+            if (!this.db) {
+                resolve([]);
+                return;
+            }
+            
+            const transaction = this.db.transaction(['expenses'], 'readonly');
+            const store = transaction.objectStore('expenses');
+            const request = store.getAll();
+            
+            request.onsuccess = () => resolve(request.result || []);
+            request.onerror = () => resolve([]);
+        });
+    }
+
+    async addExpense(expense) {
+        return new Promise((resolve) => {
+            if (!this.db) {
+                resolve(null);
+                return;
+            }
+            
+            const transaction = this.db.transaction(['expenses'], 'readwrite');
+            const store = transaction.objectStore('expenses');
+            const request = store.add({
+                ...expense,
+                createdAt: new Date().toISOString()
+            });
+            
+            request.onsuccess = () => resolve(request.result);
+            request.onerror = () => resolve(null);
+        });
+    }
+
+    async deleteExpense(id) {
+        return new Promise((resolve) => {
+            if (!this.db) {
+                resolve(false);
+                return;
+            }
+            
+            const transaction = this.db.transaction(['expenses'], 'readwrite');
+            const store = transaction.objectStore('expenses');
+            const request = store.delete(id);
+            
+            request.onsuccess = () => resolve(true);
+            request.onerror = () => resolve(false);
+        });
+    }
+
+    // ================ الفلاحين ================
+    async getFarmers() {
+        return new Promise((resolve) => {
+            if (!this.db) {
+                resolve([]);
+                return;
+            }
+            
+            const transaction = this.db.transaction(['farmers'], 'readonly');
+            const store = transaction.objectStore('farmers');
+            const request = store.getAll();
+            
+            request.onsuccess = () => resolve(request.result || []);
+            request.onerror = () => resolve([]);
+        });
+    }
+
+    async addFarmer(farmer) {
+        return new Promise((resolve) => {
+            if (!this.db) {
+                resolve(null);
+                return;
+            }
+            
+            const transaction = this.db.transaction(['farmers'], 'readwrite');
+            const store = transaction.objectStore('farmers');
+            const request = store.add({
+                ...farmer,
+                createdAt: new Date().toISOString()
+            });
+            
+            request.onsuccess = () => resolve(request.result);
+            request.onerror = () => resolve(null);
+        });
+    }
+
+    async deleteFarmer(id) {
+        return new Promise((resolve) => {
+            if (!this.db) {
+                resolve(false);
+                return;
+            }
+            
+            const transaction = this.db.transaction(['farmers'], 'readwrite');
+            const store = transaction.objectStore('farmers');
+            const request = store.delete(id);
+            
+            request.onsuccess = () => resolve(true);
+            request.onerror = () => resolve(false);
+        });
+    }
+}
+
+// ==================== تهيئة التطبيق ====================
+let db;
+let currentSettings = { commissionRate: 10, currency: 'ج.م' };
+
+// ==================== دوال مساعدة ====================
+function showToast(message, type = 'info') {
+    // إنشاء عنصر toast إذا لم يكن موجوداً
+    let toast = document.getElementById('toast-message');
+    if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'toast-message';
+        toast.style.cssText = `
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 12px 24px;
+            border-radius: 8px;
+            color: white;
+            font-weight: bold;
+            z-index: 9999;
+            display: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            direction: rtl;
+        `;
+        document.body.appendChild(toast);
+    }
+    
+    // تعيين اللون حسب النوع
+    const colors = {
+        success: '#10b981',
+        error: '#ef4444',
+        info: '#3b82f6',
+        warning: '#f59e0b'
+    };
+    
+    toast.style.backgroundColor = colors[type] || colors.info;
+    toast.textContent = message;
+    toast.style.display = 'block';
+    
+    // إخفاء الرسالة بعد 3 ثواني
+    setTimeout(() => {
+        toast.style.display = 'none';
+    }, 3000);
+}
+
+function formatNumber(number) {
+    return number?.toLocaleString() || '0';
+}
+
+// ==================== تحديث الإحصائيات ====================
+async function updateStats() {
+    const settings = await db.getSettings();
+    currentSettings = settings;
+}
+
+// ==================== شاشة تسجيل الدخول ====================
+function showLogin() {
+    const content = document.getElementById('content');
+    if (!content) return;
+    
+    content.innerHTML = `
+        <div class="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8" dir="rtl">
+            <div class="max-w-md w-full space-y-8">
+                <div>
+                    <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
+                        نظام إدارة السوق
+                    </h2>
+                    <p class="mt-2 text-center text-sm text-gray-600">
+                        الرجاء تسجيل الدخول للمتابعة
+                    </p>
+                </div>
+                <div class="mt-8 space-y-6">
+                    <div class="rounded-md shadow-sm -space-y-px">
+                        <div>
+                            <label for="username" class="sr-only">اسم المستخدم</label>
+                            <input id="username" name="username" type="text" required class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-green-500 focus:border-green-500 focus:z-10 sm:text-sm" placeholder="اسم المستخدم">
+                        </div>
+                        <div>
+                            <label for="password" class="sr-only">كلمة المرور</label>
+                            <input id="password" name="password" type="password" required class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-green-500 focus:border-green-500 focus:z-10 sm:text-sm" placeholder="كلمة المرور">
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <button id="loginButton" class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                            دخول
+                        </button>
+                    </div>
+                    
+                    <div class="text-center">
+                        <p class="text-xs text-gray-500">للاختبار: admin / admin</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    const loginButton = document.getElementById('loginButton');
+    if (loginButton) {
+        loginButton.addEventListener('click', () => {
+            const username = document.getElementById('username')?.value;
+            const password = document.getElementById('password')?.value;
+            
+            if (username === 'admin' && password === 'admin') {
+                showToast('تم تسجيل الدخول بنجاح', 'success');
+                showDashboard();
+            } else {
+                showToast('اسم المستخدم أو كلمة المرور غير صحيحة', 'error');
+            }
+        });
+    }
+}
+
+// ==================== لوحة التحكم الرئيسية ====================
+async function showDashboard() {
+    const content = document.getElementById('content');
+    if (!content) return;
+    
+    const settings = await db.getSettings();
+    currentSettings = settings;
+    
+    content.innerHTML = `
+        <div class="p-6" dir="rtl">
+            <div class="flex justify-between items-center mb-6">
+                <h1 class="text-2xl font-bold text-gray-800">لوحة التحكم</h1>
+                <button onclick="showLogin()" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition">
+                    تسجيل الخروج
+                </button>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                <div class="bg-white rounded-lg shadow p-6">
+                    <h3 class="text-gray-500 text-sm mb-2">إجمالي المشتريات</h3>
+                    <p class="text-2xl font-bold text-gray-800" id="totalPurchases">0 ${settings.currency}</p>
+                </div>
+                <div class="bg-white rounded-lg shadow p-6">
+                    <h3 class="text-gray-500 text-sm mb-2">إجمالي المبيعات</h3>
+                    <p class="text-2xl font-bold text-gray-800" id="totalSales">0 ${settings.currency}</p>
+                </div>
+                <div class="bg-white rounded-lg shadow p-6">
+                    <h3 class="text-gray-500 text-sm mb-2">صافي الأرباح</h3>
+                    <p class="text-2xl font-bold text-green-600" id="netProfit">0 ${settings.currency}</p>
+                </div>
+                <div class="bg-white rounded-lg shadow p-6">
+                    <h3 class="text-gray-500 text-sm mb-2">إجمالي المصروفات</h3>
+                    <p class="text-2xl font-bold text-red-600" id="totalExpenses">0 ${settings.currency}</p>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+                <button onclick="showProductsList()" class="bg-blue-500 text-white p-4 rounded-lg hover:bg-blue-600 transition">
+                    <div class="text-2xl mb-2">📦</div>
+                    <div>المنتجات</div>
+                </button>
+                <button onclick="showPurchasesList()" class="bg-green-500 text-white p-4 rounded-lg hover:bg-green-600 transition">
+                    <div class="text-2xl mb-2">🛒</div>
+                    <div>المشتريات</div>
+                </button>
+                <button onclick="showSalesList()" class="bg-yellow-500 text-white p-4 rounded-lg hover:bg-yellow-600 transition">
+                    <div class="text-2xl mb-2">💰</div>
+                    <div>المبيعات</div>
+                </button>
+                <button onclick="showWorkersList()" class="bg-purple-500 text-white p-4 rounded-lg hover:bg-purple-600 transition">
+                    <div class="text-2xl mb-2">👥</div>
+                    <div>العمالة</div>
+                </button>
+                <button onclick="showExpensesList()" class="bg-red-500 text-white p-4 rounded-lg hover:bg-red-600 transition">
+                    <div class="text-2xl mb-2">📝</div>
+                    <div>المصروفات</div>
+                </button>
+                <button onclick="showSettings()" class="bg-gray-500 text-white p-4 rounded-lg hover:bg-gray-600 transition">
+                    <div class="text-2xl mb-2">⚙️</div>
+                    <div>الإعدادات</div>
+                </button>
+            </div>
+        </div>
+    `;
+    
+    // حساب الإحصائيات
+    await updateDashboardStats();
+}
+
+async function updateDashboardStats() {
+    try {
+        const purchases = await db.getPurchases();
+        const sales = await db.getSales();
+        const expenses = await db.getExpenses();
+        
+        const totalPurchases = purchases.reduce((sum, p) => sum + (p.totalCost || 0), 0);
+        const totalSales = sales.reduce((sum, s) => sum + (s.totalSales || 0), 0);
+        const totalExpenses = expenses.reduce((sum, e) => sum + (e.amount || 0), 0);
+        const netProfit = totalSales - totalPurchases - totalExpenses;
+        
+        const totalPurchasesEl = document.getElementById('totalPurchases');
+        const totalSalesEl = document.getElementById('totalSales');
+        const totalExpensesEl = document.getElementById('totalExpenses');
+        const netProfitEl = document.getElementById('netProfit');
+        
+        if (totalPurchasesEl) totalPurchasesEl.textContent = `${formatNumber(totalPurchases)} ${currentSettings.currency}`;
+        if (totalSalesEl) totalSalesEl.textContent = `${formatNumber(totalSales)} ${currentSettings.currency}`;
+        if (totalExpensesEl) totalExpensesEl.textContent = `${formatNumber(totalExpenses)} ${currentSettings.currency}`;
+        if (netProfitEl) netProfitEl.textContent = `${formatNumber(netProfit)} ${currentSettings.currency}`;
+    } catch (error) {
+        console.error('خطأ في تحديث الإحصائيات:', error);
+    }
+}
+
+// ==================== قائمة المنتجات ====================
+async function showProductsList() {
+    const content = document.getElementById('content');
+    if (!content) return;
+    
+    const products = await db.getProducts();
+    
+    if (products.length === 0) {
+        content.innerHTML = `
+            <div class="p-6 text-center" dir="rtl">
+                <p class="text-gray-500 mb-4">لا يوجد منتجات بعد</p>
+                <button onclick="showProductForm()" class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition">
+                    إضافة منتج
+                </button>
+                <button onclick="showDashboard()" class="bg-gray-600 text-white px-6 py-2 rounded-lg hover:bg-gray-700 transition mr-2">
+                    عودة
+                </button>
             </div>
         `;
-        toast.classList.remove('hidden');
-        
-        setTimeout(() => {
-            toast.classList.add('hidden');
-        }, 3000);
+        return;
     }
-
-    // ==================== شاشة تسجيل الدخول ====================
-    function showLogin() {
-        app.innerHTML = `
-        <div class="w-full max-w-md">
-            <div class="text-center mb-8">
-                <div class="inline-block p-4 bg-amber-500/20 rounded-full mb-4">
-                    <i class="fas fa-seedling text-5xl text-amber-400"></i>
+    
+    let html = `
+        <div class="p-6" dir="rtl">
+            <div class="flex justify-between items-center mb-6">
+                <h1 class="text-2xl font-bold text-gray-800">قائمة المنتجات</h1>
+                <div>
+                    <button onclick="showProductForm()" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition ml-2">
+                        إضافة منتج
+                    </button>
+                    <button onclick="showDashboard()" class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition">
+                        عودة
+                    </button>
                 </div>
-                <h1 class="text-4xl font-extrabold text-amber-400 mb-2">وكالة</h1>
-                <p class="text-gray-400 text-lg">نظام تجارة الخضروات والفواكه</p>
             </div>
             
-            <div class="bg-gray-800/50 backdrop-blur-sm p-8 rounded-2xl shadow-2xl border border-gray-700">
-                <h2 class="text-2xl mb-6 text-amber-400 font-bold flex items-center gap-2">
-                    <i class="fas fa-lock"></i>
-                    <span>تسجيل دخول الإدارة</span>
-                </h2>
-                
+            <div class="bg-white rounded-lg shadow overflow-hidden">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">#</th>
+                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">المنتج</th>
+                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">السعر</th>
+                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">الكمية</th>
+                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+    `;
+    
+    products.forEach((product, index) => {
+        html += `
+            <tr>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${index + 1}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${product.name || 'غير محدد'}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${formatNumber(product.price)} ${currentSettings.currency}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${formatNumber(product.quantity)}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    <button onclick="editProduct(${product.id})" class="text-blue-600 hover:text-blue-900 ml-3">تعديل</button>
+                    <button onclick="deleteProduct(${product.id})" class="text-red-600 hover:text-red-900">حذف</button>
+                </td>
+            </tr>
+        `;
+    });
+    
+    html += `
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    `;
+    
+    content.innerHTML = html;
+}
+
+// ==================== نموذج إضافة منتج ====================
+function showProductForm() {
+    const content = document.getElementById('content');
+    if (!content) return;
+    
+    content.innerHTML = `
+        <div class="p-6 max-w-2xl mx-auto" dir="rtl">
+            <h1 class="text-2xl font-bold text-gray-800 mb-6">إضافة منتج جديد</h1>
+            
+            <div class="bg-white rounded-lg shadow p-6">
                 <div class="space-y-4">
                     <div>
-                        <label class="block text-gray-300 mb-2">كلمة المرور</label>
-                        <input id="password" type="password" placeholder="أدخل كلمة المرور" 
-                               class="w-full p-4 rounded-xl bg-gray-700 border border-gray-600 text-white focus:border-amber-500 transition"/>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">اسم المنتج</label>
+                        <input type="text" id="productName" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="أدخل اسم المنتج">
                     </div>
                     
-                    <button id="loginBtn" 
-                            class="w-full bg-gradient-to-l from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 py-4 rounded-xl font-bold text-lg shadow-lg shadow-amber-500/30 transition transform hover:scale-[1.02]">
-                        <i class="fas fa-sign-in-alt ml-2"></i>
-                        دخول
-                    </button>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">السعر (${currentSettings.currency})</label>
+                        <input type="number" id="productPrice" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="0" min="0" step="0.01">
+                    </div>
                     
-                    <p id="msg" class="mt-4 text-red-500 font-bold text-center"></p>
-                </div>
-            </div>
-            
-            <p class="text-center text-gray-500 mt-8 text-sm">
-                © 2024 وكالة - جميع الحقوق محفوظة
-            </p>
-        </div>
-        `;
-        
-        document.getElementById('loginBtn').addEventListener('click', login);
-        document.getElementById('password').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') login();
-        });
-    }
-
-    function login() {
-        const pwd = document.getElementById('password').value;
-        if(pwd === "wakala123") {
-            showToast('تم تسجيل الدخول بنجاح', 'success');
-            showDashboard();
-        } else {
-            document.getElementById('msg').innerText = "❌ كلمة المرور غير صحيحة";
-            showToast('كلمة المرور غير صحيحة', 'error');
-        }
-    }
-
-    // ==================== لوحة التحكم الرئيسية ====================
-    function showDashboard() {
-        app.innerHTML = `
-        <div class="w-full max-w-7xl">
-            <div class="flex flex-col md:flex-row justify-between items-center mb-8">
-                <div class="flex items-center gap-3 mb-4 md:mb-0">
-                    <div class="p-3 bg-amber-500/20 rounded-2xl">
-                        <i class="fas fa-chart-pie text-3xl text-amber-400"></i>
-                    </div>
                     <div>
-                        <h2 class="text-3xl font-extrabold text-amber-400">لوحة التحكم</h2>
-                        <p class="text-gray-400">نظام تجارة الخضروات والفواكه المتكامل</p>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">الكمية المتوفرة</label>
+                        <input type="number" id="productQuantity" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="0" min="0" step="1">
                     </div>
-                </div>
-                
-                <div class="flex gap-3">
-                    <button id="refreshBtn" class="bg-gray-800 hover:bg-gray-700 p-3 rounded-xl transition">
-                        <i class="fas fa-sync-alt text-amber-400"></i>
-                    </button>
-                    <button id="settingsBtn" class="bg-gray-800 hover:bg-gray-700 p-3 rounded-xl transition">
-                        <i class="fas fa-cog text-amber-400"></i>
-                    </button>
-                    <button id="logoutBtn" class="bg-red-500/20 hover:bg-red-500/30 text-red-400 px-6 py-3 rounded-xl font-bold transition flex items-center gap-2">
-                        <i class="fas fa-sign-out-alt"></i>
-                        <span>تسجيل خروج</span>
-                    </button>
-                </div>
-            </div>
-            
-            <div id="stats" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8"></div>
-            
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-                <button id="addProduct" class="stat-card flex flex-col items-center justify-center p-4 hover:scale-105">
-                    <div class="stat-icon bg-green-500/20 text-green-400">
-                        <i class="fas fa-apple-alt text-2xl"></i>
-                    </div>
-                    <span class="font-bold mt-2">إضافة منتج</span>
-                </button>
-                
-                <button id="addPurchase" class="stat-card flex flex-col items-center justify-center p-4 hover:scale-105">
-                    <div class="stat-icon bg-blue-500/20 text-blue-400">
-                        <i class="fas fa-truck-loading text-2xl"></i>
-                    </div>
-                    <span class="font-bold mt-2">تسجيل مشتريات</span>
-                </button>
-                
-                <button id="addSale" class="stat-card flex flex-col items-center justify-center p-4 hover:scale-105">
-                    <div class="stat-icon bg-purple-500/20 text-purple-400">
-                        <i class="fas fa-shopping-cart text-2xl"></i>
-                    </div>
-                    <span class="font-bold mt-2">تسجيل مبيعات</span>
-                </button>
-                
-                <button id="manageWorkers" class="stat-card flex flex-col items-center justify-center p-4 hover:scale-105">
-                    <div class="stat-icon bg-orange-500/20 text-orange-400">
-                        <i class="fas fa-users-cog text-2xl"></i>
-                    </div>
-                    <span class="font-bold mt-2">إدارة العمالة</span>
-                </button>
-            </div>
-            
-            <div class="flex border-b border-gray-700 mb-6 flex-wrap">
-                <button id="tabProducts" class="tab-btn px-6 py-3 font-bold text-gray-400 hover:text-amber-400 border-b-2 border-transparent transition">
-                    <i class="fas fa-boxes ml-2"></i>
-                    المنتجات
-                </button>
-                <button id="tabPurchases" class="tab-btn px-6 py-3 font-bold text-gray-400 hover:text-amber-400 border-b-2 border-transparent transition">
-                    <i class="fas fa-truck-loading ml-2"></i>
-                    المشتريات
-                </button>
-                <button id="tabSales" class="tab-btn px-6 py-3 font-bold text-gray-400 hover:text-amber-400 border-b-2 border-transparent transition">
-                    <i class="fas fa-chart-line ml-2"></i>
-                    المبيعات
-                </button>
-                <button id="tabWorkers" class="tab-btn px-6 py-3 font-bold text-gray-400 hover:text-amber-400 border-b-2 border-transparent transition">
-                    <i class="fas fa-users ml-2"></i>
-                    العمالة
-                </button>
-                <button id="tabExpenses" class="tab-btn px-6 py-3 font-bold text-gray-400 hover:text-amber-400 border-b-2 border-transparent transition">
-                    <i class="fas fa-file-invoice ml-2"></i>
-                    المصروفات
-                </button>
-                <button id="tabFarmers" class="tab-btn px-6 py-3 font-bold text-gray-400 hover:text-amber-400 border-b-2 border-transparent transition">
-                    <i class="fas fa-user-tie ml-2"></i>
-                    الفلاحين
-                </button>
-            </div>
-            
-            <div id="content" class="bg-card rounded-2xl p-6 border border-gray-700"></div>
-        </div>
-        `;
-        
-        document.getElementById('addProduct').addEventListener('click', () => showProductForm());
-        document.getElementById('addPurchase').addEventListener('click', () => showPurchaseForm());
-        document.getElementById('addSale').addEventListener('click', () => showSaleForm());
-        document.getElementById('manageWorkers').addEventListener('click', () => showWorkersList());
-        document.getElementById('refreshBtn').addEventListener('click', refreshData);
-        document.getElementById('settingsBtn').addEventListener('click', showSettings);
-        document.getElementById('logoutBtn').addEventListener('click', showLogin);
-        
-        document.getElementById('tabProducts').addEventListener('click', () => showProductsList());
-        document.getElementById('tabPurchases').addEventListener('click', () => showPurchasesList());
-        document.getElementById('tabSales').addEventListener('click', () => showSalesList());
-        document.getElementById('tabWorkers').addEventListener('click', () => showWorkersList());
-        document.getElementById('tabExpenses').addEventListener('click', () => showExpensesList());
-        document.getElementById('tabFarmers').addEventListener('click', () => showFarmersList());
-        
-        refreshData();
-        showProductsList();
-    }
-
-    // ==================== تحديث الإحصائيات ====================
-    function updateStats() {
-        const statsDiv = document.getElementById('stats');
-        const settings = db.getSettings();
-        
-        const products = db.getProducts();
-        const purchases = db.getPurchases();
-        const sales = db.getSales();
-        const workers = db.getWorkers();
-        const expenses = db.getExpenses();
-        
-        const totalProducts = products.length;
-        const totalStock = products.reduce((sum, p) => sum + (p.stock || 0), 0);
-        
-        const totalSales = sales.reduce((sum, s) => sum + (s.total || 0), 0);
-        const totalProfit = sales.reduce((sum, s) => sum + (s.netProfit || 0), 0);
-        const totalCommission = sales.reduce((sum, s) => sum + (s.commission || 0), 0);
-        
-        const totalWorkers = workers.length;
-        const activeWorkers = workers.filter(w => w.status === 'active').length;
-        
-        const totalExpenses = expenses.reduce((sum, e) => sum + (e.amount || 0), 0);
-        
-        statsDiv.innerHTML = `
-            <div class="stat-card">
-                <div class="stat-icon bg-green-500/20 text-green-400">
-                    <i class="fas fa-apple-alt"></i>
-                </div>
-                <p class="text-sm opacity-60">إجمالي المنتجات</p>
-                <p class="text-2xl font-bold">${totalProducts}</p>
-                <p class="text-xs text-green-400 mt-2">المخزون: ${totalStock} كجم</p>
-            </div>
-            
-            <div class="stat-card">
-                <div class="stat-icon bg-blue-500/20 text-blue-400">
-                    <i class="fas fa-chart-line"></i>
-                </div>
-                <p class="text-sm opacity-60">إجمالي المبيعات</p>
-                <p class="text-2xl font-bold">${totalSales.toLocaleString()} ${settings.currency}</p>
-                <p class="text-xs text-blue-400 mt-2">العمولة: ${totalCommission.toLocaleString()} ${settings.currency}</p>
-            </div>
-            
-            <div class="stat-card">
-                <div class="stat-icon ${totalProfit >= 0 ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}">
-                    <i class="fas fa-coins"></i>
-                </div>
-                <p class="text-sm opacity-60">صافي الأرباح</p>
-                <p class="text-2xl font-bold ${totalProfit >= 0 ? 'text-green-400' : 'text-red-400'}">
-                    ${totalProfit.toLocaleString()} ${settings.currency}
-                </p>
-                <p class="text-xs text-gray-400 mt-2">المصروفات: ${totalExpenses.toLocaleString()} ${settings.currency}</p>
-            </div>
-            
-            <div class="stat-card">
-                <div class="stat-icon bg-orange-500/20 text-orange-400">
-                    <i class="fas fa-users"></i>
-                </div>
-                <p class="text-sm opacity-60">العمالة</p>
-                <p class="text-2xl font-bold">${activeWorkers}/${totalWorkers}</p>
-                <p class="text-xs text-orange-400 mt-2">نشط/إجمالي</p>
-            </div>
-        `;
-    }
-
-    // ==================== قائمة المنتجات ====================
-    function showProductsList() {
-        const content = document.getElementById('content');
-        const products = db.getProducts();
-        
-        if (products.length === 0) {
-            content.innerHTML = `
-            <div class="text-center py-12">
-                <i class="fas fa-apple-alt text-6xl text-gray-600 mb-4"></i>
-                <p class="text-xl text-gray-400 mb-4">لا يوجد منتجات بعد</p>
-                <button onclick="showProductForm()" class="bg-amber-500 hover:bg-amber-600 px-6 py-3 rounded-xl font-bold">
-                    <i class="fas fa-plus ml-2"></i>
-                    إضافة أول منتج
-                </button>
-            </div>
-            `;
-            return;
-        }
-        
-        let html = `
-        <div class="flex justify-between items-center mb-6">
-            <h3 class="text-xl font-bold">قائمة المنتجات</h3>
-            <input type="text" id="searchProducts" placeholder="بحث..." class="px-4 py-2 rounded-lg bg-gray-700">
-        </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        `;
-        
-        products.forEach(product => {
-            html += `
-            <div class="product-card">
-                <div class="flex justify-between items-start mb-3">
+                    
                     <div>
-                        <h4 class="font-bold text-lg">${product.name}</h4>
-                        <p class="text-sm text-gray-400">${product.category || 'غير مصنف'}</p>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">الوصف</label>
+                        <textarea id="productDescription" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="وصف المنتج..."></textarea>
                     </div>
-                    <span class="badge ${product.stock > 0 ? 'badge-success' : 'badge-danger'}">
-                        ${product.stock || 0} كجم
-                    </span>
-                </div>
-                <div class="grid grid-cols-2 gap-2 text-sm mb-3">
-                    <div>
-                        <p class="text-gray-400">سعر الشراء</p>
-                        <p class="font-bold">${product.lastPurchasePrice || 0} ج.م</p>
+                    
+                    <div class="flex gap-3 pt-4">
+                        <button id="saveProduct" class="flex-1 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition">
+                            حفظ المنتج
+                        </button>
+                        <button onclick="showProductsList()" class="flex-1 bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition">
+                            إلغاء
+                        </button>
                     </div>
-                    <div>
-                        <p class="text-gray-400">سعر البيع</p>
-                        <p class="font-bold">${product.sellingPrice || 0} ج.م</p>
-                    </div>
-                </div>
-                <div class="flex justify-end gap-2">
-                    <button onclick="editProduct('${product.id}')" class="text-amber-400 hover:text-amber-300">
-                        <i class="fas fa-edit"></i>
-                    </button>
-                    <button onclick="deleteProduct('${product.id}')" class="text-danger hover:text-red-300">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </div>
-            </div>
-            `;
-        });
-        
-        html += `</div>`;
-        content.innerHTML = html;
-        
-        document.getElementById('searchProducts')?.addEventListener('input', function(e) {
-            const searchTerm = e.target.value.toLowerCase();
-            // يمكن إضافة منطق البحث هنا
-        });
-    }
-
-    // ==================== نموذج إضافة منتج ====================
-    function showProductForm() {
-        const content = document.getElementById('content');
-        content.innerHTML = `
-        <div class="max-w-2xl mx-auto">
-            <h3 class="text-2xl font-bold mb-6 flex items-center gap-2">
-                <i class="fas fa-apple-alt text-green-400"></i>
-                <span>إضافة منتج جديد</span>
-            </h3>
-            
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-gray-300 mb-2">اسم المنتج</label>
-                    <input id="productName" type="text" placeholder="مثال: طماطم" 
-                           class="w-full p-3 rounded-lg bg-gray-700"/>
-                </div>
-                
-                <div>
-                    <label class="block text-gray-300 mb-2">التصنيف</label>
-                    <select id="productCategory" class="w-full p-3 rounded-lg bg-gray-700">
-                        <option value="vegetables">خضروات</option>
-                        <option value="fruits">فواكه</option>
-                        <option value="herbs">أعشاب</option>
-                        <option value="other">أخرى</option>
-                    </select>
-                </div>
-                
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-gray-300 mb-2">سعر الشراء (كجم)</label>
-                        <input id="purchasePrice" type="number" value="0" min="0" step="0.01"
-                               class="w-full p-3 rounded-lg bg-gray-700"/>
-                    </div>
-                    <div>
-                        <label class="block text-gray-300 mb-2">سعر البيع (كجم)</label>
-                        <input id="sellingPrice" type="number" value="0" min="0" step="0.01"
-                               class="w-full p-3 rounded-lg bg-gray-700"/>
-                    </div>
-                </div>
-                
-                <div>
-                    <label class="block text-gray-300 mb-2">المخزون الحالي (كجم)</label>
-                    <input id="initialStock" type="number" value="0" min="0" step="0.01"
-                           class="w-full p-3 rounded-lg bg-gray-700"/>
-                </div>
-                
-                <div>
-                    <label class="block text-gray-300 mb-2">ملاحظات</label>
-                    <textarea id="productNotes" rows="3" placeholder="أي ملاحظات..." 
-                              class="w-full p-3 rounded-lg bg-gray-700"></textarea>
-                </div>
-                
-                <div class="flex gap-3 pt-4">
-                    <button id="saveProduct" class="flex-1 bg-gradient-to-l from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 py-3 rounded-xl font-bold">
-                        <i class="fas fa-save ml-2"></i>
-                        حفظ المنتج
-                    </button>
-                    <button id="cancelForm" class="flex-1 bg-gray-700 hover:bg-gray-600 py-3 rounded-xl font-bold">
-                        <i class="fas fa-times ml-2"></i>
-                        إلغاء
-                    </button>
                 </div>
             </div>
         </div>
-        `;
-        
-        document.getElementById('saveProduct').addEventListener('click', saveProduct);
-        document.getElementById('cancelForm').addEventListener('click', showProductsList);
+    `;
+    
+    const saveButton = document.getElementById('saveProduct');
+    if (saveButton) {
+        saveButton.addEventListener('click', saveProduct);
     }
+}
 
-    function saveProduct() {
-        const name = document.getElementById('productName').value.trim();
-        const category = document.getElementById('productCategory').value;
-        const purchasePrice = parseFloat(document.getElementById('purchasePrice').value) || 0;
-        const sellingPrice = parseFloat(document.getElementById('sellingPrice').value) || 0;
-        const stock = parseFloat(document.getElementById('initialStock').value) || 0;
-        const notes = document.getElementById('productNotes').value;
-        
-        if(!name) {
-            showToast('يرجى إدخال اسم المنتج', 'error');
-            return;
-        }
-        
-        db.addProduct({
-            name,
-            category,
-            purchasePrice,
-            sellingPrice,
-            stock,
-            notes,
-            lastPurchasePrice: purchasePrice,
-            status: 'active'
-        });
-        
+async function saveProduct() {
+    const nameInput = document.getElementById('productName');
+    const priceInput = document.getElementById('productPrice');
+    const quantityInput = document.getElementById('productQuantity');
+    const descInput = document.getElementById('productDescription');
+    
+    if (!nameInput || !priceInput || !quantityInput) {
+        showToast('حدث خطأ في النموذج', 'error');
+        return;
+    }
+    
+    const name = nameInput.value.trim();
+    const price = parseFloat(priceInput.value) || 0;
+    const quantity = parseInt(quantityInput.value) || 0;
+    const description = descInput?.value.trim() || '';
+    
+    if (!name) {
+        showToast('يرجى إدخال اسم المنتج', 'error');
+        return;
+    }
+    
+    if (price <= 0) {
+        showToast('يرجى إدخال سعر صحيح', 'error');
+        return;
+    }
+    
+    const result = await db.addProduct({
+        name,
+        price,
+        quantity,
+        description
+    });
+    
+    if (result) {
         showToast('تم إضافة المنتج بنجاح', 'success');
-        refreshData();
         showProductsList();
+    } else {
+        showToast('حدث خطأ أثناء الحفظ', 'error');
     }
+}
 
-    // ==================== نموذج تسجيل مشتريات ====================
-    function showPurchaseForm() {
-        const products = db.getProducts();
-        
-        if (products.length === 0) {
-            showToast('يجب إضافة منتجات أولاً', 'error');
-            showProductsList();
-            return;
-        }
-        
-        const content = document.getElementById('content');
-        content.innerHTML = `
-        <div class="max-w-3xl mx-auto">
-            <h3 class="text-2xl font-bold mb-6 flex items-center gap-2">
-                <i class="fas fa-truck-loading text-blue-400"></i>
-                <span>تسجيل مشتريات</span>
-            </h3>
+// ==================== نموذج تسجيل مشتريات ====================
+async function showPurchaseForm() {
+    const content = document.getElementById('content');
+    if (!content) return;
+    
+    const products = await db.getProducts();
+    
+    if (products.length === 0) {
+        showToast('يجب إضافة منتجات أولاً', 'error');
+        showProductsList();
+        return;
+    }
+    
+    const today = new Date().toISOString().split('T')[0];
+    
+    content.innerHTML = `
+        <div class="p-6" dir="rtl">
+            <div class="flex justify-between items-center mb-6">
+                <h1 class="text-2xl font-bold text-gray-800">تسجيل مشتريات</h1>
+                <button onclick="showPurchasesList()" class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition">
+                    عودة
+                </button>
+            </div>
             
-            <div class="space-y-4">
-                <div class="grid grid-cols-2 gap-4">
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                     <div>
-                        <label class="block text-gray-300 mb-2">المورد</label>
-                        <input id="supplier" type="text" placeholder="اسم المورد" 
-                               class="w-full p-3 rounded-lg bg-gray-700"/>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">المورد</label>
+                        <input type="text" id="supplier" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="اسم المورد">
                     </div>
                     <div>
-                        <label class="block text-gray-300 mb-2">التاريخ</label>
-                        <input id="purchaseDate" type="date" value="${new Date().toISOString().split('T')[0]}" 
-                               class="w-full p-3 rounded-lg bg-gray-700"/>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">التاريخ</label>
+                        <input type="date" id="purchaseDate" value="${today}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
                     </div>
                 </div>
                 
-                <div class="bg-gray-800 p-4 rounded-lg">
-                    <h4 class="font-bold mb-3">المنتجات المشتراة</h4>
-                    <div id="items-container">
-                        <div class="purchase-item grid grid-cols-12 gap-2 mb-2">
-                            <div class="col-span-5">
-                                <select class="product-select w-full p-2 rounded-lg bg-gray-700">
-                                    <option value="">اختر منتج</option>
-                                    ${products.map(p => `<option value="${p.id}" data-price="${p.purchasePrice || 0}">${p.name}</option>`).join('')}
-                                </select>
-                            </div>
-                            <div class="col-span-3">
-                                <input type="number" class="quantity w-full p-2 rounded-lg bg-gray-700" placeholder="الكمية" min="0" step="0.01">
-                            </div>
-                            <div class="col-span-3">
-                                <input type="number" class="price w-full p-2 rounded-lg bg-gray-700" placeholder="السعر" min="0" step="0.01">
-                            </div>
-                            <div class="col-span-1">
-                                <button onclick="removeItem(this)" class="text-danger">
-                                    <i class="fas fa-times"></i>
-                                </button>
-                            </div>
+                <h2 class="text-lg font-semibold text-gray-800 mb-3">المنتجات المشتراة</h2>
+                <div id="items-container" class="space-y-2 mb-4">
+                    <div class="purchase-item grid grid-cols-12 gap-2">
+                        <div class="col-span-6">
+                            <select class="product-select w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+                                <option value="">اختر منتج</option>
+                                ${products.map(p => `<option value="${p.id}" data-price="${p.price}">${p.name}</option>`).join('')}
+                            </select>
+                        </div>
+                        <div class="col-span-3">
+                            <input type="number" class="quantity w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="الكمية" min="0" step="0.01">
+                        </div>
+                        <div class="col-span-3">
+                            <input type="number" class="price w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="السعر" min="0" step="0.01">
                         </div>
                     </div>
-                    <button id="addItem" class="mt-2 text-amber-400 hover:text-amber-300">
-                        <i class="fas fa-plus ml-1"></i> إضافة منتج آخر
-                    </button>
                 </div>
                 
-                <div class="grid grid-cols-2 gap-4">
+                <button id="addItem" class="mb-6 text-green-600 hover:text-green-700 flex items-center gap-1">
+                    <span>➕</span> إضافة منتج آخر
+                </button>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                     <div>
-                        <label class="block text-gray-300 mb-2">تكلفة النقل</label>
-                        <input id="transportCost" type="number" value="0" min="0" step="0.01"
-                               class="w-full p-3 rounded-lg bg-gray-700"/>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">تكلفة النقل (${currentSettings.currency})</label>
+                        <input type="number" id="transportCost" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="0" min="0" step="0.01" value="0">
                     </div>
                     <div>
-                        <label class="block text-gray-300 mb-2">مصاريف أخرى</label>
-                        <input id="otherCosts" type="number" value="0" min="0" step="0.01"
-                               class="w-full p-3 rounded-lg bg-gray-700"/>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">تكاليف أخرى (${currentSettings.currency})</label>
+                        <input type="number" id="otherCosts" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="0" min="0" step="0.01" value="0">
                     </div>
                 </div>
                 
                 <div>
-                    <label class="block text-gray-300 mb-2">ملاحظات</label>
-                    <textarea id="purchaseNotes" rows="3" placeholder="أي ملاحظات..." 
-                              class="w-full p-3 rounded-lg bg-gray-700"></textarea>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">ملاحظات</label>
+                    <textarea id="purchaseNotes" rows="2" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="أي ملاحظات..."></textarea>
                 </div>
                 
-                <div class="flex gap-3 pt-4">
-                    <button id="savePurchase" class="flex-1 bg-gradient-to-l from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 py-3 rounded-xl font-bold">
-                        <i class="fas fa-save ml-2"></i>
+                <div class="flex gap-3 mt-6">
+                    <button id="savePurchase" class="flex-1 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition">
                         تسجيل المشتريات
                     </button>
-                    <button id="cancelForm" class="flex-1 bg-gray-700 hover:bg-gray-600 py-3 rounded-xl font-bold">
-                        <i class="fas fa-times ml-2"></i>
+                    <button onclick="showPurchasesList()" class="flex-1 bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition">
                         إلغاء
                     </button>
                 </div>
             </div>
         </div>
-        
-        <script>
-            window.removeItem = function(btn) {
-                btn.closest('.purchase-item').remove();
-            }
-        </script>
-        `;
-        
-        document.getElementById('addItem').addEventListener('click', () => {
+    `;
+    
+    // إضافة مستمعي الأحداث
+    const addItemBtn = document.getElementById('addItem');
+    if (addItemBtn) {
+        addItemBtn.addEventListener('click', () => {
             const container = document.getElementById('items-container');
+            if (!container) return;
+            
+            const products = db.getProducts();
             const newItem = document.createElement('div');
-            newItem.className = 'purchase-item grid grid-cols-12 gap-2 mb-2';
+            newItem.className = 'purchase-item grid grid-cols-12 gap-2 mt-2';
             newItem.innerHTML = `
-                <div class="col-span-5">
-                    <select class="product-select w-full p-2 rounded-lg bg-gray-700">
+                <div class="col-span-6">
+                    <select class="product-select w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
                         <option value="">اختر منتج</option>
-                        ${products.map(p => `<option value="${p.id}" data-price="${p.purchasePrice || 0}">${p.name}</option>`).join('')}
+                        ${products.map(p => `<option value="${p.id}" data-price="${p.price}">${p.name}</option>`).join('')}
                     </select>
                 </div>
                 <div class="col-span-3">
-                    <input type="number" class="quantity w-full p-2 rounded-lg bg-gray-700" placeholder="الكمية" min="0" step="0.01">
+                    <input type="number" class="quantity w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="الكمية" min="0" step="0.01">
                 </div>
                 <div class="col-span-3">
-                    <input type="number" class="price w-full p-2 rounded-lg bg-gray-700" placeholder="السعر" min="0" step="0.01">
-                </div>
-                <div class="col-span-1">
-                    <button onclick="removeItem(this)" class="text-danger">
-                        <i class="fas fa-times"></i>
-                    </button>
+                    <input type="number" class="price w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="السعر" min="0" step="0.01">
                 </div>
             `;
             container.appendChild(newItem);
         });
-        
-        document.getElementById('savePurchase').addEventListener('click', savePurchase);
-        document.getElementById('cancelForm').addEventListener('click', showPurchasesList);
     }
+    
+    const saveBtn = document.getElementById('savePurchase');
+    if (saveBtn) {
+        saveBtn.addEventListener('click', savePurchase);
+    }
+}
 
-    function savePurchase() {
-        const supplier = document.getElementById('supplier').value;
-        const date = document.getElementById('purchaseDate').value;
-        const transportCost = parseFloat(document.getElementById('transportCost').value) || 0;
-        const otherCosts = parseFloat(document.getElementById('otherCosts').value) || 0;
-        const notes = document.getElementById('purchaseNotes').value;
+async function savePurchase() {
+    const supplier = document.getElementById('supplier')?.value.trim() || '';
+    const date = document.getElementById('purchaseDate')?.value || new Date().toISOString().split('T')[0];
+    const transportCost = parseFloat(document.getElementById('transportCost')?.value) || 0;
+    const otherCosts = parseFloat(document.getElementById('otherCosts')?.value) || 0;
+    const notes = document.getElementById('purchaseNotes')?.value.trim() || '';
+    
+    const items = [];
+    document.querySelectorAll('.purchase-item').forEach(item => {
+        const productSelect = item.querySelector('.product-select');
+        const quantity = parseFloat(item.querySelector('.quantity')?.value) || 0;
+        const price = parseFloat(item.querySelector('.price')?.value) || 0;
         
-        const items = [];
-        document.querySelectorAll('.purchase-item').forEach(item => {
-            const productSelect = item.querySelector('.product-select');
-            const quantity = parseFloat(item.querySelector('.quantity').value);
-            const price = parseFloat(item.querySelector('.price').value);
-            
-            if (productSelect.value && quantity > 0 && price > 0) {
-                items.push({
-                    productId: productSelect.value,
-                    productName: productSelect.options[productSelect.selectedIndex].text,
-                    quantity,
-                    pricePerUnit: price,
-                    total: quantity * price
-                });
-            }
-        });
-        
-        if (items.length === 0) {
-            showToast('يرجى إضافة منتج واحد على الأقل', 'error');
-            return;
+        if (productSelect?.value && quantity > 0 && price > 0) {
+            items.push({
+                productId: productSelect.value,
+                productName: productSelect.options[productSelect.selectedIndex]?.text || 'غير محدد',
+                quantity,
+                pricePerUnit: price,
+                total: quantity * price
+            });
         }
-        
-        const totalItemsCost = items.reduce((sum, item) => sum + item.total, 0);
-        const totalCost = totalItemsCost + transportCost + otherCosts;
-        
-        db.addPurchase({
-            supplier,
-            date,
-            items,
-            transportCost,
-            otherCosts,
-            totalItemsCost,
-            totalCost,
-            notes,
-            status: 'completed'
-        });
-        
-        showToast('تم تسجيل المشتريات بنجاح', 'success');
-        refreshData();
-        showPurchasesList();
+    });
+    
+    if (items.length === 0) {
+        showToast('يرجى إضافة منتج واحد على الأقل', 'error');
+        return;
     }
+    
+    const totalItemsCost = items.reduce((sum, item) => sum + item.total, 0);
+    const totalCost = totalItemsCost + transportCost + otherCosts;
+    
+    const result = await db.addPurchase({
+        supplier,
+        date,
+        items,
+        transportCost,
+        otherCosts,
+        totalItemsCost,
+        totalCost,
+        notes,
+        status: 'completed'
+    });
+    
+    if (result) {
+        showToast('تم تسجيل المشتريات بنجاح', 'success');
+        await updateStats();
+        showPurchasesList();
+    } else {
+        showToast('حدث خطأ أثناء الحفظ', 'error');
+    }
+}
 
-    // ==================== قائمة المشتريات ====================
-    function showPurchasesList() {
-        const content = document.getElementById('content');
-        const purchases = db.getPurchases();
-        
-        if (purchases.length === 0) {
-            content.innerHTML = `
-            <div class="text-center py-12">
-                <i class="fas fa-truck-loading text-6xl text-gray-600 mb-4"></i>
-                <p class="text-xl text-gray-400 mb-4">لا يوجد مشتريات بعد</p>
-                <button onclick="showPurchaseForm()" class="bg-amber-500 hover:bg-amber-600 px-6 py-3 rounded-xl font-bold">
-                    <i class="fas fa-plus ml-2"></i>
+// ==================== قائمة المشتريات ====================
+async function showPurchasesList() {
+    const content = document.getElementById('content');
+    if (!content) return;
+    
+    const purchases = await db.getPurchases();
+    const settings = await db.getSettings();
+    
+    if (purchases.length === 0) {
+        content.innerHTML = `
+            <div class="p-6 text-center" dir="rtl">
+                <p class="text-gray-500 mb-4">لا يوجد مشتريات بعد</p>
+                <button onclick="showPurchaseForm()" class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition ml-2">
                     تسجيل أول مشتريات
                 </button>
+                <button onclick="showDashboard()" class="bg-gray-600 text-white px-6 py-2 rounded-lg hover:bg-gray-700 transition">
+                    عودة
+                </button>
             </div>
-            `;
-            return;
-        }
-        
-        let html = `
-        <h3 class="text-xl font-bold mb-6">سجل المشتريات</h3>
-        <div class="table-container">
-            <table>
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>التاريخ</th>
-                        <th>المورد</th>
-                        <th>عدد المنتجات</th>
-                        <th>إجمالي المشتريات</th>
-                        <th>تكلفة النقل</th>
-                        <th>الإجمالي الكلي</th>
-                    </tr>
-                </thead>
-                <tbody>
         `;
-        
-        purchases.forEach((purchase, index) => {
-            html += `
-                <tr>
-                    <td>${index + 1}</td>
-                    <td>${purchase.date || purchase.createdAt.split('T')[0]}</td>
-                    <td>${purchase.supplier || 'غير محدد'}</td>
-                    <td>${purchase.items.length}</td>
-                    <td>${purchase.totalItemsCost.toLocaleString()} ج.م</td>
-                    <td>${purchase.transportCost.toLocaleString()} ج.م</td>
-                    <td class="font-bold">${purchase.totalCost.toLocaleString()} ج.م</td>
-                </tr>
-            `;
-        });
-        
-        html += `
-                </tbody>
-            </table>
-        </div>
-        `;
-        
-        content.innerHTML = html;
+        return;
     }
-
-    // ==================== نموذج تسجيل مبيعات ====================
-    function showSaleForm() {
-        const products = db.getProducts();
-        const workers = db.getWorkers();
-        const settings = db.getSettings();
-        
-        if (products.length === 0) {
-            showToast('يجب إضافة منتجات أولاً', 'error');
-            showProductsList();
-            return;
-        }
-        
-        const content = document.getElementById('content');
-        content.innerHTML = `
-        <div class="max-w-4xl mx-auto">
-            <h3 class="text-2xl font-bold mb-6 flex items-center gap-2">
-                <i class="fas fa-shopping-cart text-purple-400"></i>
-                <span>تسجيل مبيعات</span>
-            </h3>
+    
+    let html = `
+        <div class="p-6" dir="rtl">
+            <div class="flex justify-between items-center mb-6">
+                <h1 class="text-2xl font-bold text-gray-800">سجل المشتريات</h1>
+                <div>
+                    <button onclick="showPurchaseForm()" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition ml-2">
+                        تسجيل مشتريات
+                    </button>
+                    <button onclick="showDashboard()" class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition">
+                        عودة
+                    </button>
+                </div>
+            </div>
             
-            <div class="space-y-4">
-                <div class="grid grid-cols-2 gap-4">
+            <div class="bg-white rounded-lg shadow overflow-hidden">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">#</th>
+                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">التاريخ</th>
+                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">المورد</th>
+                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">عدد المنتجات</th>
+                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">إجمالي المشتريات</th>
+                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">تكلفة النقل</th>
+                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">الإجمالي الكلي</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+    `;
+    
+    purchases.forEach((purchase, index) => {
+        html += `
+            <tr>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${index + 1}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${purchase.date || purchase.createdAt?.split('T')[0] || '-'}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${purchase.supplier || 'غير محدد'}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${purchase.items?.length || 0}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${formatNumber(purchase.totalItemsCost)} ${settings.currency}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${formatNumber(purchase.transportCost)} ${settings.currency}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${formatNumber(purchase.totalCost)} ${settings.currency}</td>
+            </tr>
+        `;
+    });
+    
+    html += `
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    `;
+    
+    content.innerHTML = html;
+}
+
+// ==================== نموذج تسجيل مبيعات ====================
+async function showSaleForm() {
+    const content = document.getElementById('content');
+    if (!content) return;
+    
+    const products = await db.getProducts();
+    const workers = await db.getWorkers();
+    const settings = await db.getSettings();
+    
+    if (products.length === 0) {
+        showToast('يجب إضافة منتجات أولاً', 'error');
+        showProductsList();
+        return;
+    }
+    
+    const today = new Date().toISOString().split('T')[0];
+    
+    content.innerHTML = `
+        <div class="p-6" dir="rtl">
+            <div class="flex justify-between items-center mb-6">
+                <h1 class="text-2xl font-bold text-gray-800">تسجيل مبيعات</h1>
+                <button onclick="showSalesList()" class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition">
+                    عودة
+                </button>
+            </div>
+            
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                     <div>
-                        <label class="block text-gray-300 mb-2">المشتري</label>
-                        <input id="buyer" type="text" placeholder="اسم المشتري" 
-                               class="w-full p-3 rounded-lg bg-gray-700"/>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">المشتري</label>
+                        <input type="text" id="buyer" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="اسم المشتري">
                     </div>
                     <div>
-                        <label class="block text-gray-300 mb-2">التاريخ</label>
-                        <input id="saleDate" type="date" value="${new Date().toISOString().split('T')[0]}" 
-                               class="w-full p-3 rounded-lg bg-gray-700"/>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">التاريخ</label>
+                        <input type="date" id="saleDate" value="${today}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
                     </div>
                 </div>
                 
-                <div class="bg-gray-800 p-4 rounded-lg">
-                    <h4 class="font-bold mb-3">المنتجات المباعة</h4>
-                    <div id="sale-items-container">
-                        <div class="sale-item grid grid-cols-12 gap-2 mb-2">
-                            <div class="col-span-5">
-                                <select class="product-select w-full p-2 rounded-lg bg-gray-700">
-                                    <option value="">اختر منتج</option>
-                                    ${products.map(p => `<option value="${p.id}" data-price="${p.sellingPrice || 0}" data-cost="${p.purchasePrice || 0}">${p.name} (متوفر: ${p.stock || 0} كجم)</option>`).join('')}
-                                </select>
-                            </div>
-                            <div class="col-span-3">
-                                <input type="number" class="quantity w-full p-2 rounded-lg bg-gray-700" placeholder="الكمية" min="0" step="0.01">
-                            </div>
-                            <div class="col-span-3">
-                                <input type="number" class="price w-full p-2 rounded-lg bg-gray-700" placeholder="السعر" min="0" step="0.01">
-                            </div>
-                            <div class="col-span-1">
-                                <button onclick="removeSaleItem(this)" class="text-danger">
-                                    <i class="fas fa-times"></i>
-                                </button>
-                            </div>
+                <h2 class="text-lg font-semibold text-gray-800 mb-3">المنتجات المباعة</h2>
+                <div id="sale-items-container" class="space-y-2 mb-4">
+                    <div class="sale-item grid grid-cols-12 gap-2">
+                        <div class="col-span-6">
+                            <select class="product-select w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+                                <option value="">اختر منتج</option>
+                                ${products.map(p => `<option value="${p.id}" data-cost="${p.price || 0}">${p.name} - ${formatNumber(p.price)} ${settings.currency}</option>`).join('')}
+                            </select>
+                        </div>
+                        <div class="col-span-3">
+                            <input type="number" class="quantity w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="الكمية" min="0" step="0.01">
+                        </div>
+                        <div class="col-span-3">
+                            <input type="number" class="price w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="السعر" min="0" step="0.01">
                         </div>
                     </div>
-                    <button id="addSaleItem" class="mt-2 text-amber-400 hover:text-amber-300">
-                        <i class="fas fa-plus ml-1"></i> إضافة منتج آخر
-                    </button>
                 </div>
                 
-                <div class="bg-gray-800 p-4 rounded-lg">
-                    <h4 class="font-bold mb-3">العمالة المشاركة</h4>
-                    <div id="workers-container">
-                        <div class="worker-item grid grid-cols-12 gap-2 mb-2">
-                            <div class="col-span-5">
-                                <select class="worker-select w-full p-2 rounded-lg bg-gray-700">
-                                    <option value="">اختر عامل</option>
-                                    ${workers.filter(w => w.status === 'active').map(w => `<option value="${w.id}" data-wage="${w.dailyWage || 0}">${w.name} (${w.role})</option>`).join('')}
-                                </select>
-                            </div>
-                            <div class="col-span-3">
-                                <input type="number" class="days w-full p-2 rounded-lg bg-gray-700" placeholder="عدد الأيام" min="0" step="0.5">
-                            </div>
-                            <div class="col-span-3">
-                                <input type="number" class="wage w-full p-2 rounded-lg bg-gray-700" placeholder="الأجر اليومي" min="0" step="0.01">
-                            </div>
-                            <div class="col-span-1">
-                                <button onclick="removeWorker(this)" class="text-danger">
-                                    <i class="fas fa-times"></i>
-                                </button>
-                            </div>
+                <button id="addSaleItem" class="mb-6 text-green-600 hover:text-green-700 flex items-center gap-1">
+                    <span>➕</span> إضافة منتج آخر
+                </button>
+                
+                <h2 class="text-lg font-semibold text-gray-800 mb-3">العمالة المشاركة</h2>
+                <div id="workers-container" class="space-y-2 mb-4">
+                    <div class="worker-item grid grid-cols-12 gap-2">
+                        <div class="col-span-5">
+                            <select class="worker-select w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+                                <option value="">اختر عامل</option>
+                                ${workers.map(w => `<option value="${w.id}" data-wage="${w.dailyWage || 0}">${w.name} - ${formatNumber(w.dailyWage)} ${settings.currency}/يوم</option>`).join('')}
+                            </select>
+                        </div>
+                        <div class="col-span-3">
+                            <input type="number" class="days w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="الأيام" min="0" step="0.5">
+                        </div>
+                        <div class="col-span-4">
+                            <input type="number" class="wage w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="الأجر اليومي" min="0" step="0.01">
                         </div>
                     </div>
-                    <button id="addWorker" class="mt-2 text-amber-400 hover:text-amber-300">
-                        <i class="fas fa-plus ml-1"></i> إضافة عامل
-                    </button>
                 </div>
                 
-                <div class="grid grid-cols-2 gap-4">
+                <button id="addWorker" class="mb-6 text-green-600 hover:text-green-700 flex items-center gap-1">
+                    <span>➕</span> إضافة عامل
+                </button>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                     <div>
-                        <label class="block text-gray-300 mb-2">تكلفة العتالة</label>
-                        <input id="handlingCost" type="number" value="0" min="0" step="0.01"
-                               class="w-full p-3 rounded-lg bg-gray-700"/>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">تكلفة العتالة (${settings.currency})</label>
+                        <input type="number" id="handlingCost" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="0" min="0" step="0.01" value="0">
                     </div>
                     <div>
-                        <label class="block text-gray-300 mb-2">عدد العتالة</label>
-                        <input id="handlingCount" type="number" value="0" min="0"
-                               class="w-full p-3 rounded-lg bg-gray-700"/>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">عدد العتالة</label>
+                        <input type="number" id="handlingCount" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="0" min="0" step="1" value="0">
                     </div>
                 </div>
                 
-                <div class="grid grid-cols-3 gap-4 bg-gray-800 p-4 rounded-lg">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                     <div>
-                        <label class="block text-gray-300 mb-2">نسبة عمولة الوكالة</label>
-                        <input id="commissionRate" type="number" value="${settings.commissionRate}" min="0" max="100" step="0.1"
-                               class="w-full p-3 rounded-lg bg-gray-700"/>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">نسبة عمولة الوكالة (%)</label>
+                        <input type="number" id="commissionRate" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" value="${settings.commissionRate || 10}" min="0" max="100" step="0.1">
                     </div>
                     <div>
-                        <label class="block text-gray-300 mb-2">قيمة العمولة</label>
-                        <input id="commissionAmount" type="number" readonly
-                               class="w-full p-3 rounded-lg bg-gray-700"/>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">قيمة العمولة (${settings.currency})</label>
+                        <input type="text" id="commissionAmount" class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50" readonly placeholder="0">
                     </div>
                     <div>
-                        <label class="block text-gray-300 mb-2">صافي الربح</label>
-                        <input id="netProfit" type="number" readonly
-                               class="w-full p-3 rounded-lg bg-gray-700"/>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">صافي الربح (${settings.currency})</label>
+                        <input type="text" id="netProfit" class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50" readonly placeholder="0">
                     </div>
                 </div>
                 
                 <div>
-                    <label class="block text-gray-300 mb-2">ملاحظات</label>
-                    <textarea id="saleNotes" rows="3" placeholder="أي ملاحظات..." 
-                              class="w-full p-3 rounded-lg bg-gray-700"></textarea>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">ملاحظات</label>
+                    <textarea id="saleNotes" rows="2" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="أي ملاحظات..."></textarea>
                 </div>
                 
-                <div class="flex gap-3 pt-4">
-                    <button id="saveSale" class="flex-1 bg-gradient-to-l from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 py-3 rounded-xl font-bold">
-                        <i class="fas fa-save ml-2"></i>
+                <div class="flex gap-3 mt-6">
+                    <button id="saveSale" class="flex-1 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition">
                         تسجيل المبيعات
                     </button>
-                    <button id="cancelForm" class="flex-1 bg-gray-700 hover:bg-gray-600 py-3 rounded-xl font-bold">
-                        <i class="fas fa-times ml-2"></i>
+                    <button onclick="showSalesList()" class="flex-1 bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition">
                         إلغاء
                     </button>
                 </div>
             </div>
         </div>
-        
-        <script>
-            window.removeSaleItem = function(btn) {
-                btn.closest('.sale-item').remove();
-            }
-            window.removeWorker = function(btn) {
-                btn.closest('.worker-item').remove();
-            }
-        </script>
-        `;
-        
-        document.getElementById('addSaleItem').addEventListener('click', () => {
+    `;
+    
+    // إضافة مستمعي الأحداث
+    const addSaleItemBtn = document.getElementById('addSaleItem');
+    if (addSaleItemBtn) {
+        addSaleItemBtn.addEventListener('click', async () => {
             const container = document.getElementById('sale-items-container');
+            if (!container) return;
+            
+            const products = await db.getProducts();
+            const settings = await db.getSettings();
+            
             const newItem = document.createElement('div');
-            newItem.className = 'sale-item grid grid-cols-12 gap-2 mb-2';
+            newItem.className = 'sale-item grid grid-cols-12 gap-2 mt-2';
             newItem.innerHTML = `
-                <div class="col-span-5">
-                    <select class="product-select w-full p-2 rounded-lg bg-gray-700">
+                <div class="col-span-6">
+                    <select class="product-select w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
                         <option value="">اختر منتج</option>
-                        ${products.map(p => `<option value="${p.id}" data-price="${p.sellingPrice || 0}" data-cost="${p.purchasePrice || 0}">${p.name} (متوفر: ${p.stock || 0} كجم)</option>`).join('')}
+                        ${products.map(p => `<option value="${p.id}" data-cost="${p.price || 0}">${p.name} - ${formatNumber(p.price)} ${settings.currency}</option>`).join('')}
                     </select>
                 </div>
                 <div class="col-span-3">
-                    <input type="number" class="quantity w-full p-2 rounded-lg bg-gray-700" placeholder="الكمية" min="0" step="0.01">
+                    <input type="number" class="quantity w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="الكمية" min="0" step="0.01">
                 </div>
                 <div class="col-span-3">
-                    <input type="number" class="price w-full p-2 rounded-lg bg-gray-700" placeholder="السعر" min="0" step="0.01">
-                </div>
-                <div class="col-span-1">
-                    <button onclick="removeSaleItem(this)" class="text-danger">
-                        <i class="fas fa-times"></i>
-                    </button>
+                    <input type="number" class="price w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="السعر" min="0" step="0.01">
                 </div>
             `;
             container.appendChild(newItem);
+            
+            // إضافة مستمعي الأحداث للحساب التلقائي
+            addCalculationListeners();
         });
-        
-        document.getElementById('addWorker').addEventListener('click', () => {
+    }
+    
+    const addWorkerBtn = document.getElementById('addWorker');
+    if (addWorkerBtn) {
+        addWorkerBtn.addEventListener('click', async () => {
             const container = document.getElementById('workers-container');
+            if (!container) return;
+            
+            const workers = await db.getWorkers();
+            const settings = await db.getSettings();
+            
             const newWorker = document.createElement('div');
-            newWorker.className = 'worker-item grid grid-cols-12 gap-2 mb-2';
+            newWorker.className = 'worker-item grid grid-cols-12 gap-2 mt-2';
             newWorker.innerHTML = `
                 <div class="col-span-5">
-                    <select class="worker-select w-full p-2 rounded-lg bg-gray-700">
+                    <select class="worker-select w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
                         <option value="">اختر عامل</option>
-                        ${workers.filter(w => w.status === 'active').map(w => `<option value="${w.id}" data-wage="${w.dailyWage || 0}">${w.name} (${w.role})</option>`).join('')}
+                        ${workers.map(w => `<option value="${w.id}" data-wage="${w.dailyWage || 0}">${w.name} - ${formatNumber(w.dailyWage)} ${settings.currency}/يوم</option>`).join('')}
                     </select>
                 </div>
                 <div class="col-span-3">
-                    <input type="number" class="days w-full p-2 rounded-lg bg-gray-700" placeholder="عدد الأيام" min="0" step="0.5">
+                    <input type="number" class="days w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="الأيام" min="0" step="0.5">
                 </div>
-                <div class="col-span-3">
-                    <input type="number" class="wage w-full p-2 rounded-lg bg-gray-700" placeholder="الأجر اليومي" min="0" step="0.01">
-                </div>
-                <div class="col-span-1">
-                    <button onclick="removeWorker(this)" class="text-danger">
-                        <i class="fas fa-times"></i>
-                    </button>
+                <div class="col-span-4">
+                    <input type="number" class="wage w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="الأجر اليومي" min="0" step="0.01">
                 </div>
             `;
             container.appendChild(newWorker);
+            
+            // إضافة مستمعي الأحداث للحساب التلقائي
+            addCalculationListeners();
         });
-        
-        document.getElementById('saveSale').addEventListener('click', saveSale);
-        document.getElementById('cancelForm').addEventListener('click', showSalesList);
-        
-        // حساب العمولة والربح تلقائياً
-        function calculateTotals() {
-            const settings = db.getSettings();
-            const commissionRate = parseFloat(document.getElementById('commissionRate').value) || settings.commissionRate;
-            
-            let totalSales = 0;
-            let totalCost = 0;
-            
-            document.querySelectorAll('.sale-item').forEach(item => {
-                const quantity = parseFloat(item.querySelector('.quantity').value) || 0;
-                const price = parseFloat(item.querySelector('.price').value) || 0;
-                const productSelect = item.querySelector('.product-select');
-                const costPerUnit = parseFloat(productSelect.selectedOptions[0]?.dataset.cost || 0);
-                
-                totalSales += quantity * price;
-                totalCost += quantity * costPerUnit;
-            });
-            
-            // تكاليف العمالة
-            let workersCost = 0;
-            document.querySelectorAll('.worker-item').forEach(item => {
-                const days = parseFloat(item.querySelector('.days').value) || 0;
-                const wage = parseFloat(item.querySelector('.wage').value) || 0;
-                workersCost += days * wage;
-            });
-            
-            const handlingCost = parseFloat(document.getElementById('handlingCost').value) || 0;
-            const totalWorkersCost = workersCost + handlingCost;
-            
-            const commission = (totalSales * commissionRate) / 100;
-            const netProfit = totalSales - totalCost - totalWorkersCost - commission;
-            
-            document.getElementById('commissionAmount').value = commission.toFixed(2);
-            document.getElementById('netProfit').value = netProfit.toFixed(2);
-        }
-        
-        document.querySelectorAll('#sale-items-container, #workers-container').forEach(container => {
-            container.addEventListener('input', calculateTotals);
-        });
-        
-        document.getElementById('commissionRate').addEventListener('input', calculateTotals);
-        document.getElementById('handlingCost').addEventListener('input', calculateTotals);
     }
+    
+    // إضافة مستمعي الأحداث للحساب التلقائي
+    addCalculationListeners();
+    
+    const saveBtn = document.getElementById('saveSale');
+    if (saveBtn) {
+        saveBtn.addEventListener('click', saveSale);
+    }
+}
 
-    function saveSale() {
-        const buyer = document.getElementById('buyer').value;
-        const date = document.getElementById('saleDate').value;
-        const commissionRate = parseFloat(document.getElementById('commissionRate').value);
-        const handlingCost = parseFloat(document.getElementById('handlingCost').value) || 0;
-        const handlingCount = parseInt(document.getElementById('handlingCount').value) || 0;
-        const notes = document.getElementById('saleNotes').value;
+function addCalculationListeners() {
+    // إضافة مستمعي الأحداث لحقول الإدخال لتحديث الحسابات تلقائياً
+    document.querySelectorAll('.sale-item input, .worker-item input, #handlingCost, #commissionRate').forEach(input => {
+        input.removeEventListener('input', calculateTotals);
+        input.addEventListener('input', calculateTotals);
+    });
+}
+
+async function calculateTotals() {
+    try {
+        const settings = await db.getSettings();
+        const commissionRate = parseFloat(document.getElementById('commissionRate')?.value) || settings.commissionRate || 10;
+        
+        let totalSales = 0;
+        let totalCost = 0;
+        
+        document.querySelectorAll('.sale-item').forEach(item => {
+            const quantity = parseFloat(item.querySelector('.quantity')?.value) || 0;
+            const price = parseFloat(item.querySelector('.price')?.value) || 0;
+            const productSelect = item.querySelector('.product-select');
+            
+            totalSales += quantity * price;
+            
+            if (productSelect?.selectedOptions?.[0]) {
+                const costPerUnit = parseFloat(productSelect.selectedOptions[0].dataset.cost) || 0;
+                totalCost += quantity * costPerUnit;
+            }
+        });
+        
+        // تكاليف العمالة
+        let workersCost = 0;
+        document.querySelectorAll('.worker-item').forEach(item => {
+            const days = parseFloat(item.querySelector('.days')?.value) || 0;
+            const wage = parseFloat(item.querySelector('.wage')?.value) || 0;
+            workersCost += days * wage;
+        });
+        
+        const handlingCost = parseFloat(document.getElementById('handlingCost')?.value) || 0;
+        const totalWorkersCost = workersCost + handlingCost;
+        
+        const commission = (totalSales * commissionRate) / 100;
+        const netProfit = totalSales - totalCost - totalWorkersCost - commission;
+        
+        const commissionEl = document.getElementById('commissionAmount');
+        const netProfitEl = document.getElementById('netProfit');
+        
+        if (commissionEl) commissionEl.value = formatNumber(commission);
+        if (netProfitEl) netProfitEl.value = formatNumber(netProfit);
+    } catch (error) {
+        console.error('خطأ في حساب المجاميع:', error);
+    }
+}
+
+async function saveSale() {
+    try {
+        const buyer = document.getElementById('buyer')?.value.trim() || '';
+        const date = document.getElementById('saleDate')?.value || new Date().toISOString().split('T')[0];
+        const commissionRate = parseFloat(document.getElementById('commissionRate')?.value) || 10;
+        const handlingCost = parseFloat(document.getElementById('handlingCost')?.value) || 0;
+        const handlingCount = parseInt(document.getElementById('handlingCount')?.value) || 0;
+        const notes = document.getElementById('saleNotes')?.value.trim() || '';
         
         const items = [];
         document.querySelectorAll('.sale-item').forEach(item => {
             const productSelect = item.querySelector('.product-select');
-            const quantity = parseFloat(item.querySelector('.quantity').value);
-            const price = parseFloat(item.querySelector('.price').value);
+            const quantity = parseFloat(item.querySelector('.quantity')?.value) || 0;
+            const price = parseFloat(item.querySelector('.price')?.value) || 0;
             
-            if (productSelect.value && quantity > 0 && price > 0) {
+            if (productSelect?.value && quantity > 0 && price > 0) {
                 items.push({
                     productId: productSelect.value,
-                    productName: productSelect.options[productSelect.selectedIndex].text.split('(')[0].trim(),
+                    productName: productSelect.options[productSelect.selectedIndex]?.text.split('-')[0].trim() || 'غير محدد',
                     quantity,
                     pricePerUnit: price,
                     total: quantity * price,
-                    costPerUnit: parseFloat(productSelect.selectedOptions[0]?.dataset.cost || 0)
+                    costPerUnit: parseFloat(productSelect.selectedOptions[0]?.dataset.cost) || 0
                 });
             }
         });
@@ -1388,13 +1291,13 @@
         const workers = [];
         document.querySelectorAll('.worker-item').forEach(item => {
             const workerSelect = item.querySelector('.worker-select');
-            const days = parseFloat(item.querySelector('.days').value);
-            const wage = parseFloat(item.querySelector('.wage').value);
+            const days = parseFloat(item.querySelector('.days')?.value) || 0;
+            const wage = parseFloat(item.querySelector('.wage')?.value) || 0;
             
-            if (workerSelect.value && days > 0 && wage > 0) {
+            if (workerSelect?.value && days > 0 && wage > 0) {
                 workers.push({
                     workerId: workerSelect.value,
-                    workerName: workerSelect.options[workerSelect.selectedIndex].text.split('(')[0].trim(),
+                    workerName: workerSelect.options[workerSelect.selectedIndex]?.text.split('-')[0].trim() || 'غير محدد',
                     days,
                     dailyWage: wage,
                     total: days * wage
@@ -1408,7 +1311,7 @@
         const commission = (totalSales * commissionRate) / 100;
         const netProfit = totalSales - totalCost - workersCost - commission;
         
-        db.addSale({
+        const result = await db.addSale({
             buyer,
             date,
             items,
@@ -1424,685 +1327,820 @@
             notes
         });
         
-        showToast('تم تسجيل المبيعات بنجاح', 'success');
-        refreshData();
-        showSalesList();
+        if (result) {
+            showToast('تم تسجيل المبيعات بنجاح', 'success');
+            await updateStats();
+            showSalesList();
+        } else {
+            showToast('حدث خطأ أثناء الحفظ', 'error');
+        }
+    } catch (error) {
+        console.error('خطأ في حفظ المبيعات:', error);
+        showToast('حدث خطأ غير متوقع', 'error');
     }
+}
 
-    // ==================== قائمة المبيعات ====================
-    function showSalesList() {
-        const content = document.getElementById('content');
-        const sales = db.getSales();
-        const settings = db.getSettings();
-        
-        if (sales.length === 0) {
-            content.innerHTML = `
-            <div class="text-center py-12">
-                <i class="fas fa-shopping-cart text-6xl text-gray-600 mb-4"></i>
-                <p class="text-xl text-gray-400 mb-4">لا يوجد مبيعات بعد</p>
-                <button onclick="showSaleForm()" class="bg-amber-500 hover:bg-amber-600 px-6 py-3 rounded-xl font-bold">
-                    <i class="fas fa-plus ml-2"></i>
+// ==================== قائمة المبيعات ====================
+async function showSalesList() {
+    const content = document.getElementById('content');
+    if (!content) return;
+    
+    const sales = await db.getSales();
+    const settings = await db.getSettings();
+    
+    if (sales.length === 0) {
+        content.innerHTML = `
+            <div class="p-6 text-center" dir="rtl">
+                <p class="text-gray-500 mb-4">لا يوجد مبيعات بعد</p>
+                <button onclick="showSaleForm()" class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition ml-2">
                     تسجيل أول مبيعات
                 </button>
+                <button onclick="showDashboard()" class="bg-gray-600 text-white px-6 py-2 rounded-lg hover:bg-gray-700 transition">
+                    عودة
+                </button>
             </div>
-            `;
-            return;
-        }
-        
-        let totalSalesAmount = 0;
-        let totalCommission = 0;
-        let totalNetProfit = 0;
-        
-        let html = `
-        <h3 class="text-xl font-bold mb-6">سجل المبيعات</h3>
-        <div class="table-container">
-            <table>
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>التاريخ</th>
-                        <th>المشتري</th>
-                        <th>عدد المنتجات</th>
-                        <th>إجمالي المبيعات</th>
-                        <th>التكلفة</th>
-                        <th>عمالة</th>
-                        <th>العمولة</th>
-                        <th>صافي الربح</th>
-                    </tr>
-                </thead>
-                <tbody>
         `;
-        
-        sales.forEach((sale, index) => {
-            totalSalesAmount += sale.totalSales || 0;
-            totalCommission += sale.commission || 0;
-            totalNetProfit += sale.netProfit || 0;
+        return;
+    }
+    
+    let totalSalesAmount = 0;
+    let totalCommission = 0;
+    let totalNetProfit = 0;
+    
+    let html = `
+        <div class="p-6" dir="rtl">
+            <div class="flex justify-between items-center mb-6">
+                <h1 class="text-2xl font-bold text-gray-800">سجل المبيعات</h1>
+                <div>
+                    <button onclick="showSaleForm()" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition ml-2">
+                        تسجيل مبيعات
+                    </button>
+                    <button onclick="showDashboard()" class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition">
+                        عودة
+                    </button>
+                </div>
+            </div>
             
-            html += `
-                <tr>
-                    <td>${index + 1}</td>
-                    <td>${sale.date || sale.createdAt.split('T')[0]}</td>
-                    <td>${sale.buyer || 'غير محدد'}</td>
-                    <td>${sale.items.length}</td>
-                    <td>${(sale.totalSales || 0).toLocaleString()} ${settings.currency}</td>
-                    <td>${(sale.totalCost || 0).toLocaleString()} ${settings.currency}</td>
-                    <td>${(sale.workersCost || 0).toLocaleString()} ${settings.currency}</td>
-                    <td>${(sale.commission || 0).toLocaleString()} ${settings.currency}</td>
-                    <td class="${(sale.netProfit || 0) >= 0 ? 'text-success' : 'text-danger'}">
-                        ${(sale.netProfit || 0).toLocaleString()} ${settings.currency}
-                    </td>
-                </tr>
-            `;
-        });
+            <div class="bg-white rounded-lg shadow overflow-hidden">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">#</th>
+                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">التاريخ</th>
+                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">المشتري</th>
+                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">عدد المنتجات</th>
+                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">إجمالي المبيعات</th>
+                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">التكلفة</th>
+                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">عمالة</th>
+                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">العمولة</th>
+                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">صافي الربح</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+    `;
+    
+    sales.forEach((sale, index) => {
+        totalSalesAmount += sale.totalSales || 0;
+        totalCommission += sale.commission || 0;
+        totalNetProfit += sale.netProfit || 0;
         
         html += `
-                </tbody>
-                <tfoot class="bg-gray-800 font-bold">
-                    <tr>
-                        <td colspan="4">الإجمالي:</td>
-                        <td>${totalSalesAmount.toLocaleString()} ${settings.currency}</td>
-                        <td></td>
-                        <td></td>
-                        <td>${totalCommission.toLocaleString()} ${settings.currency}</td>
-                        <td class="${totalNetProfit >= 0 ? 'text-success' : 'text-danger'}">
-                            ${totalNetProfit.toLocaleString()} ${settings.currency}
-                        </td>
-                    </tr>
-                </tfoot>
-            </table>
-        </div>
+            <tr>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${index + 1}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${sale.date || sale.createdAt?.split('T')[0] || '-'}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${sale.buyer || 'غير محدد'}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${sale.items?.length || 0}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${formatNumber(sale.totalSales)} ${settings.currency}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${formatNumber(sale.totalCost)} ${settings.currency}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${formatNumber(sale.workersCost)} ${settings.currency}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${formatNumber(sale.commission)} ${settings.currency}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600 font-semibold">${formatNumber(sale.netProfit)} ${settings.currency}</td>
+            </tr>
         `;
-        
-        content.innerHTML = html;
-    }
+    });
+    
+    html += `
+                    </tbody>
+                    <tfoot class="bg-gray-50 font-semibold">
+                        <tr>
+                            <td colspan="4" class="px-6 py-4 text-right text-sm text-gray-900">الإجمالي:</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${formatNumber(totalSalesAmount)} ${settings.currency}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">-</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">-</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${formatNumber(totalCommission)} ${settings.currency}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600">${formatNumber(totalNetProfit)} ${settings.currency}</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    `;
+    
+    content.innerHTML = html;
+}
 
-    // ==================== إدارة العمالة ====================
-    function showWorkersList() {
-        const content = document.getElementById('content');
-        const workers = db.getWorkers();
-        
-        if (workers.length === 0) {
-            content.innerHTML = `
-            <div class="text-center py-12">
-                <i class="fas fa-users text-6xl text-gray-600 mb-4"></i>
-                <p class="text-xl text-gray-400 mb-4">لا يوجد عمالة بعد</p>
-                <button onclick="showWorkerForm()" class="bg-amber-500 hover:bg-amber-600 px-6 py-3 rounded-xl font-bold">
-                    <i class="fas fa-plus ml-2"></i>
+// ==================== إدارة العمالة ====================
+async function showWorkersList() {
+    const content = document.getElementById('content');
+    if (!content) return;
+    
+    const workers = await db.getWorkers();
+    const settings = await db.getSettings();
+    
+    if (workers.length === 0) {
+        content.innerHTML = `
+            <div class="p-6 text-center" dir="rtl">
+                <p class="text-gray-500 mb-4">لا يوجد عمالة بعد</p>
+                <button onclick="showWorkerForm()" class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition ml-2">
                     إضافة عامل
                 </button>
+                <button onclick="showDashboard()" class="bg-gray-600 text-white px-6 py-2 rounded-lg hover:bg-gray-700 transition">
+                    عودة
+                </button>
             </div>
-            `;
-            return;
-        }
-        
-        let html = `
-        <div class="flex justify-between items-center mb-6">
-            <h3 class="text-xl font-bold">قائمة العمالة</h3>
-            <button onclick="showWorkerForm()" class="bg-green-500 hover:bg-green-600 px-4 py-2 rounded-lg">
-                <i class="fas fa-plus ml-1"></i> إضافة عامل
-            </button>
-        </div>
-        <div class="table-container">
-            <table>
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>الاسم</th>
-                        <th>الوظيفة</th>
-                        <th>رقم الهاتف</th>
-                        <th>الأجر اليومي</th>
-                        <th>الحالة</th>
-                        <th>الإجراءات</th>
-                    </tr>
-                </thead>
-                <tbody>
         `;
-        
-        workers.forEach((worker, index) => {
-            html += `
-                <tr>
-                    <td>${index + 1}</td>
-                    <td class="font-bold">${worker.name}</td>
-                    <td>${worker.role}</td>
-                    <td>${worker.phone || '-'}</td>
-                    <td>${worker.dailyWage || 0} ج.م</td>
-                    <td>
-                        <span class="badge ${worker.status === 'active' ? 'badge-success' : 'badge-danger'}">
-                            ${worker.status === 'active' ? 'نشط' : 'غير نشط'}
-                        </span>
-                    </td>
-                    <td>
-                        <button onclick="editWorker('${worker.id}')" class="text-amber-400 hover:text-amber-300 mx-1">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <button onclick="deleteWorker('${worker.id}')" class="text-danger hover:text-red-300 mx-1">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </td>
-                </tr>
-            `;
-        });
-        
-        html += `
-                </tbody>
-            </table>
-        </div>
-        `;
-        
-        content.innerHTML = html;
+        return;
     }
-
-    // ==================== نموذج إضافة عامل ====================
-    function showWorkerForm() {
-        const content = document.getElementById('content');
-        content.innerHTML = `
-        <div class="max-w-2xl mx-auto">
-            <h3 class="text-2xl font-bold mb-6 flex items-center gap-2">
-                <i class="fas fa-user-plus text-green-400"></i>
-                <span>إضافة عامل جديد</span>
-            </h3>
+    
+    let html = `
+        <div class="p-6" dir="rtl">
+            <div class="flex justify-between items-center mb-6">
+                <h1 class="text-2xl font-bold text-gray-800">قائمة العمالة</h1>
+                <div>
+                    <button onclick="showWorkerForm()" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition ml-2">
+                        إضافة عامل
+                    </button>
+                    <button onclick="showDashboard()" class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition">
+                        عودة
+                    </button>
+                </div>
+            </div>
             
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-gray-300 mb-2">الاسم الكامل</label>
-                    <input id="workerName" type="text" placeholder="أدخل اسم العامل" 
-                           class="w-full p-3 rounded-lg bg-gray-700"/>
-                </div>
-                
-                <div>
-                    <label class="block text-gray-300 mb-2">الوظيفة</label>
-                    <select id="workerRole" class="w-full p-3 rounded-lg bg-gray-700">
-                        <option value="كاتب">كاتب</option>
-                        <option value="محاسب">محاسب</option>
-                        <option value="عتال">عتال</option>
-                        <option value="عامل">عامل</option>
-                        <option value="سائق">سائق</option>
-                        <option value="أخرى">أخرى</option>
-                    </select>
-                </div>
-                
-                <div>
-                    <label class="block text-gray-300 mb-2">رقم الهاتف</label>
-                    <input id="workerPhone" type="tel" placeholder="أدخل رقم الهاتف" 
-                           class="w-full p-3 rounded-lg bg-gray-700"/>
-                </div>
-                
-                <div>
-                    <label class="block text-gray-300 mb-2">الأجر اليومي (ج.م)</label>
-                    <input id="workerWage" type="number" value="0" min="0" step="0.01"
-                           class="w-full p-3 rounded-lg bg-gray-700"/>
-                </div>
-                
-                <div>
-                    <label class="block text-gray-300 mb-2">العنوان</label>
-                    <input id="workerAddress" type="text" placeholder="العنوان" 
-                           class="w-full p-3 rounded-lg bg-gray-700"/>
-                </div>
-                
-                <div>
-                    <label class="block text-gray-300 mb-2">ملاحظات</label>
-                    <textarea id="workerNotes" rows="3" placeholder="أي ملاحظات..." 
-                              class="w-full p-3 rounded-lg bg-gray-700"></textarea>
-                </div>
-                
-                <div class="flex gap-3 pt-4">
-                    <button id="saveWorker" class="flex-1 bg-gradient-to-l from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 py-3 rounded-xl font-bold">
-                        <i class="fas fa-save ml-2"></i>
-                        حفظ البيانات
-                    </button>
-                    <button id="cancelForm" class="flex-1 bg-gray-700 hover:bg-gray-600 py-3 rounded-xl font-bold">
-                        <i class="fas fa-times ml-2"></i>
-                        إلغاء
-                    </button>
+            <div class="bg-white rounded-lg shadow overflow-hidden">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">#</th>
+                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">الاسم</th>
+                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">الوظيفة</th>
+                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">رقم الهاتف</th>
+                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">الأجر اليومي</th>
+                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">الحالة</th>
+                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+    `;
+    
+    workers.forEach((worker, index) => {
+        html += `
+            <tr>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${index + 1}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${worker.name || 'غير محدد'}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${worker.role || '-'}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${worker.phone || '-'}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${formatNumber(worker.dailyWage)} ${settings.currency}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm">
+                    <span class="px-2 py-1 text-xs rounded-full ${worker.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
+                        ${worker.status === 'active' ? 'نشط' : 'غير نشط'}
+                    </span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    <button onclick="editWorker(${worker.id})" class="text-blue-600 hover:text-blue-900 ml-3">تعديل</button>
+                    <button onclick="deleteWorker(${worker.id})" class="text-red-600 hover:text-red-900">حذف</button>
+                </td>
+            </tr>
+        `;
+    });
+    
+    html += `
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    `;
+    
+    content.innerHTML = html;
+}
+
+// ==================== نموذج إضافة عامل ====================
+function showWorkerForm() {
+    const content = document.getElementById('content');
+    if (!content) return;
+    
+    content.innerHTML = `
+        <div class="p-6 max-w-2xl mx-auto" dir="rtl">
+            <h1 class="text-2xl font-bold text-gray-800 mb-6">إضافة عامل جديد</h1>
+            
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">الاسم الكامل</label>
+                        <input type="text" id="workerName" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="أدخل اسم العامل">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">الوظيفة</label>
+                        <select id="workerRole" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+                            <option value="عامل">عامل</option>
+                            <option value="كاتب">كاتب</option>
+                            <option value="مشرف">مشرف</option>
+                            <option value="سائق">سائق</option>
+                            <option value="أخرى">أخرى</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">رقم الهاتف</label>
+                        <input type="tel" id="workerPhone" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="أدخل رقم الهاتف">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">الأجر اليومي (${currentSettings.currency})</label>
+                        <input type="number" id="workerWage" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="0" min="0" step="0.01">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">العنوان</label>
+                        <input type="text" id="workerAddress" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="العنوان">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">ملاحظات</label>
+                        <textarea id="workerNotes" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="أي ملاحظات..."></textarea>
+                    </div>
+                    
+                    <div class="flex gap-3 pt-4">
+                        <button id="saveWorker" class="flex-1 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition">
+                            حفظ البيانات
+                        </button>
+                        <button onclick="showWorkersList()" class="flex-1 bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition">
+                            إلغاء
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
-        `;
-        
-        document.getElementById('saveWorker').addEventListener('click', saveWorker);
-        document.getElementById('cancelForm').addEventListener('click', showWorkersList);
+    `;
+    
+    const saveButton = document.getElementById('saveWorker');
+    if (saveButton) {
+        saveButton.addEventListener('click', saveWorker);
     }
+}
 
-    function saveWorker() {
-        const name = document.getElementById('workerName').value.trim();
-        const role = document.getElementById('workerRole').value;
-        const phone = document.getElementById('workerPhone').value.trim();
-        const dailyWage = parseFloat(document.getElementById('workerWage').value) || 0;
-        const address = document.getElementById('workerAddress').value.trim();
-        const notes = document.getElementById('workerNotes').value;
-        
-        if(!name) {
-            showToast('يرجى إدخال اسم العامل', 'error');
-            return;
-        }
-        
-        db.addWorker({
-            name,
-            role,
-            phone,
-            dailyWage,
-            address,
-            notes,
-            status: 'active',
-            hireDate: new Date().toISOString().split('T')[0]
-        });
-        
+async function saveWorker() {
+    const nameInput = document.getElementById('workerName');
+    const roleSelect = document.getElementById('workerRole');
+    const phoneInput = document.getElementById('workerPhone');
+    const wageInput = document.getElementById('workerWage');
+    const addressInput = document.getElementById('workerAddress');
+    const notesInput = document.getElementById('workerNotes');
+    
+    if (!nameInput) {
+        showToast('حدث خطأ في النموذج', 'error');
+        return;
+    }
+    
+    const name = nameInput.value.trim();
+    const role = roleSelect?.value || 'عامل';
+    const phone = phoneInput?.value.trim() || '';
+    const dailyWage = parseFloat(wageInput?.value) || 0;
+    const address = addressInput?.value.trim() || '';
+    const notes = notesInput?.value.trim() || '';
+    
+    if (!name) {
+        showToast('يرجى إدخال اسم العامل', 'error');
+        return;
+    }
+    
+    const result = await db.addWorker({
+        name,
+        role,
+        phone,
+        dailyWage,
+        address,
+        notes,
+        status: 'active',
+        hireDate: new Date().toISOString().split('T')[0]
+    });
+    
+    if (result) {
         showToast('تم إضافة العامل بنجاح', 'success');
         showWorkersList();
+    } else {
+        showToast('حدث خطأ أثناء الحفظ', 'error');
     }
+}
 
-    // ==================== قائمة المصروفات ====================
-    function showExpensesList() {
-        const content = document.getElementById('content');
-        const expenses = db.getExpenses();
-        
-        if (expenses.length === 0) {
-            content.innerHTML = `
-            <div class="text-center py-12">
-                <i class="fas fa-file-invoice text-6xl text-gray-600 mb-4"></i>
-                <p class="text-xl text-gray-400 mb-4">لا يوجد مصروفات بعد</p>
-                <button onclick="showExpenseForm()" class="bg-amber-500 hover:bg-amber-600 px-6 py-3 rounded-xl font-bold">
-                    <i class="fas fa-plus ml-2"></i>
+// ==================== قائمة المصروفات ====================
+async function showExpensesList() {
+    const content = document.getElementById('content');
+    if (!content) return;
+    
+    const expenses = await db.getExpenses();
+    const settings = await db.getSettings();
+    
+    if (expenses.length === 0) {
+        content.innerHTML = `
+            <div class="p-6 text-center" dir="rtl">
+                <p class="text-gray-500 mb-4">لا يوجد مصروفات بعد</p>
+                <button onclick="showExpenseForm()" class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition ml-2">
                     إضافة مصروف
                 </button>
-            </div>
-            `;
-            return;
-        }
-        
-        let totalExpenses = 0;
-        
-        let html = `
-        <div class="flex justify-between items-center mb-6">
-            <h3 class="text-xl font-bold">سجل المصروفات</h3>
-            <button onclick="showExpenseForm()" class="bg-green-500 hover:bg-green-600 px-4 py-2 rounded-lg">
-                <i class="fas fa-plus ml-1"></i> إضافة مصروف
-            </button>
-        </div>
-        <div class="table-container">
-            <table>
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>التاريخ</th>
-                        <th>النوع</th>
-                        <th>الوصف</th>
-                        <th>المبلغ</th>
-                        <th>الإجراءات</th>
-                    </tr>
-                </thead>
-                <tbody>
-        `;
-        
-        expenses.forEach((expense, index) => {
-            totalExpenses += expense.amount || 0;
-            
-            html += `
-                <tr>
-                    <td>${index + 1}</td>
-                    <td>${expense.date || expense.createdAt.split('T')[0]}</td>
-                    <td>${expense.type}</td>
-                    <td>${expense.description}</td>
-                    <td class="text-danger font-bold">${expense.amount.toLocaleString()} ج.م</td>
-                    <td>
-                        <button onclick="deleteExpense('${expense.id}')" class="text-danger hover:text-red-300 mx-1">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </td>
-                </tr>
-            `;
-        });
-        
-        html += `
-                </tbody>
-                <tfoot class="bg-gray-800 font-bold">
-                    <tr>
-                        <td colspan="4">الإجمالي:</td>
-                        <td class="text-danger">${totalExpenses.toLocaleString()} ج.م</td>
-                        <td></td>
-                    </tr>
-                </tfoot>
-            </table>
-        </div>
-        `;
-        
-        content.innerHTML = html;
-    }
-
-    // ==================== نموذج إضافة مصروف ====================
-    function showExpenseForm() {
-        const content = document.getElementById('content');
-        content.innerHTML = `
-        <div class="max-w-2xl mx-auto">
-            <h3 class="text-2xl font-bold mb-6 flex items-center gap-2">
-                <i class="fas fa-file-invoice text-orange-400"></i>
-                <span>تسجيل مصروف</span>
-            </h3>
-            
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-gray-300 mb-2">نوع المصروف</label>
-                    <select id="expenseType" class="w-full p-3 rounded-lg bg-gray-700">
-                        <option value="إيجار">إيجار</option>
-                        <option value="رواتب">رواتب</option>
-                        <option value="فواتير">فواتير</option>
-                        <option value="نقل">نقل</option>
-                        <option value="صيانة">صيانة</option>
-                        <option value="تغليف">تغليف</option>
-                        <option value="أخرى">أخرى</option>
-                    </select>
-                </div>
-                
-                <div>
-                    <label class="block text-gray-300 mb-2">الوصف</label>
-                    <input id="expenseDesc" type="text" placeholder="وصف المصروف" 
-                           class="w-full p-3 rounded-lg bg-gray-700"/>
-                </div>
-                
-                <div>
-                    <label class="block text-gray-300 mb-2">المبلغ (ج.م)</label>
-                    <input id="expenseAmount" type="number" placeholder="أدخل المبلغ" 
-                           class="w-full p-3 rounded-lg bg-gray-700"/>
-                </div>
-                
-                <div>
-                    <label class="block text-gray-300 mb-2">التاريخ</label>
-                    <input id="expenseDate" type="date" value="${new Date().toISOString().split('T')[0]}" 
-                           class="w-full p-3 rounded-lg bg-gray-700"/>
-                </div>
-                
-                <div class="flex gap-3 pt-4">
-                    <button id="saveExpense" class="flex-1 bg-gradient-to-l from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 py-3 rounded-xl font-bold">
-                        <i class="fas fa-save ml-2"></i>
-                        تسجيل المصروف
-                    </button>
-                    <button id="cancelForm" class="flex-1 bg-gray-700 hover:bg-gray-600 py-3 rounded-xl font-bold">
-                        <i class="fas fa-times ml-2"></i>
-                        إلغاء
-                    </button>
-                </div>
-            </div>
-        </div>
-        `;
-        
-        document.getElementById('saveExpense').addEventListener('click', saveExpense);
-        document.getElementById('cancelForm').addEventListener('click', showExpensesList);
-    }
-
-    function saveExpense() {
-        const type = document.getElementById('expenseType').value;
-        const description = document.getElementById('expenseDesc').value.trim();
-        const amount = parseFloat(document.getElementById('expenseAmount').value);
-        const date = document.getElementById('expenseDate').value;
-        
-        if(!description || !amount || amount <= 0) {
-            showToast('يرجى إدخال وصف المصروف ومبلغ صحيح', 'error');
-            return;
-        }
-        
-        db.addExpense({
-            type,
-            description,
-            amount,
-            date
-        });
-        
-        showToast('تم تسجيل المصروف بنجاح', 'success');
-        refreshData();
-        showExpensesList();
-    }
-
-    // ==================== قائمة الفلاحين ====================
-    function showFarmersList() {
-        const content = document.getElementById('content');
-        const farmers = db.getFarmers();
-        
-        if (farmers.length === 0) {
-            content.innerHTML = `
-            <div class="text-center py-12">
-                <i class="fas fa-user-tie text-6xl text-gray-600 mb-4"></i>
-                <p class="text-xl text-gray-400 mb-4">لا يوجد فلاحين بعد</p>
-                <button onclick="showFarmerForm()" class="bg-amber-500 hover:bg-amber-600 px-6 py-3 rounded-xl font-bold">
-                    <i class="fas fa-plus ml-2"></i>
-                    إضافة فلاح
+                <button onclick="showDashboard()" class="bg-gray-600 text-white px-6 py-2 rounded-lg hover:bg-gray-700 transition">
+                    عودة
                 </button>
             </div>
-            `;
-            return;
-        }
-        
-        let html = `
-        <div class="flex justify-between items-center mb-6">
-            <h3 class="text-xl font-bold">قائمة الفلاحين</h3>
-            <button onclick="showFarmerForm()" class="bg-green-500 hover:bg-green-600 px-4 py-2 rounded-lg">
-                <i class="fas fa-plus ml-1"></i> إضافة فلاح
-            </button>
-        </div>
-        <div class="table-container">
-            <table>
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>الاسم</th>
-                        <th>رقم الهاتف</th>
-                        <th>العنوان</th>
-                        <th>الإجراءات</th>
-                    </tr>
-                </thead>
-                <tbody>
         `;
-        
-        farmers.forEach((farmer, index) => {
-            html += `
-                <tr>
-                    <td>${index + 1}</td>
-                    <td class="font-bold">${farmer.name}</td>
-                    <td>${farmer.phone || '-'}</td>
-                    <td>${farmer.address || '-'}</td>
-                    <td>
-                        <button onclick="deleteFarmer('${farmer.id}')" class="text-danger hover:text-red-300 mx-1">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </td>
-                </tr>
-            `;
-        });
+        return;
+    }
+    
+    let totalExpenses = 0;
+    
+    let html = `
+        <div class="p-6" dir="rtl">
+            <div class="flex justify-between items-center mb-6">
+                <h1 class="text-2xl font-bold text-gray-800">سجل المصروفات</h1>
+                <div>
+                    <button onclick="showExpenseForm()" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition ml-2">
+                        إضافة مصروف
+                    </button>
+                    <button onclick="showDashboard()" class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition">
+                        عودة
+                    </button>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-lg shadow overflow-hidden">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">#</th>
+                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">التاريخ</th>
+                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">النوع</th>
+                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">الوصف</th>
+                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">المبلغ</th>
+                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+    `;
+    
+    expenses.forEach((expense, index) => {
+        totalExpenses += expense.amount || 0;
         
         html += `
-                </tbody>
-            </table>
-        </div>
+            <tr>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${index + 1}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${expense.date || expense.createdAt?.split('T')[0] || '-'}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${expense.type || 'غير محدد'}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${expense.description || '-'}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${formatNumber(expense.amount)} ${settings.currency}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    <button onclick="deleteExpense(${expense.id})" class="text-red-600 hover:text-red-900">حذف</button>
+                </td>
+            </tr>
         `;
-        
-        content.innerHTML = html;
-    }
+    });
+    
+    html += `
+                    </tbody>
+                    <tfoot class="bg-gray-50 font-semibold">
+                        <tr>
+                            <td colspan="4" class="px-6 py-4 text-right text-sm text-gray-900">الإجمالي:</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${formatNumber(totalExpenses)} ${settings.currency}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900"></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    `;
+    
+    content.innerHTML = html;
+}
 
-    // ==================== نموذج إضافة فلاح ====================
-    function showFarmerForm() {
-        const content = document.getElementById('content');
-        content.innerHTML = `
-        <div class="max-w-2xl mx-auto">
-            <h3 class="text-2xl font-bold mb-6 flex items-center gap-2">
-                <i class="fas fa-user-plus text-green-400"></i>
-                <span>إضافة فلاح جديد</span>
-            </h3>
+// ==================== نموذج إضافة مصروف ====================
+function showExpenseForm() {
+    const content = document.getElementById('content');
+    if (!content) return;
+    
+    const today = new Date().toISOString().split('T')[0];
+    
+    content.innerHTML = `
+        <div class="p-6 max-w-2xl mx-auto" dir="rtl">
+            <h1 class="text-2xl font-bold text-gray-800 mb-6">تسجيل مصروف</h1>
             
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-gray-300 mb-2">الاسم الكامل</label>
-                    <input id="farmerName" type="text" placeholder="أدخل اسم الفلاح" 
-                           class="w-full p-3 rounded-lg bg-gray-700"/>
-                </div>
-                
-                <div>
-                    <label class="block text-gray-300 mb-2">رقم الهاتف</label>
-                    <input id="farmerPhone" type="tel" placeholder="أدخل رقم الهاتف" 
-                           class="w-full p-3 rounded-lg bg-gray-700"/>
-                </div>
-                
-                <div>
-                    <label class="block text-gray-300 mb-2">العنوان</label>
-                    <input id="farmerAddress" type="text" placeholder="العنوان" 
-                           class="w-full p-3 rounded-lg bg-gray-700"/>
-                </div>
-                
-                <div>
-                    <label class="block text-gray-300 mb-2">ملاحظات</label>
-                    <textarea id="farmerNotes" rows="3" placeholder="أي ملاحظات..." 
-                              class="w-full p-3 rounded-lg bg-gray-700"></textarea>
-                </div>
-                
-                <div class="flex gap-3 pt-4">
-                    <button id="saveFarmer" class="flex-1 bg-gradient-to-l from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 py-3 rounded-xl font-bold">
-                        <i class="fas fa-save ml-2"></i>
-                        حفظ البيانات
-                    </button>
-                    <button id="cancelForm" class="flex-1 bg-gray-700 hover:bg-gray-600 py-3 rounded-xl font-bold">
-                        <i class="fas fa-times ml-2"></i>
-                        إلغاء
-                    </button>
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">نوع المصروف</label>
+                        <select id="expenseType" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+                            <option value="إيجار">إيجار</option>
+                            <option value="كهرباء">كهرباء</option>
+                            <option value="مياه">مياه</option>
+                            <option value="رواتب">رواتب</option>
+                            <option value="صيانة">صيانة</option>
+                            <option value="نقل">نقل</option>
+                            <option value="أخرى">أخرى</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">الوصف</label>
+                        <input type="text" id="expenseDesc" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="وصف المصروف">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">المبلغ (${currentSettings.currency})</label>
+                        <input type="number" id="expenseAmount" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="أدخل المبلغ" min="0" step="0.01">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">التاريخ</label>
+                        <input type="date" id="expenseDate" value="${today}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+                    </div>
+                    
+                    <div class="flex gap-3 pt-4">
+                        <button id="saveExpense" class="flex-1 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition">
+                            تسجيل المصروف
+                        </button>
+                        <button onclick="showExpensesList()" class="flex-1 bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition">
+                            إلغاء
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
-        `;
-        
-        document.getElementById('saveFarmer').addEventListener('click', saveFarmer);
-        document.getElementById('cancelForm').addEventListener('click', showFarmersList);
+    `;
+    
+    const saveButton = document.getElementById('saveExpense');
+    if (saveButton) {
+        saveButton.addEventListener('click', saveExpense);
     }
+}
 
-    function saveFarmer() {
-        const name = document.getElementById('farmerName').value.trim();
-        const phone = document.getElementById('farmerPhone').value.trim();
-        const address = document.getElementById('farmerAddress').value.trim();
-        const notes = document.getElementById('farmerNotes').value;
-        
-        if(!name) {
-            showToast('يرجى إدخال اسم الفلاح', 'error');
+async function saveExpense() {
+    const typeSelect = document.getElementById('expenseType');
+    const descInput = document.getElementById('expenseDesc');
+    const amountInput = document.getElementById('expenseAmount');
+    const dateInput = document.getElementById('expenseDate');
+    
+    if (!descInput || !amountInput) {
+        showToast('حدث خطأ في النموذج', 'error');
+        return;
+    }
+    
+    const type = typeSelect?.value || 'أخرى';
+    const description = descInput.value.trim();
+    const amount = parseFloat(amountInput.value) || 0;
+    const date = dateInput?.value || new Date().toISOString().split('T')[0];
+    
+    if (!description) {
+        showToast('يرجى إدخال وصف المصروف', 'error');
+        return;
+    }
+    
+    if (amount <= 0) {
+        showToast('يرجى إدخال مبلغ صحيح', 'error');
+        return;
+    }
+    
+    const result = await db.addExpense({
+        type,
+        description,
+        amount,
+        date
+    });
+    
+    if (result) {
+        showToast('تم تسجيل المصروف بنجاح', 'success');
+        await updateStats();
+        showExpensesList();
+    } else {
+        showToast('حدث خطأ أثناء الحفظ', 'error');
+    }
+}
+
+// ==================== قائمة الفلاحين ====================
+async function showFarmersList() {
+    const content = document.getElementById('content');
+    if (!content) return;
+    
+    const farmers = await db.getFarmers();
+    
+    if (farmers.length === 0) {
+        content.innerHTML = `
+            <div class="p-6 text-center" dir="rtl">
+                <p class="text-gray-500 mb-4">لا يوجد فلاحين بعد</p>
+                <button onclick="showFarmerForm()" class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition ml-2">
+                    إضافة فلاح
+                </button>
+                <button onclick="showDashboard()" class="bg-gray-600 text-white px-6 py-2 rounded-lg hover:bg-gray-700 transition">
+                    عودة
+                </button>
+            </div>
+        `;
+        return;
+    }
+    
+    let html = `
+        <div class="p-6" dir="rtl">
+            <div class="flex justify-between items-center mb-6">
+                <h1 class="text-2xl font-bold text-gray-800">قائمة الفلاحين</h1>
+                <div>
+                    <button onclick="showFarmerForm()" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition ml-2">
+                        إضافة فلاح
+                    </button>
+                    <button onclick="showDashboard()" class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition">
+                        عودة
+                    </button>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-lg shadow overflow-hidden">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">#</th>
+                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">الاسم</th>
+                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">رقم الهاتف</th>
+                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">العنوان</th>
+                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+    `;
+    
+    farmers.forEach((farmer, index) => {
+        html += `
+            <tr>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${index + 1}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${farmer.name || 'غير محدد'}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${farmer.phone || '-'}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${farmer.address || '-'}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    <button onclick="deleteFarmer(${farmer.id})" class="text-red-600 hover:text-red-900">حذف</button>
+                </td>
+            </tr>
+        `;
+    });
+    
+    html += `
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    `;
+    
+    content.innerHTML = html;
+}
+
+// ==================== نموذج إضافة فلاح ====================
+function showFarmerForm() {
+    const content = document.getElementById('content');
+    if (!content) return;
+    
+    content.innerHTML = `
+        <div class="p-6 max-w-2xl mx-auto" dir="rtl">
+            <h1 class="text-2xl font-bold text-gray-800 mb-6">إضافة فلاح جديد</h1>
+            
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">الاسم الكامل</label>
+                        <input type="text" id="farmerName" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="أدخل اسم الفلاح">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">رقم الهاتف</label>
+                        <input type="tel" id="farmerPhone" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="أدخل رقم الهاتف">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">العنوان</label>
+                        <input type="text" id="farmerAddress" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="العنوان">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">ملاحظات</label>
+                        <textarea id="farmerNotes" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="أي ملاحظات..."></textarea>
+                    </div>
+                    
+                    <div class="flex gap-3 pt-4">
+                        <button id="saveFarmer" class="flex-1 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition">
+                            حفظ البيانات
+                        </button>
+                        <button onclick="showFarmersList()" class="flex-1 bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition">
+                            إلغاء
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    const saveButton = document.getElementById('saveFarmer');
+    if (saveButton) {
+        saveButton.addEventListener('click', saveFarmer);
+    }
+}
+
+async function saveFarmer() {
+    const nameInput = document.getElementById('farmerName');
+    const phoneInput = document.getElementById('farmerPhone');
+    const addressInput = document.getElementById('farmerAddress');
+    const notesInput = document.getElementById('farmerNotes');
+    
+    if (!nameInput) {
+        showToast('حدث خطأ في النموذج', 'error');
+        return;
+    }
+    
+    const name = nameInput.value.trim();
+    const phone = phoneInput?.value.trim() || '';
+    const address = addressInput?.value.trim() || '';
+    const notes = notesInput?.value.trim() || '';
+    
+    if (!name) {
+        showToast('يرجى إدخال اسم الفلاح', 'error');
+        return;
+    }
+    
+    const result = await db.addFarmer({
+        name,
+        phone,
+        address,
+        notes
+    });
+    
+    if (result) {
+        showToast('تم إضافة الفلاح بنجاح', 'success');
+        showFarmersList();
+    } else {
+        showToast('حدث خطأ أثناء الحفظ', 'error');
+    }
+}
+
+// ==================== الإعدادات ====================
+async function showSettings() {
+    const content = document.getElementById('content');
+    if (!content) return;
+    
+    const settings = await db.getSettings();
+    
+    content.innerHTML = `
+        <div class="p-6 max-w-2xl mx-auto" dir="rtl">
+            <h1 class="text-2xl font-bold text-gray-800 mb-6">إعدادات النظام</h1>
+            
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">نسبة عمولة الوكالة (%)</label>
+                        <input type="number" id="commissionRate" value="${settings.commissionRate || 10}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" min="0" max="100" step="0.1">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">العملة</label>
+                        <select id="currency" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+                            <option value="ج.م" ${settings.currency === 'ج.م' ? 'selected' : ''}>جنيه مصري (ج.م)</option>
+                            <option value="$" ${settings.currency === '$' ? 'selected' : ''}>دولار ($)</option>
+                            <option value="€" ${settings.currency === '€' ? 'selected' : ''}>يورو (€)</option>
+                            <option value="ر.س" ${settings.currency === 'ر.س' ? 'selected' : ''}>ريال سعودي (ر.س)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="flex gap-3 pt-4">
+                        <button id="saveSettings" class="flex-1 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition">
+                            حفظ الإعدادات
+                        </button>
+                        <button onclick="showDashboard()" class="flex-1 bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition">
+                            إلغاء
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    const saveButton = document.getElementById('saveSettings');
+    if (saveButton) {
+        saveButton.addEventListener('click', async () => {
+            const commissionRate = parseFloat(document.getElementById('commissionRate')?.value) || 10;
+            const currency = document.getElementById('currency')?.value || 'ج.م';
+            
+            const result = await db.updateSettings({ commissionRate, currency });
+            
+            if (result) {
+                currentSettings = { commissionRate, currency };
+                showToast('تم حفظ الإعدادات بنجاح', 'success');
+                showDashboard();
+            } else {
+                showToast('حدث خطأ أثناء الحفظ', 'error');
+            }
+        });
+    }
+}
+
+// ==================== دوال الحذف ====================
+async function deleteProduct(id) {
+    if (confirm('هل أنت متأكد من حذف هذا المنتج؟')) {
+        const result = await db.deleteProduct(id);
+        if (result) {
+            showToast('تم الحذف بنجاح', 'success');
+            await updateStats();
+            showProductsList();
+        } else {
+            showToast('حدث خطأ أثناء الحذف', 'error');
+        }
+    }
+}
+
+async function deleteWorker(id) {
+    if (confirm('هل أنت متأكد من حذف هذا العامل؟')) {
+        const result = await db.deleteWorker(id);
+        if (result) {
+            showToast('تم الحذف بنجاح', 'success');
+            showWorkersList();
+        } else {
+            showToast('حدث خطأ أثناء الحذف', 'error');
+        }
+    }
+}
+
+async function deleteExpense(id) {
+    if (confirm('هل أنت متأكد من حذف هذا المصروف؟')) {
+        const result = await db.deleteExpense(id);
+        if (result) {
+            showToast('تم الحذف بنجاح', 'success');
+            await updateStats();
+            showExpensesList();
+        } else {
+            showToast('حدث خطأ أثناء الحذف', 'error');
+        }
+    }
+}
+
+async function deleteFarmer(id) {
+    if (confirm('هل أنت متأكد من حذف هذا الفلاح؟')) {
+        const result = await db.deleteFarmer(id);
+        if (result) {
+            showToast('تم الحذف بنجاح', 'success');
+            showFarmersList();
+        } else {
+            showToast('حدث خطأ أثناء الحذف', 'error');
+        }
+    }
+}
+
+// ==================== دوال التعديل (قيد التطوير) ====================
+function editProduct(id) {
+    showToast('جاري تطوير خاصية التعديل', 'info');
+}
+
+function editWorker(id) {
+    showToast('جاري تطوير خاصية التعديل', 'info');
+}
+
+// ==================== بدء التطبيق ====================
+document.addEventListener('DOMContentLoaded', async function() {
+    // تهيئة قاعدة البيانات
+    db = new DatabaseManager();
+    
+    // الانتظار قليلاً للتأكد من تهيئة قاعدة البيانات
+    setTimeout(() => {
+        // التحقق من وجود عنصر content
+        const content = document.getElementById('content');
+        if (!content) {
+            console.error('عنصر content غير موجود في الصفحة');
             return;
         }
         
-        db.addFarmer({
-            name,
-            phone,
-            address,
-            notes,
-            createdAt: new Date().toISOString()
-        });
-        
-        showToast('تم إضافة الفلاح بنجاح', 'success');
-        showFarmersList();
-    }
+        // بدء التطبيق
+        showLogin();
+    }, 100);
+});
 
-    // ==================== الإعدادات ====================
-    function showSettings() {
-        const settings = db.getSettings();
-        const content = document.getElementById('content');
-        
-        content.innerHTML = `
-        <div class="max-w-2xl mx-auto">
-            <h3 class="text-2xl font-bold mb-6 flex items-center gap-2">
-                <i class="fas fa-cog text-amber-400"></i>
-                <span>إعدادات النظام</span>
-            </h3>
-            
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-gray-300 mb-2">نسبة عمولة الوكالة (%)</label>
-                    <input id="commissionRate" type="number" value="${settings.commissionRate}" min="0" max="100" step="0.1"
-                           class="w-full p-3 rounded-lg bg-gray-700"/>
-                </div>
-                
-                <div>
-                    <label class="block text-gray-300 mb-2">العملة</label>
-                    <select id="currency" class="w-full p-3 rounded-lg bg-gray-700">
-                        <option value="ج.م" ${settings.currency === 'ج.م' ? 'selected' : ''}>جنيه مصري (ج.م)</option>
-                        <option value="$" ${settings.currency === '$' ? 'selected' : ''}>دولار ($)</option>
-                        <option value="ر.س" ${settings.currency === 'ر.س' ? 'selected' : ''}>ريال سعودي (ر.س)</option>
-                    </select>
-                </div>
-                
-                <div class="flex gap-3 pt-4">
-                    <button id="saveSettings" class="flex-1 bg-gradient-to-l from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 py-3 rounded-xl font-bold">
-                        <i class="fas fa-save ml-2"></i>
-                        حفظ الإعدادات
-                    </button>
-                    <button id="cancelForm" class="flex-1 bg-gray-700 hover:bg-gray-600 py-3 rounded-xl font-bold">
-                        <i class="fas fa-times ml-2"></i>
-                        إلغاء
-                    </button>
-                </div>
-            </div>
-        </div>
-        `;
-        
-        document.getElementById('saveSettings').addEventListener('click', () => {
-            const commissionRate = parseFloat(document.getElementById('commissionRate').value) || 0;
-            const currency = document.getElementById('currency').value;
-            
-            db.updateSettings({ commissionRate, currency });
-            showToast('تم حفظ الإعدادات بنجاح', 'success');
-            showDashboard();
-        });
-        
-        document.getElementById('cancelForm').addEventListener('click', showDashboard);
-    }
-
-    // ==================== دوال مساعدة ====================
-    function refreshData() {
-        updateStats();
-    }
-
-    // دوال الحذف
-    window.deleteProduct = (id) => {
-        if (confirm('هل أنت متأكد من حذف هذا المنتج؟')) {
-            db.deleteProduct(id);
-            showToast('تم الحذف بنجاح', 'success');
-            refreshData();
-            showProductsList();
-        }
-    };
-
-    window.deleteWorker = (id) => {
-        if (confirm('هل أنت متأكد من حذف هذا العامل؟')) {
-            db.deleteWorker(id);
-            showToast('تم الحذف بنجاح', 'success');
-            showWorkersList();
-        }
-    };
-
-    window.deleteExpense = (id) => {
-        if (confirm('هل أنت متأكد من حذف هذا المصروف؟')) {
-            db.deleteExpense(id);
-            showToast('تم الحذف بنجاح', 'success');
-            refreshData();
-            showExpensesList();
-        }
-    };
-
-    window.deleteFarmer = (id) => {
-        if (confirm('هل أنت متأكد من حذف هذا الفلاح؟')) {
-            db.deleteFarmer(id);
-            showToast('تم الحذف بنجاح', 'success');
-            showFarmersList();
-        }
-    };
-
-    // تصدير الدوال
-    window.showProductForm = showProductForm;
-    window.showPurchaseForm = showPurchaseForm;
-    window.showSaleForm = showSaleForm;
-    window.showWorkerForm = showWorkerForm;
-    window.showExpenseForm = showExpenseForm;
-    window.showFarmerForm = showFarmerForm;
-    window.editProduct = (id) => {
-        showToast('جاري تطوير خاصية التعديل', 'info');
-    };
-    window.editWorker = (id) => {
-        showToast('جاري تطوير خاصية التعديل', 'info');
-    };
-
-    // بدء التطبيق
-    showLogin();
-</script>
-</body>
-</html>
+// تصدير الدوال للتستخدم في onclick
+window.showLogin = showLogin;
+window.showDashboard = showDashboard;
+window.showProductsList = showProductsList;
+window.showProductForm = showProductForm;
+window.showPurchaseForm = showPurchaseForm;
+window.showPurchasesList = showPurchasesList;
+window.showSaleForm = showSaleForm;
+window.showSalesList = showSalesList;
+window.showWorkersList = showWorkersList;
+window.showWorkerForm = showWorkerForm;
+window.showExpensesList = showExpensesList;
+window.showExpenseForm = showExpenseForm;
+window.showFarmersList = showFarmersList;
+window.showFarmerForm = showFarmerForm;
+window.showSettings = showSettings;
+window.deleteProduct = deleteProduct;
+window.deleteWorker = deleteWorker;
+window.deleteExpense = deleteExpense;
+window.deleteFarmer = deleteFarmer;
+window.editProduct = editProduct;
+window.editWorker = editWorker;

@@ -1,2146 +1,284 @@
-// ==================== إدارة قاعدة البيانات (IndexedDB) ====================
-class DatabaseManager {
-    constructor() {
-        this.db = null;
-        this.initDB();
-    }
-
-    async initDB() {
-        return new Promise((resolve, reject) => {
-            const request = indexedDB.open('MarketManagerDB', 1);
-
-            request.onerror = (event) => {
-                console.error('خطأ في فتح قاعدة البيانات:', event.target.error);
-                reject(event.target.error);
-            };
-
-            request.onsuccess = (event) => {
-                this.db = event.target.result;
-                console.log('تم فتح قاعدة البيانات بنجاح');
-                resolve(this.db);
-            };
-
-            request.onupgradeneeded = (event) => {
-                const db = event.target.result;
-                
-                // إنشاء جداول قاعدة البيانات
-                if (!db.objectStoreNames.contains('settings')) {
-                    db.createObjectStore('settings', { keyPath: 'id' });
-                }
-                
-                if (!db.objectStoreNames.contains('products')) {
-                    const productStore = db.createObjectStore('products', { keyPath: 'id', autoIncrement: true });
-                    productStore.createIndex('name', 'name', { unique: false });
-                }
-                
-                if (!db.objectStoreNames.contains('purchases')) {
-                    db.createObjectStore('purchases', { keyPath: 'id', autoIncrement: true });
-                }
-                
-                if (!db.objectStoreNames.contains('sales')) {
-                    db.createObjectStore('sales', { keyPath: 'id', autoIncrement: true });
-                }
-                
-                if (!db.objectStoreNames.contains('workers')) {
-                    const workerStore = db.createObjectStore('workers', { keyPath: 'id', autoIncrement: true });
-                    workerStore.createIndex('name', 'name', { unique: false });
-                }
-                
-                if (!db.objectStoreNames.contains('expenses')) {
-                    db.createObjectStore('expenses', { keyPath: 'id', autoIncrement: true });
-                }
-                
-                if (!db.objectStoreNames.contains('farmers')) {
-                    db.createObjectStore('farmers', { keyPath: 'id', autoIncrement: true });
-                }
-            };
-        });
-    }
-
-    // ================ الإعدادات ================
-    async getSettings() {
-        return new Promise((resolve) => {
-            if (!this.db) {
-                resolve({ commissionRate: 10, currency: 'ج.م' });
-                return;
-            }
-            
-            const transaction = this.db.transaction(['settings'], 'readonly');
-            const store = transaction.objectStore('settings');
-            const request = store.get('main');
-            
-            request.onsuccess = () => {
-                if (request.result) {
-                    resolve(request.result);
-                } else {
-                    resolve({ commissionRate: 10, currency: 'ج.م' });
-                }
-            };
-            
-            request.onerror = () => {
-                resolve({ commissionRate: 10, currency: 'ج.م' });
-            };
-        });
-    }
-
-    async updateSettings(settings) {
-        return new Promise((resolve) => {
-            if (!this.db) {
-                resolve(false);
-                return;
-            }
-            
-            const transaction = this.db.transaction(['settings'], 'readwrite');
-            const store = transaction.objectStore('settings');
-            const request = store.put({ id: 'main', ...settings });
-            
-            request.onsuccess = () => resolve(true);
-            request.onerror = () => resolve(false);
-        });
-    }
-
-    // ================ المنتجات ================
-    async getProducts() {
-        return new Promise((resolve) => {
-            if (!this.db) {
-                resolve([]);
-                return;
-            }
-            
-            const transaction = this.db.transaction(['products'], 'readonly');
-            const store = transaction.objectStore('products');
-            const request = store.getAll();
-            
-            request.onsuccess = () => resolve(request.result || []);
-            request.onerror = () => resolve([]);
-        });
-    }
-
-    async addProduct(product) {
-        return new Promise((resolve) => {
-            if (!this.db) {
-                resolve(null);
-                return;
-            }
-            
-            const transaction = this.db.transaction(['products'], 'readwrite');
-            const store = transaction.objectStore('products');
-            const request = store.add({
-                ...product,
-                createdAt: new Date().toISOString()
-            });
-            
-            request.onsuccess = () => resolve(request.result);
-            request.onerror = () => resolve(null);
-        });
-    }
-
-    async deleteProduct(id) {
-        return new Promise((resolve) => {
-            if (!this.db) {
-                resolve(false);
-                return;
-            }
-            
-            const transaction = this.db.transaction(['products'], 'readwrite');
-            const store = transaction.objectStore('products');
-            const request = store.delete(id);
-            
-            request.onsuccess = () => resolve(true);
-            request.onerror = () => resolve(false);
-        });
-    }
-
-    // ================ المشتريات ================
-    async getPurchases() {
-        return new Promise((resolve) => {
-            if (!this.db) {
-                resolve([]);
-                return;
-            }
-            
-            const transaction = this.db.transaction(['purchases'], 'readonly');
-            const store = transaction.objectStore('purchases');
-            const request = store.getAll();
-            
-            request.onsuccess = () => resolve(request.result || []);
-            request.onerror = () => resolve([]);
-        });
-    }
-
-    async addPurchase(purchase) {
-        return new Promise((resolve) => {
-            if (!this.db) {
-                resolve(null);
-                return;
-            }
-            
-            const transaction = this.db.transaction(['purchases'], 'readwrite');
-            const store = transaction.objectStore('purchases');
-            const request = store.add({
-                ...purchase,
-                createdAt: new Date().toISOString()
-            });
-            
-            request.onsuccess = () => resolve(request.result);
-            request.onerror = () => resolve(null);
-        });
-    }
-
-    // ================ المبيعات ================
-    async getSales() {
-        return new Promise((resolve) => {
-            if (!this.db) {
-                resolve([]);
-                return;
-            }
-            
-            const transaction = this.db.transaction(['sales'], 'readonly');
-            const store = transaction.objectStore('sales');
-            const request = store.getAll();
-            
-            request.onsuccess = () => resolve(request.result || []);
-            request.onerror = () => resolve([]);
-        });
-    }
-
-    async addSale(sale) {
-        return new Promise((resolve) => {
-            if (!this.db) {
-                resolve(null);
-                return;
-            }
-            
-            const transaction = this.db.transaction(['sales'], 'readwrite');
-            const store = transaction.objectStore('sales');
-            const request = store.add({
-                ...sale,
-                createdAt: new Date().toISOString()
-            });
-            
-            request.onsuccess = () => resolve(request.result);
-            request.onerror = () => resolve(null);
-        });
-    }
-
-    // ================ العمالة ================
-    async getWorkers() {
-        return new Promise((resolve) => {
-            if (!this.db) {
-                resolve([]);
-                return;
-            }
-            
-            const transaction = this.db.transaction(['workers'], 'readonly');
-            const store = transaction.objectStore('workers');
-            const request = store.getAll();
-            
-            request.onsuccess = () => resolve(request.result || []);
-            request.onerror = () => resolve([]);
-        });
-    }
-
-    async addWorker(worker) {
-        return new Promise((resolve) => {
-            if (!this.db) {
-                resolve(null);
-                return;
-            }
-            
-            const transaction = this.db.transaction(['workers'], 'readwrite');
-            const store = transaction.objectStore('workers');
-            const request = store.add({
-                ...worker,
-                createdAt: new Date().toISOString()
-            });
-            
-            request.onsuccess = () => resolve(request.result);
-            request.onerror = () => resolve(null);
-        });
-    }
-
-    async deleteWorker(id) {
-        return new Promise((resolve) => {
-            if (!this.db) {
-                resolve(false);
-                return;
-            }
-            
-            const transaction = this.db.transaction(['workers'], 'readwrite');
-            const store = transaction.objectStore('workers');
-            const request = store.delete(id);
-            
-            request.onsuccess = () => resolve(true);
-            request.onerror = () => resolve(false);
-        });
-    }
-
-    // ================ المصروفات ================
-    async getExpenses() {
-        return new Promise((resolve) => {
-            if (!this.db) {
-                resolve([]);
-                return;
-            }
-            
-            const transaction = this.db.transaction(['expenses'], 'readonly');
-            const store = transaction.objectStore('expenses');
-            const request = store.getAll();
-            
-            request.onsuccess = () => resolve(request.result || []);
-            request.onerror = () => resolve([]);
-        });
-    }
-
-    async addExpense(expense) {
-        return new Promise((resolve) => {
-            if (!this.db) {
-                resolve(null);
-                return;
-            }
-            
-            const transaction = this.db.transaction(['expenses'], 'readwrite');
-            const store = transaction.objectStore('expenses');
-            const request = store.add({
-                ...expense,
-                createdAt: new Date().toISOString()
-            });
-            
-            request.onsuccess = () => resolve(request.result);
-            request.onerror = () => resolve(null);
-        });
-    }
-
-    async deleteExpense(id) {
-        return new Promise((resolve) => {
-            if (!this.db) {
-                resolve(false);
-                return;
-            }
-            
-            const transaction = this.db.transaction(['expenses'], 'readwrite');
-            const store = transaction.objectStore('expenses');
-            const request = store.delete(id);
-            
-            request.onsuccess = () => resolve(true);
-            request.onerror = () => resolve(false);
-        });
-    }
-
-    // ================ الفلاحين ================
-    async getFarmers() {
-        return new Promise((resolve) => {
-            if (!this.db) {
-                resolve([]);
-                return;
-            }
-            
-            const transaction = this.db.transaction(['farmers'], 'readonly');
-            const store = transaction.objectStore('farmers');
-            const request = store.getAll();
-            
-            request.onsuccess = () => resolve(request.result || []);
-            request.onerror = () => resolve([]);
-        });
-    }
-
-    async addFarmer(farmer) {
-        return new Promise((resolve) => {
-            if (!this.db) {
-                resolve(null);
-                return;
-            }
-            
-            const transaction = this.db.transaction(['farmers'], 'readwrite');
-            const store = transaction.objectStore('farmers');
-            const request = store.add({
-                ...farmer,
-                createdAt: new Date().toISOString()
-            });
-            
-            request.onsuccess = () => resolve(request.result);
-            request.onerror = () => resolve(null);
-        });
-    }
-
-    async deleteFarmer(id) {
-        return new Promise((resolve) => {
-            if (!this.db) {
-                resolve(false);
-                return;
-            }
-            
-            const transaction = this.db.transaction(['farmers'], 'readwrite');
-            const store = transaction.objectStore('farmers');
-            const request = store.delete(id);
-            
-            request.onsuccess = () => resolve(true);
-            request.onerror = () => resolve(false);
-        });
-    }
-}
-
-// ==================== تهيئة التطبيق ====================
-let db;
-let currentSettings = { commissionRate: 10, currency: 'ج.م' };
-
-// ==================== دوال مساعدة ====================
-function showToast(message, type = 'info') {
-    // إنشاء عنصر toast إذا لم يكن موجوداً
-    let toast = document.getElementById('toast-message');
-    if (!toast) {
-        toast = document.createElement('div');
-        toast.id = 'toast-message';
-        toast.style.cssText = `
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            padding: 12px 24px;
-            border-radius: 8px;
-            color: white;
-            font-weight: bold;
-            z-index: 9999;
-            display: none;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            direction: rtl;
-        `;
-        document.body.appendChild(toast);
-    }
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>وكالة - نظام إدارة متكامل</title>
     
-    // تعيين اللون حسب النوع
-    const colors = {
-        success: '#10b981',
-        error: '#ef4444',
-        info: '#3b82f6',
-        warning: '#f59e0b'
-    };
+    <!-- الخطوط -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
     
-    toast.style.backgroundColor = colors[type] || colors.info;
-    toast.textContent = message;
-    toast.style.display = 'block';
+    <!-- أيقونات Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    // إخفاء الرسالة بعد 3 ثواني
-    setTimeout(() => {
-        toast.style.display = 'none';
-    }, 3000);
-}
-
-function formatNumber(number) {
-    return number?.toLocaleString() || '0';
-}
-
-// ==================== تحديث الإحصائيات ====================
-async function updateStats() {
-    const settings = await db.getSettings();
-    currentSettings = settings;
-}
-
-// ==================== شاشة تسجيل الدخول ====================
-function showLogin() {
-    const content = document.getElementById('content');
-    if (!content) return;
-    
-    content.innerHTML = `
-        <div class="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8" dir="rtl">
-            <div class="max-w-md w-full space-y-8">
-                <div>
-                    <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
-                        نظام إدارة السوق
-                    </h2>
-                    <p class="mt-2 text-center text-sm text-gray-600">
-                        الرجاء تسجيل الدخول للمتابعة
-                    </p>
-                </div>
-                <div class="mt-8 space-y-6">
-                    <div class="rounded-md shadow-sm -space-y-px">
-                        <div>
-                            <label for="username" class="sr-only">اسم المستخدم</label>
-                            <input id="username" name="username" type="text" required class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-green-500 focus:border-green-500 focus:z-10 sm:text-sm" placeholder="اسم المستخدم">
-                        </div>
-                        <div>
-                            <label for="password" class="sr-only">كلمة المرور</label>
-                            <input id="password" name="password" type="password" required class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-green-500 focus:border-green-500 focus:z-10 sm:text-sm" placeholder="كلمة المرور">
-                        </div>
-                    </div>
-                    
-                    <div>
-                        <button id="loginButton" class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
-                            دخول
-                        </button>
-                    </div>
-                    
-                    <div class="text-center">
-                        <p class="text-xs text-gray-500">للاختبار: admin / admin</p>
-                    </div>
-                </div>
-            </div>
+    <!-- ملف التنسيق الرئيسي -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container" id="app">
+        <!-- شاشة التحميل الأولية -->
+        <div id="loading-screen" class="glass-card" style="text-align: center; padding: 50px;">
+            <i class="fas fa-spinner fa-spin" style="font-size: 3rem; color: white; margin-bottom: 20px;"></i>
+            <h2 style="color: white;">جاري تحميل النظام...</h2>
         </div>
-    `;
-    
-    const loginButton = document.getElementById('loginButton');
-    if (loginButton) {
-        loginButton.addEventListener('click', () => {
-            const username = document.getElementById('username')?.value;
-            const password = document.getElementById('password')?.value;
-            
-            if (username === 'admin' && password === 'admin') {
-                showToast('تم تسجيل الدخول بنجاح', 'success');
-                showDashboard();
-            } else {
-                showToast('اسم المستخدم أو كلمة المرور غير صحيحة', 'error');
-            }
-        });
-    }
-}
 
-// ==================== لوحة التحكم الرئيسية ====================
-async function showDashboard() {
-    const content = document.getElementById('content');
-    if (!content) return;
-    
-    const settings = await db.getSettings();
-    currentSettings = settings;
-    
-    content.innerHTML = `
-        <div class="p-6" dir="rtl">
-            <div class="flex justify-between items-center mb-6">
-                <h1 class="text-2xl font-bold text-gray-800">لوحة التحكم</h1>
-                <button onclick="showLogin()" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition">
-                    تسجيل الخروج
-                </button>
-            </div>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-                <div class="bg-white rounded-lg shadow p-6">
-                    <h3 class="text-gray-500 text-sm mb-2">إجمالي المشتريات</h3>
-                    <p class="text-2xl font-bold text-gray-800" id="totalPurchases">0 ${settings.currency}</p>
-                </div>
-                <div class="bg-white rounded-lg shadow p-6">
-                    <h3 class="text-gray-500 text-sm mb-2">إجمالي المبيعات</h3>
-                    <p class="text-2xl font-bold text-gray-800" id="totalSales">0 ${settings.currency}</p>
-                </div>
-                <div class="bg-white rounded-lg shadow p-6">
-                    <h3 class="text-gray-500 text-sm mb-2">صافي الأرباح</h3>
-                    <p class="text-2xl font-bold text-green-600" id="netProfit">0 ${settings.currency}</p>
-                </div>
-                <div class="bg-white rounded-lg shadow p-6">
-                    <h3 class="text-gray-500 text-sm mb-2">إجمالي المصروفات</h3>
-                    <p class="text-2xl font-bold text-red-600" id="totalExpenses">0 ${settings.currency}</p>
-                </div>
-            </div>
-            
-            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
-                <button onclick="showProductsList()" class="bg-blue-500 text-white p-4 rounded-lg hover:bg-blue-600 transition">
-                    <div class="text-2xl mb-2">📦</div>
-                    <div>المنتجات</div>
-                </button>
-                <button onclick="showPurchasesList()" class="bg-green-500 text-white p-4 rounded-lg hover:bg-green-600 transition">
-                    <div class="text-2xl mb-2">🛒</div>
-                    <div>المشتريات</div>
-                </button>
-                <button onclick="showSalesList()" class="bg-yellow-500 text-white p-4 rounded-lg hover:bg-yellow-600 transition">
-                    <div class="text-2xl mb-2">💰</div>
-                    <div>المبيعات</div>
-                </button>
-                <button onclick="showWorkersList()" class="bg-purple-500 text-white p-4 rounded-lg hover:bg-purple-600 transition">
-                    <div class="text-2xl mb-2">👥</div>
-                    <div>العمالة</div>
-                </button>
-                <button onclick="showExpensesList()" class="bg-red-500 text-white p-4 rounded-lg hover:bg-red-600 transition">
-                    <div class="text-2xl mb-2">📝</div>
-                    <div>المصروفات</div>
-                </button>
-                <button onclick="showSettings()" class="bg-gray-500 text-white p-4 rounded-lg hover:bg-gray-600 transition">
-                    <div class="text-2xl mb-2">⚙️</div>
-                    <div>الإعدادات</div>
-                </button>
-            </div>
+        <!-- المحتوى الرئيسي (سيتم تعبئته بواسطة JavaScript) -->
+        <div id="content"></div>
+
+        <!-- شريط الاختصارات -->
+        <div class="shortcuts-bar" style="position: fixed; bottom: 20px; left: 20px; background: rgba(0,0,0,0.7); color: white; padding: 10px; border-radius: 10px; font-size: 0.8rem; display: none;" id="shortcuts-bar">
+            <span><span class="shortcut-badge">F1</span> مبيعات</span>
+            <span><span class="shortcut-badge">F2</span> مشتريات</span>
+            <span><span class="shortcut-badge">F3</span> عمالة</span>
+            <span><span class="shortcut-badge">F4</span> رئيسية</span>
         </div>
-    `;
-    
-    // حساب الإحصائيات
-    await updateDashboardStats();
-}
 
-async function updateDashboardStats() {
-    try {
-        const purchases = await db.getPurchases();
-        const sales = await db.getSales();
-        const expenses = await db.getExpenses();
+        <!-- شريط التنقل السفلي للموبايل -->
+        <div class="mobile-nav">
+            <a href="#" onclick="window.showDashboard(); return false;" class="mobile-nav-item">
+                <i class="fas fa-home"></i>
+                <span>الرئيسية</span>
+            </a>
+            <a href="#" onclick="window.showSaleForm(); return false;" class="mobile-nav-item">
+                <i class="fas fa-cash-register"></i>
+                <span>مبيعات</span>
+            </a>
+            <a href="#" onclick="window.showPurchaseForm(); return false;" class="mobile-nav-item">
+                <i class="fas fa-shopping-cart"></i>
+                <span>مشتريات</span>
+            </a>
+            <a href="#" onclick="window.showWorkersList(); return false;" class="mobile-nav-item">
+                <i class="fas fa-users"></i>
+                <span>عمالة</span>
+            </a>
+            <a href="#" onclick="window.showExpensesList(); return false;" class="mobile-nav-item">
+                <i class="fas fa-file-invoice"></i>
+                <span>مصروفات</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- نافذة منبثقة للرسائل (Toast) -->
+    <div id="toast-container" style="position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; display: none;"></div>
+
+    <!-- تحميل مكتبات JavaScript -->
+    <script src="calculations.js"></script>
+    <script>
+        // =============================================
+        // البيانات الأساسية والتهيئة الأولية
+        // =============================================
         
-        const totalPurchases = purchases.reduce((sum, p) => sum + (p.totalCost || 0), 0);
-        const totalSales = sales.reduce((sum, s) => sum + (s.totalSales || 0), 0);
-        const totalExpenses = expenses.reduce((sum, e) => sum + (e.amount || 0), 0);
-        const netProfit = totalSales - totalPurchases - totalExpenses;
-        
-        const totalPurchasesEl = document.getElementById('totalPurchases');
-        const totalSalesEl = document.getElementById('totalSales');
-        const totalExpensesEl = document.getElementById('totalExpenses');
-        const netProfitEl = document.getElementById('netProfit');
-        
-        if (totalPurchasesEl) totalPurchasesEl.textContent = `${formatNumber(totalPurchases)} ${currentSettings.currency}`;
-        if (totalSalesEl) totalSalesEl.textContent = `${formatNumber(totalSales)} ${currentSettings.currency}`;
-        if (totalExpensesEl) totalExpensesEl.textContent = `${formatNumber(totalExpenses)} ${currentSettings.currency}`;
-        if (netProfitEl) netProfitEl.textContent = `${formatNumber(netProfit)} ${currentSettings.currency}`;
-    } catch (error) {
-        console.error('خطأ في تحديث الإحصائيات:', error);
-    }
-}
-
-// ==================== قائمة المنتجات ====================
-async function showProductsList() {
-    const content = document.getElementById('content');
-    if (!content) return;
-    
-    const products = await db.getProducts();
-    
-    if (products.length === 0) {
-        content.innerHTML = `
-            <div class="p-6 text-center" dir="rtl">
-                <p class="text-gray-500 mb-4">لا يوجد منتجات بعد</p>
-                <button onclick="showProductForm()" class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition">
-                    إضافة منتج
-                </button>
-                <button onclick="showDashboard()" class="bg-gray-600 text-white px-6 py-2 rounded-lg hover:bg-gray-700 transition mr-2">
-                    عودة
-                </button>
-            </div>
-        `;
-        return;
-    }
-    
-    let html = `
-        <div class="p-6" dir="rtl">
-            <div class="flex justify-between items-center mb-6">
-                <h1 class="text-2xl font-bold text-gray-800">قائمة المنتجات</h1>
-                <div>
-                    <button onclick="showProductForm()" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition ml-2">
-                        إضافة منتج
-                    </button>
-                    <button onclick="showDashboard()" class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition">
-                        عودة
-                    </button>
-                </div>
-            </div>
+        // قاعدة البيانات المحلية (LocalStorage)
+        const Storage = {
+            // حفظ البيانات
+            set: (key, data) => {
+                try {
+                    localStorage.setItem(key, JSON.stringify(data));
+                    return true;
+                } catch (e) {
+                    console.error('خطأ في الحفظ:', e);
+                    return false;
+                }
+            },
             
-            <div class="bg-white rounded-lg shadow overflow-hidden">
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
-                        <tr>
-                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">#</th>
-                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">المنتج</th>
-                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">السعر</th>
-                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">الكمية</th>
-                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">الإجراءات</th>
-                        </tr>
-                    </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
-    `;
-    
-    products.forEach((product, index) => {
-        html += `
-            <tr>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${index + 1}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${product.name || 'غير محدد'}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${formatNumber(product.price)} ${currentSettings.currency}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${formatNumber(product.quantity)}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <button onclick="editProduct(${product.id})" class="text-blue-600 hover:text-blue-900 ml-3">تعديل</button>
-                    <button onclick="deleteProduct(${product.id})" class="text-red-600 hover:text-red-900">حذف</button>
-                </td>
-            </tr>
-        `;
-    });
-    
-    html += `
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    `;
-    
-    content.innerHTML = html;
-}
-
-// ==================== نموذج إضافة منتج ====================
-function showProductForm() {
-    const content = document.getElementById('content');
-    if (!content) return;
-    
-    content.innerHTML = `
-        <div class="p-6 max-w-2xl mx-auto" dir="rtl">
-            <h1 class="text-2xl font-bold text-gray-800 mb-6">إضافة منتج جديد</h1>
+            // قراءة البيانات
+            get: (key, defaultValue = null) => {
+                try {
+                    const data = localStorage.getItem(key);
+                    return data ? JSON.parse(data) : defaultValue;
+                } catch (e) {
+                    console.error('خطأ في القراءة:', e);
+                    return defaultValue;
+                }
+            },
             
-            <div class="bg-white rounded-lg shadow p-6">
-                <div class="space-y-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">اسم المنتج</label>
-                        <input type="text" id="productName" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="أدخل اسم المنتج">
-                    </div>
-                    
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">السعر (${currentSettings.currency})</label>
-                        <input type="number" id="productPrice" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="0" min="0" step="0.01">
-                    </div>
-                    
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">الكمية المتوفرة</label>
-                        <input type="number" id="productQuantity" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="0" min="0" step="1">
-                    </div>
-                    
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">الوصف</label>
-                        <textarea id="productDescription" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="وصف المنتج..."></textarea>
-                    </div>
-                    
-                    <div class="flex gap-3 pt-4">
-                        <button id="saveProduct" class="flex-1 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition">
-                            حفظ المنتج
-                        </button>
-                        <button onclick="showProductsList()" class="flex-1 bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition">
-                            إلغاء
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    `;
-    
-    const saveButton = document.getElementById('saveProduct');
-    if (saveButton) {
-        saveButton.addEventListener('click', saveProduct);
-    }
-}
+            // حذف البيانات
+            remove: (key) => {
+                try {
+                    localStorage.removeItem(key);
+                    return true;
+                } catch (e) {
+                    console.error('خطأ في الحذف:', e);
+                    return false;
+                }
+            }
+        };
 
-async function saveProduct() {
-    const nameInput = document.getElementById('productName');
-    const priceInput = document.getElementById('productPrice');
-    const quantityInput = document.getElementById('productQuantity');
-    const descInput = document.getElementById('productDescription');
-    
-    if (!nameInput || !priceInput || !quantityInput) {
-        showToast('حدث خطأ في النموذج', 'error');
-        return;
-    }
-    
-    const name = nameInput.value.trim();
-    const price = parseFloat(priceInput.value) || 0;
-    const quantity = parseInt(quantityInput.value) || 0;
-    const description = descInput?.value.trim() || '';
-    
-    if (!name) {
-        showToast('يرجى إدخال اسم المنتج', 'error');
-        return;
-    }
-    
-    if (price <= 0) {
-        showToast('يرجى إدخال سعر صحيح', 'error');
-        return;
-    }
-    
-    const result = await db.addProduct({
-        name,
-        price,
-        quantity,
-        description
-    });
-    
-    if (result) {
-        showToast('تم إضافة المنتج بنجاح', 'success');
-        showProductsList();
-    } else {
-        showToast('حدث خطأ أثناء الحفظ', 'error');
-    }
-}
+        // إعدادات النظام
+        let SystemSettings = Storage.get('wakala_settings', {
+            commissionRate: 10,
+            currency: 'ج.م',
+            storeName: 'وكالة',
+            allowNegativeProfit: false,
+            minimumProfit: 0.01
+        });
 
-// ==================== نموذج تسجيل مشتريات ====================
-async function showPurchaseForm() {
-    const content = document.getElementById('content');
-    if (!content) return;
-    
-    const products = await db.getProducts();
-    
-    if (products.length === 0) {
-        showToast('يجب إضافة منتجات أولاً', 'error');
-        showProductsList();
-        return;
-    }
-    
-    const today = new Date().toISOString().split('T')[0];
-    
-    content.innerHTML = `
-        <div class="p-6" dir="rtl">
-            <div class="flex justify-between items-center mb-6">
-                <h1 class="text-2xl font-bold text-gray-800">تسجيل مشتريات</h1>
-                <button onclick="showPurchasesList()" class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition">
-                    عودة
-                </button>
-            </div>
-            
-            <div class="bg-white rounded-lg shadow p-6">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">المورد</label>
-                        <input type="text" id="supplier" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="اسم المورد">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">التاريخ</label>
-                        <input type="date" id="purchaseDate" value="${today}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
-                    </div>
-                </div>
-                
-                <h2 class="text-lg font-semibold text-gray-800 mb-3">المنتجات المشتراة</h2>
-                <div id="items-container" class="space-y-2 mb-4">
-                    <div class="purchase-item grid grid-cols-12 gap-2">
-                        <div class="col-span-6">
-                            <select class="product-select w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
-                                <option value="">اختر منتج</option>
-                                ${products.map(p => `<option value="${p.id}" data-price="${p.price}">${p.name}</option>`).join('')}
-                            </select>
-                        </div>
-                        <div class="col-span-3">
-                            <input type="number" class="quantity w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="الكمية" min="0" step="0.01">
-                        </div>
-                        <div class="col-span-3">
-                            <input type="number" class="price w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="السعر" min="0" step="0.01">
-                        </div>
-                    </div>
-                </div>
-                
-                <button id="addItem" class="mb-6 text-green-600 hover:text-green-700 flex items-center gap-1">
-                    <span>➕</span> إضافة منتج آخر
-                </button>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">تكلفة النقل (${currentSettings.currency})</label>
-                        <input type="number" id="transportCost" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="0" min="0" step="0.01" value="0">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">تكاليف أخرى (${currentSettings.currency})</label>
-                        <input type="number" id="otherCosts" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="0" min="0" step="0.01" value="0">
-                    </div>
-                </div>
-                
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">ملاحظات</label>
-                    <textarea id="purchaseNotes" rows="2" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="أي ملاحظات..."></textarea>
-                </div>
-                
-                <div class="flex gap-3 mt-6">
-                    <button id="savePurchase" class="flex-1 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition">
-                        تسجيل المشتريات
-                    </button>
-                    <button onclick="showPurchasesList()" class="flex-1 bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition">
-                        إلغاء
-                    </button>
-                </div>
-            </div>
-        </div>
-    `;
-    
-    // إضافة مستمعي الأحداث
-    const addItemBtn = document.getElementById('addItem');
-    if (addItemBtn) {
-        addItemBtn.addEventListener('click', () => {
-            const container = document.getElementById('items-container');
+        // بيانات العمال
+        let Workers = Storage.get('wakala_workers', []);
+
+        // بيانات المنتجات
+        let Products = Storage.get('wakala_products', []);
+
+        // بيانات المبيعات
+        let Sales = Storage.get('wakala_sales', []);
+
+        // بيانات المشتريات
+        let Purchases = Storage.get('wakala_purchases', []);
+
+        // بيانات المصروفات
+        let Expenses = Storage.get('wakala_expenses', []);
+
+        // بيانات الفلاحين
+        let Farmers = Storage.get('wakala_farmers', []);
+
+        // =============================================
+        // تحميل البيانات الافتراضية من ملف JSON
+        // =============================================
+        async function loadDefaultData() {
+            try {
+                // محاولة تحميل البيانات الافتراضية من ملف JSON
+                const response = await fetch('data-defaults.json');
+                if (response.ok) {
+                    const defaults = await response.json();
+                    
+                    // تحميل الإعدادات إذا لم تكن موجودة
+                    if (!Storage.get('wakala_settings')) {
+                        Storage.set('wakala_settings', defaults.settings);
+                        SystemSettings = defaults.settings;
+                    }
+                    
+                    // تحميل العمال إذا لم يكونوا موجودين
+                    if (!Storage.get('wakala_workers') || Storage.get('wakala_workers').length === 0) {
+                        Storage.set('wakala_workers', defaults.workers);
+                        Workers = defaults.workers;
+                    }
+                    
+                    // تحميل المنتجات إذا لم تكن موجودة
+                    if (!Storage.get('wakala_products') || Storage.get('wakala_products').length === 0) {
+                        Storage.set('wakala_products', defaults.products);
+                        Products = defaults.products;
+                    }
+                    
+                    console.log('تم تحميل البيانات الافتراضية بنجاح');
+                }
+            } catch (error) {
+                console.log('لا يوجد ملف بيانات افتراضية أو خطأ في تحميله:', error);
+            }
+        }
+
+        // =============================================
+        // دوال مساعدة
+        // =============================================
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
             if (!container) return;
             
-            const products = db.getProducts();
-            const newItem = document.createElement('div');
-            newItem.className = 'purchase-item grid grid-cols-12 gap-2 mt-2';
-            newItem.innerHTML = `
-                <div class="col-span-6">
-                    <select class="product-select w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
-                        <option value="">اختر منتج</option>
-                        ${products.map(p => `<option value="${p.id}" data-price="${p.price}">${p.name}</option>`).join('')}
-                    </select>
-                </div>
-                <div class="col-span-3">
-                    <input type="number" class="quantity w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="الكمية" min="0" step="0.01">
-                </div>
-                <div class="col-span-3">
-                    <input type="number" class="price w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="السعر" min="0" step="0.01">
-                </div>
-            `;
-            container.appendChild(newItem);
-        });
-    }
-    
-    const saveBtn = document.getElementById('savePurchase');
-    if (saveBtn) {
-        saveBtn.addEventListener('click', savePurchase);
-    }
-}
-
-async function savePurchase() {
-    const supplier = document.getElementById('supplier')?.value.trim() || '';
-    const date = document.getElementById('purchaseDate')?.value || new Date().toISOString().split('T')[0];
-    const transportCost = parseFloat(document.getElementById('transportCost')?.value) || 0;
-    const otherCosts = parseFloat(document.getElementById('otherCosts')?.value) || 0;
-    const notes = document.getElementById('purchaseNotes')?.value.trim() || '';
-    
-    const items = [];
-    document.querySelectorAll('.purchase-item').forEach(item => {
-        const productSelect = item.querySelector('.product-select');
-        const quantity = parseFloat(item.querySelector('.quantity')?.value) || 0;
-        const price = parseFloat(item.querySelector('.price')?.value) || 0;
-        
-        if (productSelect?.value && quantity > 0 && price > 0) {
-            items.push({
-                productId: productSelect.value,
-                productName: productSelect.options[productSelect.selectedIndex]?.text || 'غير محدد',
-                quantity,
-                pricePerUnit: price,
-                total: quantity * price
-            });
+            const colors = {
+                success: '#28a745',
+                error: '#dc3545',
+                info: '#17a2b8',
+                warning: '#ffc107'
+            };
+            
+            container.style.backgroundColor = colors[type] || colors.info;
+            container.style.color = type === 'warning' ? '#212529' : 'white';
+            container.style.padding = '15px 25px';
+            container.style.borderRadius = '50px';
+            container.style.fontWeight = 'bold';
+            container.style.boxShadow = '0 5px 15px rgba(0,0,0,0.3)';
+            container.style.display = 'block';
+            container.textContent = message;
+            
+            setTimeout(() => {
+                container.style.display = 'none';
+            }, 3000);
         }
-    });
-    
-    if (items.length === 0) {
-        showToast('يرجى إضافة منتج واحد على الأقل', 'error');
-        return;
-    }
-    
-    const totalItemsCost = items.reduce((sum, item) => sum + item.total, 0);
-    const totalCost = totalItemsCost + transportCost + otherCosts;
-    
-    const result = await db.addPurchase({
-        supplier,
-        date,
-        items,
-        transportCost,
-        otherCosts,
-        totalItemsCost,
-        totalCost,
-        notes,
-        status: 'completed'
-    });
-    
-    if (result) {
-        showToast('تم تسجيل المشتريات بنجاح', 'success');
-        await updateStats();
-        showPurchasesList();
-    } else {
-        showToast('حدث خطأ أثناء الحفظ', 'error');
-    }
-}
 
-// ==================== قائمة المشتريات ====================
-async function showPurchasesList() {
-    const content = document.getElementById('content');
-    if (!content) return;
-    
-    const purchases = await db.getPurchases();
-    const settings = await db.getSettings();
-    
-    if (purchases.length === 0) {
-        content.innerHTML = `
-            <div class="p-6 text-center" dir="rtl">
-                <p class="text-gray-500 mb-4">لا يوجد مشتريات بعد</p>
-                <button onclick="showPurchaseForm()" class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition ml-2">
-                    تسجيل أول مشتريات
-                </button>
-                <button onclick="showDashboard()" class="bg-gray-600 text-white px-6 py-2 rounded-lg hover:bg-gray-700 transition">
-                    عودة
-                </button>
-            </div>
-        `;
-        return;
-    }
-    
-    let html = `
-        <div class="p-6" dir="rtl">
-            <div class="flex justify-between items-center mb-6">
-                <h1 class="text-2xl font-bold text-gray-800">سجل المشتريات</h1>
-                <div>
-                    <button onclick="showPurchaseForm()" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition ml-2">
-                        تسجيل مشتريات
-                    </button>
-                    <button onclick="showDashboard()" class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition">
-                        عودة
-                    </button>
-                </div>
-            </div>
-            
-            <div class="bg-white rounded-lg shadow overflow-hidden">
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
-                        <tr>
-                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">#</th>
-                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">التاريخ</th>
-                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">المورد</th>
-                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">عدد المنتجات</th>
-                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">إجمالي المشتريات</th>
-                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">تكلفة النقل</th>
-                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">الإجمالي الكلي</th>
-                        </tr>
-                    </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
-    `;
-    
-    purchases.forEach((purchase, index) => {
-        html += `
-            <tr>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${index + 1}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${purchase.date || purchase.createdAt?.split('T')[0] || '-'}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${purchase.supplier || 'غير محدد'}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${purchase.items?.length || 0}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${formatNumber(purchase.totalItemsCost)} ${settings.currency}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${formatNumber(purchase.transportCost)} ${settings.currency}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${formatNumber(purchase.totalCost)} ${settings.currency}</td>
-            </tr>
-        `;
-    });
-    
-    html += `
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    `;
-    
-    content.innerHTML = html;
-}
+        function formatNumber(value) {
+            const num = parseFloat(value) || 0;
+            return num.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+        }
 
-// ==================== نموذج تسجيل مبيعات ====================
-async function showSaleForm() {
-    const content = document.getElementById('content');
-    if (!content) return;
-    
-    const products = await db.getProducts();
-    const workers = await db.getWorkers();
-    const settings = await db.getSettings();
-    
-    if (products.length === 0) {
-        showToast('يجب إضافة منتجات أولاً', 'error');
-        showProductsList();
-        return;
-    }
-    
-    const today = new Date().toISOString().split('T')[0];
-    
-    content.innerHTML = `
-        <div class="p-6" dir="rtl">
-            <div class="flex justify-between items-center mb-6">
-                <h1 class="text-2xl font-bold text-gray-800">تسجيل مبيعات</h1>
-                <button onclick="showSalesList()" class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition">
-                    عودة
-                </button>
-            </div>
-            
-            <div class="bg-white rounded-lg shadow p-6">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">المشتري</label>
-                        <input type="text" id="buyer" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="اسم المشتري">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">التاريخ</label>
-                        <input type="date" id="saleDate" value="${today}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
-                    </div>
-                </div>
-                
-                <h2 class="text-lg font-semibold text-gray-800 mb-3">المنتجات المباعة</h2>
-                <div id="sale-items-container" class="space-y-2 mb-4">
-                    <div class="sale-item grid grid-cols-12 gap-2">
-                        <div class="col-span-6">
-                            <select class="product-select w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
-                                <option value="">اختر منتج</option>
-                                ${products.map(p => `<option value="${p.id}" data-cost="${p.price || 0}">${p.name} - ${formatNumber(p.price)} ${settings.currency}</option>`).join('')}
-                            </select>
-                        </div>
-                        <div class="col-span-3">
-                            <input type="number" class="quantity w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="الكمية" min="0" step="0.01">
-                        </div>
-                        <div class="col-span-3">
-                            <input type="number" class="price w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="السعر" min="0" step="0.01">
-                        </div>
-                    </div>
-                </div>
-                
-                <button id="addSaleItem" class="mb-6 text-green-600 hover:text-green-700 flex items-center gap-1">
-                    <span>➕</span> إضافة منتج آخر
-                </button>
-                
-                <h2 class="text-lg font-semibold text-gray-800 mb-3">العمالة المشاركة</h2>
-                <div id="workers-container" class="space-y-2 mb-4">
-                    <div class="worker-item grid grid-cols-12 gap-2">
-                        <div class="col-span-5">
-                            <select class="worker-select w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
-                                <option value="">اختر عامل</option>
-                                ${workers.map(w => `<option value="${w.id}" data-wage="${w.dailyWage || 0}">${w.name} - ${formatNumber(w.dailyWage)} ${settings.currency}/يوم</option>`).join('')}
-                            </select>
-                        </div>
-                        <div class="col-span-3">
-                            <input type="number" class="days w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="الأيام" min="0" step="0.5">
-                        </div>
-                        <div class="col-span-4">
-                            <input type="number" class="wage w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="الأجر اليومي" min="0" step="0.01">
-                        </div>
-                    </div>
-                </div>
-                
-                <button id="addWorker" class="mb-6 text-green-600 hover:text-green-700 flex items-center gap-1">
-                    <span>➕</span> إضافة عامل
-                </button>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">تكلفة العتالة (${settings.currency})</label>
-                        <input type="number" id="handlingCost" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="0" min="0" step="0.01" value="0">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">عدد العتالة</label>
-                        <input type="number" id="handlingCount" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="0" min="0" step="1" value="0">
-                    </div>
-                </div>
-                
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">نسبة عمولة الوكالة (%)</label>
-                        <input type="number" id="commissionRate" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" value="${settings.commissionRate || 10}" min="0" max="100" step="0.1">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">قيمة العمولة (${settings.currency})</label>
-                        <input type="text" id="commissionAmount" class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50" readonly placeholder="0">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">صافي الربح (${settings.currency})</label>
-                        <input type="text" id="netProfit" class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50" readonly placeholder="0">
-                    </div>
-                </div>
-                
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">ملاحظات</label>
-                    <textarea id="saleNotes" rows="2" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="أي ملاحظات..."></textarea>
-                </div>
-                
-                <div class="flex gap-3 mt-6">
-                    <button id="saveSale" class="flex-1 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition">
-                        تسجيل المبيعات
-                    </button>
-                    <button onclick="showSalesList()" class="flex-1 bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition">
-                        إلغاء
-                    </button>
-                </div>
-            </div>
-        </div>
-    `;
-    
-    // إضافة مستمعي الأحداث
-    const addSaleItemBtn = document.getElementById('addSaleItem');
-    if (addSaleItemBtn) {
-        addSaleItemBtn.addEventListener('click', async () => {
-            const container = document.getElementById('sale-items-container');
-            if (!container) return;
-            
-            const products = await db.getProducts();
-            const settings = await db.getSettings();
-            
-            const newItem = document.createElement('div');
-            newItem.className = 'sale-item grid grid-cols-12 gap-2 mt-2';
-            newItem.innerHTML = `
-                <div class="col-span-6">
-                    <select class="product-select w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
-                        <option value="">اختر منتج</option>
-                        ${products.map(p => `<option value="${p.id}" data-cost="${p.price || 0}">${p.name} - ${formatNumber(p.price)} ${settings.currency}</option>`).join('')}
-                    </select>
-                </div>
-                <div class="col-span-3">
-                    <input type="number" class="quantity w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="الكمية" min="0" step="0.01">
-                </div>
-                <div class="col-span-3">
-                    <input type="number" class="price w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="السعر" min="0" step="0.01">
-                </div>
-            `;
-            container.appendChild(newItem);
-            
-            // إضافة مستمعي الأحداث للحساب التلقائي
-            addCalculationListeners();
-        });
-    }
-    
-    const addWorkerBtn = document.getElementById('addWorker');
-    if (addWorkerBtn) {
-        addWorkerBtn.addEventListener('click', async () => {
-            const container = document.getElementById('workers-container');
-            if (!container) return;
-            
-            const workers = await db.getWorkers();
-            const settings = await db.getSettings();
-            
-            const newWorker = document.createElement('div');
-            newWorker.className = 'worker-item grid grid-cols-12 gap-2 mt-2';
-            newWorker.innerHTML = `
-                <div class="col-span-5">
-                    <select class="worker-select w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
-                        <option value="">اختر عامل</option>
-                        ${workers.map(w => `<option value="${w.id}" data-wage="${w.dailyWage || 0}">${w.name} - ${formatNumber(w.dailyWage)} ${settings.currency}/يوم</option>`).join('')}
-                    </select>
-                </div>
-                <div class="col-span-3">
-                    <input type="number" class="days w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="الأيام" min="0" step="0.5">
-                </div>
-                <div class="col-span-4">
-                    <input type="number" class="wage w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="الأجر اليومي" min="0" step="0.01">
-                </div>
-            `;
-            container.appendChild(newWorker);
-            
-            // إضافة مستمعي الأحداث للحساب التلقائي
-            addCalculationListeners();
-        });
-    }
-    
-    // إضافة مستمعي الأحداث للحساب التلقائي
-    addCalculationListeners();
-    
-    const saveBtn = document.getElementById('saveSale');
-    if (saveBtn) {
-        saveBtn.addEventListener('click', saveSale);
-    }
-}
+        // تحديث جميع البيانات من التخزين
+        function refreshData() {
+            Workers = Storage.get('wakala_workers', []);
+            Products = Storage.get('wakala_products', []);
+            Sales = Storage.get('wakala_sales', []);
+            Purchases = Storage.get('wakala_purchases', []);
+            Expenses = Storage.get('wakala_expenses', []);
+            Farmers = Storage.get('wakala_farmers', []);
+            SystemSettings = Storage.get('wakala_settings', SystemSettings);
+        }
 
-function addCalculationListeners() {
-    // إضافة مستمعي الأحداث لحقول الإدخال لتحديث الحسابات تلقائياً
-    document.querySelectorAll('.sale-item input, .worker-item input, #handlingCost, #commissionRate').forEach(input => {
-        input.removeEventListener('input', calculateTotals);
-        input.addEventListener('input', calculateTotals);
-    });
-}
-
-async function calculateTotals() {
-    try {
-        const settings = await db.getSettings();
-        const commissionRate = parseFloat(document.getElementById('commissionRate')?.value) || settings.commissionRate || 10;
-        
-        let totalSales = 0;
-        let totalCost = 0;
-        
-        document.querySelectorAll('.sale-item').forEach(item => {
-            const quantity = parseFloat(item.querySelector('.quantity')?.value) || 0;
-            const price = parseFloat(item.querySelector('.price')?.value) || 0;
-            const productSelect = item.querySelector('.product-select');
+        // =============================================
+        // إدارة الاختصارات (Keyboard Shortcuts)
+        // =============================================
+        document.addEventListener('keydown', (e) => {
+            // منع السلوك الافتراضي للمتصفح للاختصارات
+            if (e.key.startsWith('F') || (e.ctrlKey && e.key === 's')) {
+                e.preventDefault();
+            }
             
-            totalSales += quantity * price;
+            switch(e.key) {
+                case 'F1':
+                    showSaleForm();
+                    break;
+                case 'F2':
+                    showPurchaseForm();
+                    break;
+                case 'F3':
+                    showWorkersList();
+                    break;
+                case 'F4':
+                    showDashboard();
+                    break;
+                case 'F5':
+                    refreshData();
+                    showToast('تم تحديث البيانات', 'success');
+                    break;
+            }
             
-            if (productSelect?.selectedOptions?.[0]) {
-                const costPerUnit = parseFloat(productSelect.selectedOptions[0].dataset.cost) || 0;
-                totalCost += quantity * costPerUnit;
+            // Ctrl+S للحفظ
+            if (e.ctrlKey && e.key === 's') {
+                // سيتم التعامل معها من النماذج المختلفة
+                const saveButton = document.querySelector('button[id^="save"]');
+                if (saveButton) {
+                    saveButton.click();
+                }
             }
         });
-        
-        // تكاليف العمالة
-        let workersCost = 0;
-        document.querySelectorAll('.worker-item').forEach(item => {
-            const days = parseFloat(item.querySelector('.days')?.value) || 0;
-            const wage = parseFloat(item.querySelector('.wage')?.value) || 0;
-            workersCost += days * wage;
-        });
-        
-        const handlingCost = parseFloat(document.getElementById('handlingCost')?.value) || 0;
-        const totalWorkersCost = workersCost + handlingCost;
-        
-        const commission = (totalSales * commissionRate) / 100;
-        const netProfit = totalSales - totalCost - totalWorkersCost - commission;
-        
-        const commissionEl = document.getElementById('commissionAmount');
-        const netProfitEl = document.getElementById('netProfit');
-        
-        if (commissionEl) commissionEl.value = formatNumber(commission);
-        if (netProfitEl) netProfitEl.value = formatNumber(netProfit);
-    } catch (error) {
-        console.error('خطأ في حساب المجاميع:', error);
-    }
-}
 
-async function saveSale() {
-    try {
-        const buyer = document.getElementById('buyer')?.value.trim() || '';
-        const date = document.getElementById('saleDate')?.value || new Date().toISOString().split('T')[0];
-        const commissionRate = parseFloat(document.getElementById('commissionRate')?.value) || 10;
-        const handlingCost = parseFloat(document.getElementById('handlingCost')?.value) || 0;
-        const handlingCount = parseInt(document.getElementById('handlingCount')?.value) || 0;
-        const notes = document.getElementById('saleNotes')?.value.trim() || '';
-        
-        const items = [];
-        document.querySelectorAll('.sale-item').forEach(item => {
-            const productSelect = item.querySelector('.product-select');
-            const quantity = parseFloat(item.querySelector('.quantity')?.value) || 0;
-            const price = parseFloat(item.querySelector('.price')?.value) || 0;
-            
-            if (productSelect?.value && quantity > 0 && price > 0) {
-                items.push({
-                    productId: productSelect.value,
-                    productName: productSelect.options[productSelect.selectedIndex]?.text.split('-')[0].trim() || 'غير محدد',
-                    quantity,
-                    pricePerUnit: price,
-                    total: quantity * price,
-                    costPerUnit: parseFloat(productSelect.selectedOptions[0]?.dataset.cost) || 0
-                });
-            }
-        });
-        
-        if (items.length === 0) {
-            showToast('يرجى إضافة منتج واحد على الأقل', 'error');
-            return;
-        }
-        
-        const workers = [];
-        document.querySelectorAll('.worker-item').forEach(item => {
-            const workerSelect = item.querySelector('.worker-select');
-            const days = parseFloat(item.querySelector('.days')?.value) || 0;
-            const wage = parseFloat(item.querySelector('.wage')?.value) || 0;
-            
-            if (workerSelect?.value && days > 0 && wage > 0) {
-                workers.push({
-                    workerId: workerSelect.value,
-                    workerName: workerSelect.options[workerSelect.selectedIndex]?.text.split('-')[0].trim() || 'غير محدد',
-                    days,
-                    dailyWage: wage,
-                    total: days * wage
-                });
-            }
-        });
-        
-        const totalSales = items.reduce((sum, item) => sum + item.total, 0);
-        const totalCost = items.reduce((sum, item) => sum + (item.quantity * item.costPerUnit), 0);
-        const workersCost = workers.reduce((sum, w) => sum + w.total, 0) + handlingCost;
-        const commission = (totalSales * commissionRate) / 100;
-        const netProfit = totalSales - totalCost - workersCost - commission;
-        
-        const result = await db.addSale({
-            buyer,
-            date,
-            items,
-            workers,
-            handlingCost,
-            handlingCount,
-            commissionRate,
-            commission,
-            totalSales,
-            totalCost,
-            workersCost,
-            netProfit,
-            notes
-        });
-        
-        if (result) {
-            showToast('تم تسجيل المبيعات بنجاح', 'success');
-            await updateStats();
-            showSalesList();
-        } else {
-            showToast('حدث خطأ أثناء الحفظ', 'error');
-        }
-    } catch (error) {
-        console.error('خطأ في حفظ المبيعات:', error);
-        showToast('حدث خطأ غير متوقع', 'error');
-    }
-}
-
-// ==================== قائمة المبيعات ====================
-async function showSalesList() {
-    const content = document.getElementById('content');
-    if (!content) return;
-    
-    const sales = await db.getSales();
-    const settings = await db.getSettings();
-    
-    if (sales.length === 0) {
-        content.innerHTML = `
-            <div class="p-6 text-center" dir="rtl">
-                <p class="text-gray-500 mb-4">لا يوجد مبيعات بعد</p>
-                <button onclick="showSaleForm()" class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition ml-2">
-                    تسجيل أول مبيعات
-                </button>
-                <button onclick="showDashboard()" class="bg-gray-600 text-white px-6 py-2 rounded-lg hover:bg-gray-700 transition">
-                    عودة
-                </button>
-            </div>
-        `;
-        return;
-    }
-    
-    let totalSalesAmount = 0;
-    let totalCommission = 0;
-    let totalNetProfit = 0;
-    
-    let html = `
-        <div class="p-6" dir="rtl">
-            <div class="flex justify-between items-center mb-6">
-                <h1 class="text-2xl font-bold text-gray-800">سجل المبيعات</h1>
-                <div>
-                    <button onclick="showSaleForm()" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition ml-2">
-                        تسجيل مبيعات
-                    </button>
-                    <button onclick="showDashboard()" class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition">
-                        عودة
-                    </button>
-                </div>
-            </div>
-            
-            <div class="bg-white rounded-lg shadow overflow-hidden">
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
-                        <tr>
-                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">#</th>
-                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">التاريخ</th>
-                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">المشتري</th>
-                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">عدد المنتجات</th>
-                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">إجمالي المبيعات</th>
-                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">التكلفة</th>
-                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">عمالة</th>
-                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">العمولة</th>
-                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">صافي الربح</th>
-                        </tr>
-                    </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
-    `;
-    
-    sales.forEach((sale, index) => {
-        totalSalesAmount += sale.totalSales || 0;
-        totalCommission += sale.commission || 0;
-        totalNetProfit += sale.netProfit || 0;
-        
-        html += `
-            <tr>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${index + 1}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${sale.date || sale.createdAt?.split('T')[0] || '-'}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${sale.buyer || 'غير محدد'}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${sale.items?.length || 0}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${formatNumber(sale.totalSales)} ${settings.currency}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${formatNumber(sale.totalCost)} ${settings.currency}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${formatNumber(sale.workersCost)} ${settings.currency}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${formatNumber(sale.commission)} ${settings.currency}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600 font-semibold">${formatNumber(sale.netProfit)} ${settings.currency}</td>
-            </tr>
-        `;
-    });
-    
-    html += `
-                    </tbody>
-                    <tfoot class="bg-gray-50 font-semibold">
-                        <tr>
-                            <td colspan="4" class="px-6 py-4 text-right text-sm text-gray-900">الإجمالي:</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${formatNumber(totalSalesAmount)} ${settings.currency}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">-</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">-</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${formatNumber(totalCommission)} ${settings.currency}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600">${formatNumber(totalNetProfit)} ${settings.currency}</td>
-                        </tr>
-                    </tfoot>
-                </table>
-            </div>
-        </div>
-    `;
-    
-    content.innerHTML = html;
-}
-
-// ==================== إدارة العمالة ====================
-async function showWorkersList() {
-    const content = document.getElementById('content');
-    if (!content) return;
-    
-    const workers = await db.getWorkers();
-    const settings = await db.getSettings();
-    
-    if (workers.length === 0) {
-        content.innerHTML = `
-            <div class="p-6 text-center" dir="rtl">
-                <p class="text-gray-500 mb-4">لا يوجد عمالة بعد</p>
-                <button onclick="showWorkerForm()" class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition ml-2">
-                    إضافة عامل
-                </button>
-                <button onclick="showDashboard()" class="bg-gray-600 text-white px-6 py-2 rounded-lg hover:bg-gray-700 transition">
-                    عودة
-                </button>
-            </div>
-        `;
-        return;
-    }
-    
-    let html = `
-        <div class="p-6" dir="rtl">
-            <div class="flex justify-between items-center mb-6">
-                <h1 class="text-2xl font-bold text-gray-800">قائمة العمالة</h1>
-                <div>
-                    <button onclick="showWorkerForm()" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition ml-2">
-                        إضافة عامل
-                    </button>
-                    <button onclick="showDashboard()" class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition">
-                        عودة
-                    </button>
-                </div>
-            </div>
-            
-            <div class="bg-white rounded-lg shadow overflow-hidden">
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
-                        <tr>
-                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">#</th>
-                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">الاسم</th>
-                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">الوظيفة</th>
-                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">رقم الهاتف</th>
-                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">الأجر اليومي</th>
-                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">الحالة</th>
-                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">الإجراءات</th>
-                        </tr>
-                    </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
-    `;
-    
-    workers.forEach((worker, index) => {
-        html += `
-            <tr>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${index + 1}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${worker.name || 'غير محدد'}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${worker.role || '-'}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${worker.phone || '-'}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${formatNumber(worker.dailyWage)} ${settings.currency}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm">
-                    <span class="px-2 py-1 text-xs rounded-full ${worker.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
-                        ${worker.status === 'active' ? 'نشط' : 'غير نشط'}
-                    </span>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <button onclick="editWorker(${worker.id})" class="text-blue-600 hover:text-blue-900 ml-3">تعديل</button>
-                    <button onclick="deleteWorker(${worker.id})" class="text-red-600 hover:text-red-900">حذف</button>
-                </td>
-            </tr>
-        `;
-    });
-    
-    html += `
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    `;
-    
-    content.innerHTML = html;
-}
-
-// ==================== نموذج إضافة عامل ====================
-function showWorkerForm() {
-    const content = document.getElementById('content');
-    if (!content) return;
-    
-    content.innerHTML = `
-        <div class="p-6 max-w-2xl mx-auto" dir="rtl">
-            <h1 class="text-2xl font-bold text-gray-800 mb-6">إضافة عامل جديد</h1>
-            
-            <div class="bg-white rounded-lg shadow p-6">
-                <div class="space-y-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">الاسم الكامل</label>
-                        <input type="text" id="workerName" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="أدخل اسم العامل">
-                    </div>
-                    
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">الوظيفة</label>
-                        <select id="workerRole" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
-                            <option value="عامل">عامل</option>
-                            <option value="كاتب">كاتب</option>
-                            <option value="مشرف">مشرف</option>
-                            <option value="سائق">سائق</option>
-                            <option value="أخرى">أخرى</option>
-                        </select>
-                    </div>
-                    
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">رقم الهاتف</label>
-                        <input type="tel" id="workerPhone" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="أدخل رقم الهاتف">
-                    </div>
-                    
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">الأجر اليومي (${currentSettings.currency})</label>
-                        <input type="number" id="workerWage" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="0" min="0" step="0.01">
-                    </div>
-                    
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">العنوان</label>
-                        <input type="text" id="workerAddress" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="العنوان">
-                    </div>
-                    
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">ملاحظات</label>
-                        <textarea id="workerNotes" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="أي ملاحظات..."></textarea>
-                    </div>
-                    
-                    <div class="flex gap-3 pt-4">
-                        <button id="saveWorker" class="flex-1 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition">
-                            حفظ البيانات
-                        </button>
-                        <button onclick="showWorkersList()" class="flex-1 bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition">
-                            إلغاء
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    `;
-    
-    const saveButton = document.getElementById('saveWorker');
-    if (saveButton) {
-        saveButton.addEventListener('click', saveWorker);
-    }
-}
-
-async function saveWorker() {
-    const nameInput = document.getElementById('workerName');
-    const roleSelect = document.getElementById('workerRole');
-    const phoneInput = document.getElementById('workerPhone');
-    const wageInput = document.getElementById('workerWage');
-    const addressInput = document.getElementById('workerAddress');
-    const notesInput = document.getElementById('workerNotes');
-    
-    if (!nameInput) {
-        showToast('حدث خطأ في النموذج', 'error');
-        return;
-    }
-    
-    const name = nameInput.value.trim();
-    const role = roleSelect?.value || 'عامل';
-    const phone = phoneInput?.value.trim() || '';
-    const dailyWage = parseFloat(wageInput?.value) || 0;
-    const address = addressInput?.value.trim() || '';
-    const notes = notesInput?.value.trim() || '';
-    
-    if (!name) {
-        showToast('يرجى إدخال اسم العامل', 'error');
-        return;
-    }
-    
-    const result = await db.addWorker({
-        name,
-        role,
-        phone,
-        dailyWage,
-        address,
-        notes,
-        status: 'active',
-        hireDate: new Date().toISOString().split('T')[0]
-    });
-    
-    if (result) {
-        showToast('تم إضافة العامل بنجاح', 'success');
-        showWorkersList();
-    } else {
-        showToast('حدث خطأ أثناء الحفظ', 'error');
-    }
-}
-
-// ==================== قائمة المصروفات ====================
-async function showExpensesList() {
-    const content = document.getElementById('content');
-    if (!content) return;
-    
-    const expenses = await db.getExpenses();
-    const settings = await db.getSettings();
-    
-    if (expenses.length === 0) {
-        content.innerHTML = `
-            <div class="p-6 text-center" dir="rtl">
-                <p class="text-gray-500 mb-4">لا يوجد مصروفات بعد</p>
-                <button onclick="showExpenseForm()" class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition ml-2">
-                    إضافة مصروف
-                </button>
-                <button onclick="showDashboard()" class="bg-gray-600 text-white px-6 py-2 rounded-lg hover:bg-gray-700 transition">
-                    عودة
-                </button>
-            </div>
-        `;
-        return;
-    }
-    
-    let totalExpenses = 0;
-    
-    let html = `
-        <div class="p-6" dir="rtl">
-            <div class="flex justify-between items-center mb-6">
-                <h1 class="text-2xl font-bold text-gray-800">سجل المصروفات</h1>
-                <div>
-                    <button onclick="showExpenseForm()" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition ml-2">
-                        إضافة مصروف
-                    </button>
-                    <button onclick="showDashboard()" class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition">
-                        عودة
-                    </button>
-                </div>
-            </div>
-            
-            <div class="bg-white rounded-lg shadow overflow-hidden">
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
-                        <tr>
-                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">#</th>
-                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">التاريخ</th>
-                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">النوع</th>
-                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">الوصف</th>
-                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">المبلغ</th>
-                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">الإجراءات</th>
-                        </tr>
-                    </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
-    `;
-    
-    expenses.forEach((expense, index) => {
-        totalExpenses += expense.amount || 0;
-        
-        html += `
-            <tr>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${index + 1}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${expense.date || expense.createdAt?.split('T')[0] || '-'}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${expense.type || 'غير محدد'}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${expense.description || '-'}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${formatNumber(expense.amount)} ${settings.currency}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <button onclick="deleteExpense(${expense.id})" class="text-red-600 hover:text-red-900">حذف</button>
-                </td>
-            </tr>
-        `;
-    });
-    
-    html += `
-                    </tbody>
-                    <tfoot class="bg-gray-50 font-semibold">
-                        <tr>
-                            <td colspan="4" class="px-6 py-4 text-right text-sm text-gray-900">الإجمالي:</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${formatNumber(totalExpenses)} ${settings.currency}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900"></td>
-                        </tr>
-                    </tfoot>
-                </table>
-            </div>
-        </div>
-    `;
-    
-    content.innerHTML = html;
-}
-
-// ==================== نموذج إضافة مصروف ====================
-function showExpenseForm() {
-    const content = document.getElementById('content');
-    if (!content) return;
-    
-    const today = new Date().toISOString().split('T')[0];
-    
-    content.innerHTML = `
-        <div class="p-6 max-w-2xl mx-auto" dir="rtl">
-            <h1 class="text-2xl font-bold text-gray-800 mb-6">تسجيل مصروف</h1>
-            
-            <div class="bg-white rounded-lg shadow p-6">
-                <div class="space-y-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">نوع المصروف</label>
-                        <select id="expenseType" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
-                            <option value="إيجار">إيجار</option>
-                            <option value="كهرباء">كهرباء</option>
-                            <option value="مياه">مياه</option>
-                            <option value="رواتب">رواتب</option>
-                            <option value="صيانة">صيانة</option>
-                            <option value="نقل">نقل</option>
-                            <option value="أخرى">أخرى</option>
-                        </select>
-                    </div>
-                    
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">الوصف</label>
-                        <input type="text" id="expenseDesc" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="وصف المصروف">
-                    </div>
-                    
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">المبلغ (${currentSettings.currency})</label>
-                        <input type="number" id="expenseAmount" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="أدخل المبلغ" min="0" step="0.01">
-                    </div>
-                    
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">التاريخ</label>
-                        <input type="date" id="expenseDate" value="${today}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
-                    </div>
-                    
-                    <div class="flex gap-3 pt-4">
-                        <button id="saveExpense" class="flex-1 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition">
-                            تسجيل المصروف
-                        </button>
-                        <button onclick="showExpensesList()" class="flex-1 bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition">
-                            إلغاء
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    `;
-    
-    const saveButton = document.getElementById('saveExpense');
-    if (saveButton) {
-        saveButton.addEventListener('click', saveExpense);
-    }
-}
-
-async function saveExpense() {
-    const typeSelect = document.getElementById('expenseType');
-    const descInput = document.getElementById('expenseDesc');
-    const amountInput = document.getElementById('expenseAmount');
-    const dateInput = document.getElementById('expenseDate');
-    
-    if (!descInput || !amountInput) {
-        showToast('حدث خطأ في النموذج', 'error');
-        return;
-    }
-    
-    const type = typeSelect?.value || 'أخرى';
-    const description = descInput.value.trim();
-    const amount = parseFloat(amountInput.value) || 0;
-    const date = dateInput?.value || new Date().toISOString().split('T')[0];
-    
-    if (!description) {
-        showToast('يرجى إدخال وصف المصروف', 'error');
-        return;
-    }
-    
-    if (amount <= 0) {
-        showToast('يرجى إدخال مبلغ صحيح', 'error');
-        return;
-    }
-    
-    const result = await db.addExpense({
-        type,
-        description,
-        amount,
-        date
-    });
-    
-    if (result) {
-        showToast('تم تسجيل المصروف بنجاح', 'success');
-        await updateStats();
-        showExpensesList();
-    } else {
-        showToast('حدث خطأ أثناء الحفظ', 'error');
-    }
-}
-
-// ==================== قائمة الفلاحين ====================
-async function showFarmersList() {
-    const content = document.getElementById('content');
-    if (!content) return;
-    
-    const farmers = await db.getFarmers();
-    
-    if (farmers.length === 0) {
-        content.innerHTML = `
-            <div class="p-6 text-center" dir="rtl">
-                <p class="text-gray-500 mb-4">لا يوجد فلاحين بعد</p>
-                <button onclick="showFarmerForm()" class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition ml-2">
-                    إضافة فلاح
-                </button>
-                <button onclick="showDashboard()" class="bg-gray-600 text-white px-6 py-2 rounded-lg hover:bg-gray-700 transition">
-                    عودة
-                </button>
-            </div>
-        `;
-        return;
-    }
-    
-    let html = `
-        <div class="p-6" dir="rtl">
-            <div class="flex justify-between items-center mb-6">
-                <h1 class="text-2xl font-bold text-gray-800">قائمة الفلاحين</h1>
-                <div>
-                    <button onclick="showFarmerForm()" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition ml-2">
-                        إضافة فلاح
-                    </button>
-                    <button onclick="showDashboard()" class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition">
-                        عودة
-                    </button>
-                </div>
-            </div>
-            
-            <div class="bg-white rounded-lg shadow overflow-hidden">
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
-                        <tr>
-                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">#</th>
-                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">الاسم</th>
-                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">رقم الهاتف</th>
-                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">العنوان</th>
-                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">الإجراءات</th>
-                        </tr>
-                    </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
-    `;
-    
-    farmers.forEach((farmer, index) => {
-        html += `
-            <tr>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${index + 1}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${farmer.name || 'غير محدد'}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${farmer.phone || '-'}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${farmer.address || '-'}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <button onclick="deleteFarmer(${farmer.id})" class="text-red-600 hover:text-red-900">حذف</button>
-                </td>
-            </tr>
-        `;
-    });
-    
-    html += `
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    `;
-    
-    content.innerHTML = html;
-}
-
-// ==================== نموذج إضافة فلاح ====================
-function showFarmerForm() {
-    const content = document.getElementById('content');
-    if (!content) return;
-    
-    content.innerHTML = `
-        <div class="p-6 max-w-2xl mx-auto" dir="rtl">
-            <h1 class="text-2xl font-bold text-gray-800 mb-6">إضافة فلاح جديد</h1>
-            
-            <div class="bg-white rounded-lg shadow p-6">
-                <div class="space-y-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">الاسم الكامل</label>
-                        <input type="text" id="farmerName" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="أدخل اسم الفلاح">
-                    </div>
-                    
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">رقم الهاتف</label>
-                        <input type="tel" id="farmerPhone" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="أدخل رقم الهاتف">
-                    </div>
-                    
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">العنوان</label>
-                        <input type="text" id="farmerAddress" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="العنوان">
-                    </div>
-                    
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">ملاحظات</label>
-                        <textarea id="farmerNotes" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="أي ملاحظات..."></textarea>
-                    </div>
-                    
-                    <div class="flex gap-3 pt-4">
-                        <button id="saveFarmer" class="flex-1 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition">
-                            حفظ البيانات
-                        </button>
-                        <button onclick="showFarmersList()" class="flex-1 bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition">
-                            إلغاء
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    `;
-    
-    const saveButton = document.getElementById('saveFarmer');
-    if (saveButton) {
-        saveButton.addEventListener('click', saveFarmer);
-    }
-}
-
-async function saveFarmer() {
-    const nameInput = document.getElementById('farmerName');
-    const phoneInput = document.getElementById('farmerPhone');
-    const addressInput = document.getElementById('farmerAddress');
-    const notesInput = document.getElementById('farmerNotes');
-    
-    if (!nameInput) {
-        showToast('حدث خطأ في النموذج', 'error');
-        return;
-    }
-    
-    const name = nameInput.value.trim();
-    const phone = phoneInput?.value.trim() || '';
-    const address = addressInput?.value.trim() || '';
-    const notes = notesInput?.value.trim() || '';
-    
-    if (!name) {
-        showToast('يرجى إدخال اسم الفلاح', 'error');
-        return;
-    }
-    
-    const result = await db.addFarmer({
-        name,
-        phone,
-        address,
-        notes
-    });
-    
-    if (result) {
-        showToast('تم إضافة الفلاح بنجاح', 'success');
-        showFarmersList();
-    } else {
-        showToast('حدث خطأ أثناء الحفظ', 'error');
-    }
-}
-
-// ==================== الإعدادات ====================
-async function showSettings() {
-    const content = document.getElementById('content');
-    if (!content) return;
-    
-    const settings = await db.getSettings();
-    
-    content.innerHTML = `
-        <div class="p-6 max-w-2xl mx-auto" dir="rtl">
-            <h1 class="text-2xl font-bold text-gray-800 mb-6">إعدادات النظام</h1>
-            
-            <div class="bg-white rounded-lg shadow p-6">
-                <div class="space-y-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">نسبة عمولة الوكالة (%)</label>
-                        <input type="number" id="commissionRate" value="${settings.commissionRate || 10}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" min="0" max="100" step="0.1">
-                    </div>
-                    
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">العملة</label>
-                        <select id="currency" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
-                            <option value="ج.م" ${settings.currency === 'ج.م' ? 'selected' : ''}>جنيه مصري (ج.م)</option>
-                            <option value="$" ${settings.currency === '$' ? 'selected' : ''}>دولار ($)</option>
-                            <option value="€" ${settings.currency === '€' ? 'selected' : ''}>يورو (€)</option>
-                            <option value="ر.س" ${settings.currency === 'ر.س' ? 'selected' : ''}>ريال سعودي (ر.س)</option>
-                        </select>
-                    </div>
-                    
-                    <div class="flex gap-3 pt-4">
-                        <button id="saveSettings" class="flex-1 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition">
-                            حفظ الإعدادات
-                        </button>
-                        <button onclick="showDashboard()" class="flex-1 bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition">
-                            إلغاء
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    `;
-    
-    const saveButton = document.getElementById('saveSettings');
-    if (saveButton) {
-        saveButton.addEventListener('click', async () => {
-            const commissionRate = parseFloat(document.getElementById('commissionRate')?.value) || 10;
-            const currency = document.getElementById('currency')?.value || 'ج.م';
-            
-            const result = await db.updateSettings({ commissionRate, currency });
-            
-            if (result) {
-                currentSettings = { commissionRate, currency };
-                showToast('تم حفظ الإعدادات بنجاح', 'success');
-                showDashboard();
-            } else {
-                showToast('حدث خطأ أثناء الحفظ', 'error');
-            }
-        });
-    }
-}
-
-// ==================== دوال الحذف ====================
-async function deleteProduct(id) {
-    if (confirm('هل أنت متأكد من حذف هذا المنتج؟')) {
-        const result = await db.deleteProduct(id);
-        if (result) {
-            showToast('تم الحذف بنجاح', 'success');
-            await updateStats();
-            showProductsList();
-        } else {
-            showToast('حدث خطأ أثناء الحذف', 'error');
-        }
-    }
-}
-
-async function deleteWorker(id) {
-    if (confirm('هل أنت متأكد من حذف هذا العامل؟')) {
-        const result = await db.deleteWorker(id);
-        if (result) {
-            showToast('تم الحذف بنجاح', 'success');
-            showWorkersList();
-        } else {
-            showToast('حدث خطأ أثناء الحذف', 'error');
-        }
-    }
-}
-
-async function deleteExpense(id) {
-    if (confirm('هل أنت متأكد من حذف هذا المصروف؟')) {
-        const result = await db.deleteExpense(id);
-        if (result) {
-            showToast('تم الحذف بنجاح', 'success');
-            await updateStats();
-            showExpensesList();
-        } else {
-            showToast('حدث خطأ أثناء الحذف', 'error');
-        }
-    }
-}
-
-async function deleteFarmer(id) {
-    if (confirm('هل أنت متأكد من حذف هذا الفلاح؟')) {
-        const result = await db.deleteFarmer(id);
-        if (result) {
-            showToast('تم الحذف بنجاح', 'success');
-            showFarmersList();
-        } else {
-            showToast('حدث خطأ أثناء الحذف', 'error');
-        }
-    }
-}
-
-// ==================== دوال التعديل (قيد التطوير) ====================
-function editProduct(id) {
-    showToast('جاري تطوير خاصية التعديل', 'info');
-}
-
-function editWorker(id) {
-    showToast('جاري تطوير خاصية التعديل', 'info');
-}
-
-// ==================== بدء التطبيق ====================
-document.addEventListener('DOMContentLoaded', async function() {
-    // تهيئة قاعدة البيانات
-    db = new DatabaseManager();
-    
-    // الانتظار قليلاً للتأكد من تهيئة قاعدة البيانات
-    setTimeout(() => {
-        // التحقق من وجود عنصر content
-        const content = document.getElementById('content');
-        if (!content) {
-            console.error('عنصر content غير موجود في الصفحة');
-            return;
-        }
-        
+        // =============================================
         // بدء التطبيق
-        showLogin();
-    }, 100);
-});
+        // =============================================
+        document.addEventListener('DOMContentLoaded', async () => {
+            // إخفاء شاشة التحميل
+            const loadingScreen = document.getElementById('loading-screen');
+            
+            // تحميل البيانات الافتراضية
+            await loadDefaultData();
+            
+            // تحديث البيانات من التخزين
+            refreshData();
+            
+            // إخفاء شاشة التحميل بعد ثانية
+            setTimeout(() => {
+                if (loadingScreen) loadingScreen.style.display = 'none';
+                // عرض شاشة تسجيل الدخول
+                showLogin();
+                // عرض شريط الاختصارات بعد قليل
+                document.getElementById('shortcuts-bar').style.display = 'block';
+            }, 1000);
+        });
 
-// تصدير الدوال للتستخدم في onclick
-window.showLogin = showLogin;
-window.showDashboard = showDashboard;
-window.showProductsList = showProductsList;
-window.showProductForm = showProductForm;
-window.showPurchaseForm = showPurchaseForm;
-window.showPurchasesList = showPurchasesList;
-window.showSaleForm = showSaleForm;
-window.showSalesList = showSalesList;
-window.showWorkersList = showWorkersList;
-window.showWorkerForm = showWorkerForm;
-window.showExpensesList = showExpensesList;
-window.showExpenseForm = showExpenseForm;
-window.showFarmersList = showFarmersList;
-window.showFarmerForm = showFarmerForm;
-window.showSettings = showSettings;
-window.deleteProduct = deleteProduct;
-window.deleteWorker = deleteWorker;
-window.deleteExpense = deleteExpense;
-window.deleteFarmer = deleteFarmer;
-window.editProduct = editProduct;
-window.editWorker = editWorker;
+        // =============================================
+        // سيتم إضافة باقي الدوال (showLogin, showDashboard, etc.)
+        // في ملف app.js
+        // =============================================
+    </script>
+    <!-- تحميل ملف التطبيق الرئيسي -->
+    <script src="app.js"></script>
+</body>
+</html>

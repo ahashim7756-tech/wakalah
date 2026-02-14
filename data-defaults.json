@@ -1,0 +1,58 @@
+{
+    "settings": {
+        "commissionRate": 10,
+        "currency": "ج.م",
+        "storeName": "وكالة",
+        "taxRate": 0,
+        "allowNegativeProfit": false,
+        "minimumProfit": 0.01
+    },
+    "workers": [
+        {
+            "id": 1,
+            "name": "عامل عام",
+            "role": "عامل",
+            "dailyWage": 150,
+            "status": "active"
+        },
+        {
+            "id": 2,
+            "name": "كاتب",
+            "role": "كاتب",
+            "dailyWage": 200,
+            "status": "active"
+        },
+        {
+            "id": 3,
+            "name": "مشرف",
+            "role": "مشرف",
+            "dailyWage": 250,
+            "status": "active"
+        }
+    ],
+    "products": [
+        {
+            "id": 1,
+            "name": "منتج تجريبي 1",
+            "price": 100,
+            "cost": 70,
+            "quantity": 100
+        },
+        {
+            "id": 2,
+            "name": "منتج تجريبي 2",
+            "price": 200,
+            "cost": 150,
+            "quantity": 50
+        }
+    ],
+    "keyboardShortcuts": {
+        "F1": "فتح شاشة المبيعات",
+        "F2": "فتح شاشة المشتريات",
+        "F3": "فتح شاشة العمالة",
+        "F4": "فتح لوحة التحكم",
+        "F5": "تحديث البيانات",
+        "Ctrl+S": "حفظ البيانات",
+        "Ctrl+F": "بحث"
+    }
+}

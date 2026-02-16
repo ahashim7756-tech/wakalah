@@ -2,286 +2,302 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>وكالة - نظام إدارة متكامل</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- تخصيص Tailwind -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#f59e0b',
+                        'primary-dark': '#d97706',
+                    },
+                    fontFamily: {
+                        sans: ['Cairo', 'Tajawal', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
     
     <!-- الخطوط -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
     
     <!-- أيقونات Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- ملف التنسيق الرئيسي -->
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-    <div class="app-container" id="app">
-        <!-- شاشة التحميل الأولية -->
-        <div id="loading-screen" class="glass-card" style="text-align: center; padding: 50px;">
-            <i class="fas fa-spinner fa-spin" style="font-size: 3rem; color: white; margin-bottom: 20px;"></i>
-            <h2 style="color: white;">جاري تحميل النظام...</h2>
-        </div>
-
-        <!-- المحتوى الرئيسي (سيتم تعبئته بواسطة JavaScript) -->
-        <div id="content"></div>
-
-        <!-- شريط الاختصارات -->
-        <div class="shortcuts-bar" style="position: fixed; bottom: 20px; left: 20px; background: rgba(0,0,0,0.7); color: white; padding: 10px; border-radius: 10px; font-size: 0.8rem; display: none;" id="shortcuts-bar">
-            <span><span class="shortcut-badge">F1</span> مبيعات</span>
-            <span><span class="shortcut-badge">F2</span> مشتريات</span>
-            <span><span class="shortcut-badge">F3</span> عمالة</span>
-            <span><span class="shortcut-badge">F4</span> رئيسية</span>
-        </div>
-
-        <!-- شريط التنقل السفلي للموبايل -->
-        <div class="mobile-nav">
-            <a href="#" onclick="window.showDashboard(); return false;" class="mobile-nav-item">
-                <i class="fas fa-home"></i>
-                <span>الرئيسية</span>
-            </a>
-            <a href="#" onclick="window.showSaleForm(); return false;" class="mobile-nav-item">
-                <i class="fas fa-cash-register"></i>
-                <span>مبيعات</span>
-            </a>
-            <a href="#" onclick="window.showPurchaseForm(); return false;" class="mobile-nav-item">
-                <i class="fas fa-shopping-cart"></i>
-                <span>مشتريات</span>
-            </a>
-            <a href="#" onclick="window.showWorkersList(); return false;" class="mobile-nav-item">
-                <i class="fas fa-users"></i>
-                <span>عمالة</span>
-            </a>
-            <a href="#" onclick="window.showExpensesList(); return false;" class="mobile-nav-item">
-                <i class="fas fa-file-invoice"></i>
-                <span>مصروفات</span>
-            </a>
-        </div>
-    </div>
-
-    <!-- نافذة منبثقة للرسائل (Toast) -->
-    <div id="toast-container" style="position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; display: none;"></div>
-    
-    <!-- عنصر Toast للتطبيق الجديد -->
-    <div id="toast" class="hidden"></div>
-
-    <!-- تحميل مكتبات JavaScript -->
-    <script src="calculations.js"></script>
-    <script>
-        // =============================================
-        // البيانات الأساسية والتهيئة الأولية
-        // =============================================
+    <!-- ملف التنسيق المخصص -->
+    <style>
+        /* ===== تنسيقات إضافية ===== */
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            min-height: 100vh;
+            font-family: 'Cairo', 'Tajawal', sans-serif;
+        }
         
-        // قاعدة البيانات المحلية (LocalStorage)
-        const Storage = {
-            // حفظ البيانات
-            set: (key, data) => {
-                try {
-                    localStorage.setItem(key, JSON.stringify(data));
-                    return true;
-                } catch (e) {
-                    console.error('خطأ في الحفظ:', e);
-                    return false;
-                }
-            },
-            
-            // قراءة البيانات
-            get: (key, defaultValue = null) => {
-                try {
-                    const data = localStorage.getItem(key);
-                    return data ? JSON.parse(data) : defaultValue;
-                } catch (e) {
-                    console.error('خطأ في القراءة:', e);
-                    return defaultValue;
-                }
-            },
-            
-            // حذف البيانات
-            remove: (key) => {
-                try {
-                    localStorage.removeItem(key);
-                    return true;
-                } catch (e) {
-                    console.error('خطأ في الحذف:', e);
-                    return false;
-                }
+        /* تنسيق شريط التمرير */
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #1e293b;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #f59e0b;
+            border-radius: 5px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #d97706;
+        }
+        
+        /* تأثيرات حركية */
+        @keyframes slideDown {
+            from {
+                transform: translate(-50%, -100%);
+                opacity: 0;
             }
-        };
-
-        // إعدادات النظام
-        let SystemSettings = Storage.get('wakala_settings', {
-            commissionRate: 10,
-            currency: 'ج.م',
-            storeName: 'وكالة',
-            allowNegativeProfit: false,
-            minimumProfit: 0.01
-        });
-
-        // بيانات العمال
-        let Workers = Storage.get('wakala_workers', []);
-
-        // بيانات المنتجات
-        let Products = Storage.get('wakala_products', []);
-
-        // بيانات المبيعات
-        let Sales = Storage.get('wakala_sales', []);
-
-        // بيانات المشتريات
-        let Purchases = Storage.get('wakala_purchases', []);
-
-        // بيانات المصروفات
-        let Expenses = Storage.get('wakala_expenses', []);
-
-        // بيانات الفلاحين
-        let Farmers = Storage.get('wakala_farmers', []);
-
-        // =============================================
-        // تحميل البيانات الافتراضية من ملف JSON
-        // =============================================
-        async function loadDefaultData() {
-            try {
-                // محاولة تحميل البيانات الافتراضية من ملف JSON
-                const response = await fetch('data-defaults.json');
-                if (response.ok) {
-                    const defaults = await response.json();
-                    
-                    // تحميل الإعدادات إذا لم تكن موجودة
-                    if (!Storage.get('wakala_settings')) {
-                        Storage.set('wakala_settings', defaults.settings);
-                        SystemSettings = defaults.settings;
-                    }
-                    
-                    // تحميل العمال إذا لم يكونوا موجودين
-                    if (!Storage.get('wakala_workers') || Storage.get('wakala_workers').length === 0) {
-                        Storage.set('wakala_workers', defaults.workers);
-                        Workers = defaults.workers;
-                    }
-                    
-                    // تحميل المنتجات إذا لم تكن موجودة
-                    if (!Storage.get('wakala_products') || Storage.get('wakala_products').length === 0) {
-                        Storage.set('wakala_products', defaults.products);
-                        Products = defaults.products;
-                    }
-                    
-                    console.log('تم تحميل البيانات الافتراضية بنجاح');
-                }
-            } catch (error) {
-                console.log('لا يوجد ملف بيانات افتراضية أو خطأ في تحميله:', error);
+            to {
+                transform: translate(-50%, 0);
+                opacity: 1;
             }
         }
-
-        // =============================================
-        // دوال مساعدة
-        // =============================================
-        function showToast(message, type = 'info') {
-            const container = document.getElementById('toast-container');
-            if (!container) return;
-            
-            const colors = {
-                success: '#28a745',
-                error: '#dc3545',
-                info: '#17a2b8',
-                warning: '#ffc107'
-            };
-            
-            container.style.backgroundColor = colors[type] || colors.info;
-            container.style.color = type === 'warning' ? '#212529' : 'white';
-            container.style.padding = '15px 25px';
-            container.style.borderRadius = '50px';
-            container.style.fontWeight = 'bold';
-            container.style.boxShadow = '0 5px 15px rgba(0,0,0,0.3)';
-            container.style.display = 'block';
-            container.textContent = message;
-            
-            setTimeout(() => {
-                container.style.display = 'none';
-            }, 3000);
+        
+        .toast-success {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 50px;
+            box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.5);
+            font-weight: bold;
         }
-
-        function formatNumber(value) {
-            const num = parseFloat(value) || 0;
-            return num.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+        
+        .toast-error {
+            background: linear-gradient(135deg, #ef4444, #b91c1c);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 50px;
+            box-shadow: 0 10px 25px -5px rgba(239, 68, 68, 0.5);
+            font-weight: bold;
         }
-
-        // تحديث جميع البيانات من التخزين
-        function refreshData() {
-            Workers = Storage.get('wakala_workers', []);
-            Products = Storage.get('wakala_products', []);
-            Sales = Storage.get('wakala_sales', []);
-            Purchases = Storage.get('wakala_purchases', []);
-            Expenses = Storage.get('wakala_expenses', []);
-            Farmers = Storage.get('wakala_farmers', []);
-            SystemSettings = Storage.get('wakala_settings', SystemSettings);
+        
+        .toast-info {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 50px;
+            box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.5);
+            font-weight: bold;
         }
-
-        // =============================================
-        // إدارة الاختصارات (Keyboard Shortcuts)
-        // =============================================
-        document.addEventListener('keydown', (e) => {
-            // منع السلوك الافتراضي للمتصفح للاختصارات
-            if (e.key.startsWith('F') || (e.ctrlKey && e.key === 's')) {
-                e.preventDefault();
+        
+        /* تنسيق الجداول */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th {
+            background: #2d3a4f;
+            color: #f59e0b;
+            padding: 12px;
+            text-align: center;
+            font-weight: 700;
+        }
+        
+        td {
+            padding: 10px 12px;
+            text-align: center;
+            border-bottom: 1px solid #334155;
+            color: #e2e8f0;
+        }
+        
+        tr:hover {
+            background: #2d3a4f;
+        }
+        
+        /* تنسيق شريط التنقل السفلي */
+        .mobile-nav {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid #334155;
+            padding: 10px 5px;
+            z-index: 1000;
+        }
+        
+        .mobile-nav-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #94a3b8;
+            text-decoration: none;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+        }
+        
+        .mobile-nav-item i {
+            font-size: 1.3rem;
+            margin-bottom: 4px;
+        }
+        
+        .mobile-nav-item:hover {
+            color: #f59e0b;
+        }
+        
+        @media (max-width: 768px) {
+            .mobile-nav {
+                display: flex;
+                justify-content: space-around;
             }
             
-            switch(e.key) {
-                case 'F1':
-                    if (typeof window.showSaleForm === 'function') showSaleForm();
-                    break;
-                case 'F2':
-                    if (typeof window.showPurchaseForm === 'function') showPurchaseForm();
-                    break;
-                case 'F3':
-                    if (typeof window.showWorkersList === 'function') showWorkersList();
-                    break;
-                case 'F4':
-                    if (typeof window.showDashboard === 'function') showDashboard();
-                    break;
-                case 'F5':
-                    refreshData();
-                    showToast('تم تحديث البيانات', 'success');
-                    break;
+            body {
+                padding-bottom: 70px;
             }
-            
-            // Ctrl+S للحفظ
-            if (e.ctrlKey && e.key === 's') {
-                const saveButton = document.querySelector('button[id^="save"]');
-                if (saveButton) {
-                    saveButton.click();
-                }
-            }
-        });
+        }
+        
+        /* تنسيق البطاقات */
+        .stat-card {
+            background: linear-gradient(135deg, #1e293b, #2d3a4f);
+            border-radius: 20px;
+            padding: 20px;
+            border: 1px solid #334155;
+        }
+        
+        /* تنسيق الأزرار */
+        .menu-btn {
+            background: linear-gradient(135deg, #1e293b, #2d3a4f);
+            border: 1px solid #334155;
+            border-radius: 20px;
+            padding: 24px 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .menu-btn:hover {
+            transform: translateY(-5px);
+            border-color: #f59e0b;
+            box-shadow: 0 10px 25px -5px rgba(245, 158, 11, 0.3);
+        }
+        
+        /* تنسيق حقول الإدخال */
+        input, select, textarea {
+            background: #2d3a4f !important;
+            border: 2px solid #334155 !important;
+            color: white !important;
+            padding: 12px 16px !important;
+            border-radius: 16px !important;
+            width: 100%;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            border-color: #f59e0b !important;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2) !important;
+        }
+        
+        /* تنسيق الشارات */
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        
+        .badge-success {
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+            border: 1px solid #22c55e;
+        }
+        
+        .badge-danger {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            border: 1px solid #ef4444;
+        }
+        
+        .badge-warning {
+            background: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
+            border: 1px solid #f59e0b;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white font-[Cairo]">
 
-        // =============================================
-        // بدء التطبيق
-        // =============================================
-        document.addEventListener('DOMContentLoaded', async () => {
-            // إخفاء شاشة التحميل
-            const loadingScreen = document.getElementById('loading-screen');
-            
-            // تحميل البيانات الافتراضية
-            await loadDefaultData();
-            
-            // تحديث البيانات من التخزين
-            refreshData();
-            
-            // إخفاء شاشة التحميل بعد ثانية
-            setTimeout(() => {
-                if (loadingScreen) loadingScreen.style.display = 'none';
-                // عرض شريط الاختصارات بعد قليل
-                document.getElementById('shortcuts-bar').style.display = 'block';
-            }, 1000);
-        });
+<div id="app" class="container mx-auto p-4 min-h-screen">
+    <!-- المحتوى سيتم تحميله هنا -->
+</div>
 
-        // =============================================
-        // تصدير الدوال للاستخدام العام
-        // =============================================
-        window.Storage = Storage;
-        window.showToast = showToast;
-        window.formatNumber = formatNumber;
-        window.refreshData = refreshData;
-    </script>
-    <!-- تحميل ملف التطبيق الرئيسي الجديد -->
-    <script type="module" src="script.js"></script>
+<!-- نافذة التنبيهات -->
+<div id="toast" class="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 hidden"></div>
+
+<!-- شريط التنقل السفلي -->
+<div class="mobile-nav" id="mobileNav" style="display: none;">
+    <a href="#" onclick="window.showDashboard(); return false;" class="mobile-nav-item">
+        <i class="fas fa-home"></i>
+        <span>الرئيسية</span>
+    </a>
+    <a href="#" onclick="window.showSaleForm(); return false;" class="mobile-nav-item">
+        <i class="fas fa-cash-register"></i>
+        <span>مبيعات</span>
+    </a>
+    <a href="#" onclick="window.showPurchaseForm(); return false;" class="mobile-nav-item">
+        <i class="fas fa-shopping-cart"></i>
+        <span>مشتريات</span>
+    </a>
+    <a href="#" onclick="window.showWorkersList(); return false;" class="mobile-nav-item">
+        <i class="fas fa-users"></i>
+        <span>عمالة</span>
+    </a>
+    <a href="#" onclick="window.showExpensesList(); return false;" class="mobile-nav-item">
+        <i class="fas fa-file-invoice"></i>
+        <span>مصروفات</span>
+    </a>
+</div>
+
+<!-- شريط الاختصارات -->
+<div class="shortcuts-bar fixed bottom-4 left-4 bg-gray-800/90 backdrop-blur-sm border border-gray-700 rounded-full px-4 py-2 hidden md:flex gap-4 z-50" id="shortcutsBar">
+    <span class="text-sm"><span class="bg-amber-500 text-gray-900 px-2 py-1 rounded-md text-xs font-bold ml-1">F1</span> مبيعات</span>
+    <span class="text-sm"><span class="bg-amber-500 text-gray-900 px-2 py-1 rounded-md text-xs font-bold ml-1">F2</span> مشتريات</span>
+    <span class="text-sm"><span class="bg-amber-500 text-gray-900 px-2 py-1 rounded-md text-xs font-bold ml-1">F3</span> عمالة</span>
+    <span class="text-sm"><span class="bg-amber-500 text-gray-900 px-2 py-1 rounded-md text-xs font-bold ml-1">F4</span> رئيسية</span>
+    <span class="text-sm"><span class="bg-amber-500 text-gray-900 px-2 py-1 rounded-md text-xs font-bold ml-1">F5</span> تحديث</span>
+</div>
+
+<!-- تحميل JavaScript -->
+<script type="module" src="script.js"></script>
+
+<script>
+    // إظهار شريط التنقل السفلي على الموبايل
+    if (window.innerWidth <= 768) {
+        document.getElementById('mobileNav').style.display = 'flex';
+    }
+    
+    window.addEventListener('resize', function() {
+        if (window.innerWidth <= 768) {
+            document.getElementById('mobileNav').style.display = 'flex';
+        } else {
+            document.getElementById('mobileNav').style.display = 'none';
+        }
+    });
+</script>
+
 </body>
 </html>

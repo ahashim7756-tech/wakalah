@@ -1,3 +1,49 @@
+// ==================== توافق مع الأسماء القديمة ====================
+// هذا لضمان عمل الأيقونات في index.html
+window.showDashboard = function() {
+    if (typeof showDashboard === 'function') showDashboard();
+    else console.error('showDashboard غير موجودة');
+};
+
+window.showSaleForm = function() {
+    if (typeof showSaleForm === 'function') showSaleForm();
+    else console.error('showSaleForm غير موجودة');
+};
+
+window.showPurchaseForm = function() {
+    if (typeof showPurchaseForm === 'function') showPurchaseForm();
+    else console.error('showPurchaseForm غير موجودة');
+};
+
+window.showWorkersList = function() {
+    if (typeof showWorkersList === 'function') showWorkersList();
+    else console.error('showWorkersList غير موجودة');
+};
+
+window.showExpensesList = function() {
+    if (typeof showExpensesList === 'function') showExpensesList();
+    else console.error('showExpensesList غير موجودة');
+};
+
+window.showProductsList = function() {
+    if (typeof showProductsList === 'function') showProductsList();
+    else console.error('showProductsList غير موجودة');
+};
+
+window.showFarmersList = function() {
+    if (typeof showFarmersList === 'function') showFarmersList();
+    else console.error('showFarmersList غير موجودة');
+};
+
+window.showReports = function() {
+    if (typeof showReports === 'function') showReports();
+    else console.error('showReports غير موجودة');
+};
+
+window.showSettings = function() {
+    if (typeof showSettings === 'function') showSettings();
+    else console.error('showSettings غير موجودة');
+};
 // ==================== نظام التخزين المحلي ====================
 class LocalDB {
     constructor() {

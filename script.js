@@ -1935,6 +1935,21 @@ window.editFarmer = (id) => {
 };
 
 // تصدير الدوال للاستخدام العام
+// ==================== ربط الدوال الإضافية ====================
+window.showPurchasesList = showPurchasesList;
+window.showWorkersList = showWorkersList;
+window.showFarmersList = showFarmersList;
+window.showExpensesList = showExpensesList;
+window.showReports = showReports;
+window.showSettings = showSettings;
+window.showProductsList = showProductsList;
+window.showSalesList = showSalesList;
+window.showProductForm = showProductForm;
+window.showPurchaseForm = showPurchaseForm;
+window.showSaleForm = showSaleForm;
+window.showWorkerForm = showWorkerForm;
+window.showFarmerForm = showFarmerForm;
+window.showExpenseForm = showExpenseForm;
 window.showProductForm = showProductForm;
 window.showPurchaseForm = showPurchaseForm;
 window.showSaleForm = showSaleForm;

@@ -3,253 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>وكالة - نظام إدارة متكامل</title>
+    <title>وكالة - نظام إدارة الوكالات الزراعية</title>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- تخصيص Tailwind -->
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: '#f59e0b',
-                        'primary-dark': '#d97706',
-                    },
-                    fontFamily: {
-                        sans: ['Cairo', 'Tajawal', 'sans-serif'],
-                    },
-                }
-            }
-        }
-    </script>
-    
     <!-- الخطوط -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
     
     <!-- أيقونات Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- ملف التنسيق المخصص -->
+    <!-- التنسيقات المخصصة (انسخ هنا الـ Style أعلاه) -->
     <style>
-        /* ===== تنسيقات إضافية ===== */
-        body {
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-            min-height: 100vh;
-            font-family: 'Cairo', 'Tajawal', sans-serif;
-        }
-        
-        /* تنسيق شريط التمرير */
-        ::-webkit-scrollbar {
-            width: 10px;
-            height: 10px;
-        }
-        
-        ::-webkit-scrollbar-track {
-            background: #1e293b;
-        }
-        
-        ::-webkit-scrollbar-thumb {
-            background: #f59e0b;
-            border-radius: 5px;
-        }
-        
-        ::-webkit-scrollbar-thumb:hover {
-            background: #d97706;
-        }
-        
-        /* تأثيرات حركية */
-        @keyframes slideDown {
-            from {
-                transform: translate(-50%, -100%);
-                opacity: 0;
-            }
-            to {
-                transform: translate(-50%, 0);
-                opacity: 1;
-            }
-        }
-        
-        .toast-success {
-            background: linear-gradient(135deg, #10b981, #059669);
-            color: white;
-            padding: 12px 24px;
-            border-radius: 50px;
-            box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.5);
-            font-weight: bold;
-        }
-        
-        .toast-error {
-            background: linear-gradient(135deg, #ef4444, #b91c1c);
-            color: white;
-            padding: 12px 24px;
-            border-radius: 50px;
-            box-shadow: 0 10px 25px -5px rgba(239, 68, 68, 0.5);
-            font-weight: bold;
-        }
-        
-        .toast-info {
-            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-            color: white;
-            padding: 12px 24px;
-            border-radius: 50px;
-            box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.5);
-            font-weight: bold;
-        }
-        
-        /* تنسيق الجداول */
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        
-        th {
-            background: #2d3a4f;
-            color: #f59e0b;
-            padding: 12px;
-            text-align: center;
-            font-weight: 700;
-        }
-        
-        td {
-            padding: 10px 12px;
-            text-align: center;
-            border-bottom: 1px solid #334155;
-            color: #e2e8f0;
-        }
-        
-        tr:hover {
-            background: #2d3a4f;
-        }
-        
-        /* تنسيق شريط التنقل السفلي */
-        .mobile-nav {
-            display: none;
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: rgba(15, 23, 42, 0.95);
-            backdrop-filter: blur(10px);
-            border-top: 1px solid #334155;
-            padding: 10px 5px;
-            z-index: 1000;
-        }
-        
-        .mobile-nav-item {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            color: #94a3b8;
-            text-decoration: none;
-            font-size: 0.8rem;
-            transition: all 0.3s ease;
-        }
-        
-        .mobile-nav-item i {
-            font-size: 1.3rem;
-            margin-bottom: 4px;
-        }
-        
-        .mobile-nav-item:hover {
-            color: #f59e0b;
-        }
-        
-        @media (max-width: 768px) {
-            .mobile-nav {
-                display: flex;
-                justify-content: space-around;
-            }
-            
-            body {
-                padding-bottom: 70px;
-            }
-        }
-        
-        /* تنسيق البطاقات */
-        .stat-card {
-            background: linear-gradient(135deg, #1e293b, #2d3a4f);
-            border-radius: 20px;
-            padding: 20px;
-            border: 1px solid #334155;
-        }
-        
-        /* تنسيق الأزرار */
-        .menu-btn {
-            background: linear-gradient(135deg, #1e293b, #2d3a4f);
-            border: 1px solid #334155;
-            border-radius: 20px;
-            padding: 24px 16px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
-        .menu-btn:hover {
-            transform: translateY(-5px);
-            border-color: #f59e0b;
-            box-shadow: 0 10px 25px -5px rgba(245, 158, 11, 0.3);
-        }
-        
-        /* تنسيق حقول الإدخال */
-        input, select, textarea {
-            background: #2d3a4f !important;
-            border: 2px solid #334155 !important;
-            color: white !important;
-            padding: 12px 16px !important;
-            border-radius: 16px !important;
-            width: 100%;
-        }
-        
-        input:focus, select:focus, textarea:focus {
-            border-color: #f59e0b !important;
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2) !important;
-        }
-        
-        /* تنسيق الشارات */
-        .badge {
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 50px;
-            font-size: 0.85rem;
-            font-weight: 600;
-        }
-        
-        .badge-success {
-            background: rgba(34, 197, 94, 0.2);
-            color: #22c55e;
-            border: 1px solid #22c55e;
-        }
-        
-        .badge-danger {
-            background: rgba(239, 68, 68, 0.2);
-            color: #ef4444;
-            border: 1px solid #ef4444;
-        }
-        
-        .badge-warning {
-            background: rgba(245, 158, 11, 0.2);
-            color: #f59e0b;
-            border: 1px solid #f59e0b;
-        }
+        /* الصق هنا كل التنسيقات التي أعطيتها أعلاه */
     </style>
 </head>
-<body class="bg-gray-900 text-white font-[Cairo]">
+<body>
 
-<div id="app" class="container mx-auto p-4 min-h-screen">
-    <!-- المحتوى سيتم تحميله هنا -->
-</div>
+<!-- حاوية التطبيق -->
+<div id="app" class="min-h-screen flex items-center justify-center p-4"></div>
 
-<!-- نافذة التنبيهات -->
-<div id="toast" class="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 hidden"></div>
+<!-- عنصر التنبيهات -->
+<div id="toast" class="hidden fixed top-4 left-1/2 transform -translate-x-1/2 z-50 toast"></div>
 
-<!-- شريط التنقل السفلي -->
-<div class="mobile-nav" id="mobileNav" style="display: none;">
+<!-- شريط التنقل السفلي (سيظهر تلقائياً) -->
+<div class="mobile-nav" id="mobileNav">
     <a href="#" onclick="window.showDashboard(); return false;" class="mobile-nav-item">
         <i class="fas fa-home"></i>
         <span>الرئيسية</span>
@@ -273,19 +54,19 @@
 </div>
 
 <!-- شريط الاختصارات -->
-<div class="shortcuts-bar fixed bottom-4 left-4 bg-gray-800/90 backdrop-blur-sm border border-gray-700 rounded-full px-4 py-2 hidden md:flex gap-4 z-50" id="shortcutsBar">
-    <span class="text-sm"><span class="bg-amber-500 text-gray-900 px-2 py-1 rounded-md text-xs font-bold ml-1">F1</span> مبيعات</span>
-    <span class="text-sm"><span class="bg-amber-500 text-gray-900 px-2 py-1 rounded-md text-xs font-bold ml-1">F2</span> مشتريات</span>
-    <span class="text-sm"><span class="bg-amber-500 text-gray-900 px-2 py-1 rounded-md text-xs font-bold ml-1">F3</span> عمالة</span>
-    <span class="text-sm"><span class="bg-amber-500 text-gray-900 px-2 py-1 rounded-md text-xs font-bold ml-1">F4</span> رئيسية</span>
-    <span class="text-sm"><span class="bg-amber-500 text-gray-900 px-2 py-1 rounded-md text-xs font-bold ml-1">F5</span> تحديث</span>
+<div class="shortcuts-bar" id="shortcutsBar">
+    <span><span class="shortcut-badge">F1</span> مبيعات</span>
+    <span><span class="shortcut-badge">F2</span> مشتريات</span>
+    <span><span class="shortcut-badge">F3</span> عمالة</span>
+    <span><span class="shortcut-badge">F4</span> رئيسية</span>
+    <span><span class="shortcut-badge">F5</span> تحديث</span>
 </div>
 
 <!-- تحميل JavaScript -->
 <script type="module" src="script.js"></script>
 
 <script>
-    // إظهار شريط التنقل السفلي على الموبايل
+    // إظهار شريط التنقل على الموبايل
     if (window.innerWidth <= 768) {
         document.getElementById('mobileNav').style.display = 'flex';
     }
